@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "airbnb",
+    "./.es6_eslintrc.json",
+    "./.react_eslintrc.json"
+  ],
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "jquery": true,
+    "mocha": true
+  },
+  "rules": {
+    "no-unused-vars": 1,
+    "quotes": 0,
+    "no-console": 1,
+    "no-debugger": 1,
+    "func-names": 0,
+    "new-cap": 1,
+    "no-shadow": 1,
+    "no-param-reassign": 1,
+    "wrap-iife": 0,
+    "no-use-before-define": 0
+  }
+}
