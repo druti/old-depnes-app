@@ -7,8 +7,7 @@ import styles from './App.css';
 // Import Components
 import Helmet from 'react-helmet';
 import DevTools from './components/DevTools';
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
+import MasterLayout from '../../layouts/MasterLayout';
 
 // Import Actions
 import { toggleAddPost } from './AppActions';
@@ -58,15 +57,13 @@ export class App extends Component {
               },
             ]}
           />
-          <Header
+          <MasterLayout
             switchLanguage={lang => this.props.dispatch(switchLanguage(lang))}
             intl={this.props.intl}
             toggleAddPost={this.toggleAddPostSection}
-          />
-          <div className={styles.container}>
+          >
             {this.props.children}
-          </div>
-          <Footer />
+          </MasterLayout>
         </div>
       </div>
     );

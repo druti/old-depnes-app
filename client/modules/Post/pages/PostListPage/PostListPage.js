@@ -1,8 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 
-import MasterLayout from '../../../../layouts/MasterLayout';
-
 // Import Components
 import PostList from '../../components/PostList';
 import PostCreateWidget from '../../components/PostCreateWidget/PostCreateWidget';
@@ -33,10 +31,10 @@ class PostListPage extends Component {
 
   render() {
     return (
-      <MasterLayout>
+      <div>
         <PostCreateWidget addPost={this.handleAddPost} showAddPost={this.props.showAddPost} />
         <PostList handleDeletePost={this.handleDeletePost} posts={this.props.posts} />
-      </MasterLayout>
+      </div>
     );
   }
 }

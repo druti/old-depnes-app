@@ -83,8 +83,9 @@ class MasterLayout extends React.Component {
 
 MasterLayout.propTypes = {
   auth: PropTypes.object,
-  idToken: PropTypes.string,
-  children: PropTypes.array,
+  switchLanguage: PropTypes.func,
+  intl: PropTypes.object,
+  children: PropTypes.object,
 };
 
 export default MasterLayout;
