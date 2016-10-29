@@ -2,7 +2,7 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 
-//import AuthService from './util/AuthService'
+import AuthService from './util/AuthService'
 import App from './modules/App/App';
 
 
@@ -24,7 +24,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 
-/*
 const auth = new AuthService( // TODO remove hard coded credentials
   'wsTRLfN6pOyjQDpfCYzTOzFYNnq0ycbz',
   'druti.auth0.com', {
@@ -36,12 +35,13 @@ const auth = new AuthService( // TODO remove hard coded credentials
       primaryColor: '#333',
     },
     languageDictionary: {
-    signUpTerms: 'I agree to the <a href="/terms" target="_new">terms of service</a> and <a href="/privacy" target="_new">privacy policy</a>.',
+      signUpTerms: 'I agree to the <a href="/terms" target="_new">terms of service</a> and <a href="/privacy" target="_new">privacy policy</a>.',
       title: 'Depnes',
     },
   }
 );
 
+/*
 // validate authentication for private routes
 const requireAuth = (nextState, replace) => {
   if (!auth.loggedIn()) {
@@ -53,7 +53,7 @@ const requireAuth = (nextState, replace) => {
 // react-router setup with code-splitting
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
 export default (
-  <Route path='/' component={App} >
+  <Route path='/' component={App} auth={auth}>
     <IndexRoute
       getComponent={(nextState, cb) => {
         require.ensure([], require => {

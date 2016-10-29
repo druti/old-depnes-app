@@ -2,13 +2,6 @@
  * Entry Script
  */
 
-// https://github.com/webpack/webpack/issues/1754
-require.extensions['.scss'] = () => {
-    return;
-};
-require.extensions['.css'] = () => {
-    return;
-};
 /////////////////////////////////////////////////
 
 
@@ -30,6 +23,14 @@ if (process.env.NODE_ENV === 'production') {
       ]
     ]
   });
+  // https://github.com/webpack/webpack/issues/1754
+  require.extensions['.scss'] = () => {
+      return;
+  };
+  require.extensions['.css'] = () => {
+      return;
+  };
+
   require('babel-polyfill');
 
   require('./server/server');

@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 // Import Style
-import styles from './App.css';
+import styles from './App.css'; // eslint-disable-line
 
 // Import Components
 import Helmet from 'react-helmet';
@@ -28,6 +28,13 @@ export class App extends Component {
   };
 
   render() {
+    let children = null;
+    if (this.props.children) {
+      children = React.cloneElement(this.props.children, {
+        auth: this.props.route.auth, //sends auth instance from route to children
+      });
+    }
+
     return (
       <div>
         {this.state.isMounted && !window.devToolsExtension && process.env.NODE_ENV === 'development' && <DevTools />}
@@ -58,11 +65,12 @@ export class App extends Component {
             ]}
           />
           <MasterLayout
+            auth={this.props.route.auth}
             switchLanguage={lang => this.props.dispatch(switchLanguage(lang))}
             intl={this.props.intl}
             toggleAddPost={this.toggleAddPostSection}
           >
-            {this.props.children}
+            {children}
           </MasterLayout>
         </div>
       </div>
@@ -71,6 +79,7 @@ export class App extends Component {
 }
 
 App.propTypes = {
+  route: PropTypes.object.isRequired,
   children: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   intl: PropTypes.object.isRequired,

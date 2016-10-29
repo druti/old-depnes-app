@@ -2,10 +2,10 @@ import React, {PropTypes} from 'react';
 import $ from 'jquery';
 import {Layout, NavDrawer, Panel} from 'react-toolbox';
 import {AppBar} from 'react-toolbox/lib/app_bar';
-import {Checkbox} from 'react-toolbox/lib/checkbox';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 
 import DrawerMenu from './DrawerMenu';
+
 const theme = require('./masterLayout.scss');
 
 class MasterLayout extends React.Component {
@@ -16,8 +16,6 @@ class MasterLayout extends React.Component {
       drawerActive: false,
       drawerPinned: false,
     };
-
-    this.showLock = this.showLock.bind(this);
   }
 
   componentDidMount() {
@@ -25,15 +23,9 @@ class MasterLayout extends React.Component {
     // server for SSR
     this.lg = 840;
 
-    $(window).on('resize', e => {
+    $(window).on('resize', () => {
       this.viewportW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     });
-  }
-
-  showLock(options) {
-    this.props.lock.show(
-        Object.assign({}, options),
-    );
   }
 
   toggleDrawer = () => {
@@ -51,6 +43,7 @@ class MasterLayout extends React.Component {
   };
 
   render() {
+    const { auth } = this.props;
     return (
       <Layout>
         <NavDrawer
@@ -64,11 +57,15 @@ class MasterLayout extends React.Component {
         <Panel>
           <AppBar theme={theme}>
             <IconButton icon='menu' inverse onClick={this.toggleDrawer}/>
-            {this.props.idToken ?
-              <Button label='Profile' onClick={() => console.log(this.props.idToken)} accent /> :
+            {auth.loggedIn() ?
+              <Button
+                accent
+                label='Profile'
+                onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
+              /> :
               <div>
-                <Button label='Sign Up' onClick={() => this.showLock({initialScreen: 'signUp'})} accent />
-                <Button label='Log In' onClick={() => this.showLock({initialScreen: 'login'})} accent />
+                <Button label='Sign Up' onClick={() => auth.showUI({initialScreen: 'signUp'})} accent />
+                <Button label='Log In' onClick={() => auth.showUI({initialScreen: 'login'})} accent />
               </div>
             }
           </AppBar>
@@ -82,7 +79,7 @@ class MasterLayout extends React.Component {
 }
 
 MasterLayout.propTypes = {
-  auth: PropTypes.object,
+  auth: PropTypes.object.isRequired,
   switchLanguage: PropTypes.func,
   intl: PropTypes.object,
   children: PropTypes.object,
