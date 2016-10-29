@@ -46,8 +46,7 @@ test('calls addPost', t => {
     <PostCreateWidget addPost={addPost} showAddPost />
   );
 
-  wrapper.ref('name').get(0).value = 'David';
-  wrapper.ref('title').get(0).value = 'Some Title';
+  wrapper.ref('textContent').get(0).value = 'Some Title';
   wrapper.ref('content').get(0).value = 'Bla Bla Bla';
 
   wrapper.find('a').first().simulate('click');

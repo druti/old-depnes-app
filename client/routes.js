@@ -1,7 +1,10 @@
 /* eslint-disable global-require */
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
+
+//import AuthService from './util/AuthService'
 import App from './modules/App/App';
+
 
 // require.ensure polyfill for node
 if (typeof require.ensure !== 'function') {
@@ -20,10 +23,37 @@ if (process.env.NODE_ENV !== 'production') {
   require('./modules/Post/pages/PostDetailPage/PostDetailPage');
 }
 
+
+/*
+const auth = new AuthService( // TODO remove hard coded credentials
+  'wsTRLfN6pOyjQDpfCYzTOzFYNnq0ycbz',
+  'druti.auth0.com', {
+    avatar: null,
+    redirectUrl: 'http://localhost:3000',
+    responseType: 'code',
+    mustAcceptTerms: true,
+    theme : {
+      primaryColor: '#333',
+    },
+    languageDictionary: {
+    signUpTerms: 'I agree to the <a href="/terms" target="_new">terms of service</a> and <a href="/privacy" target="_new">privacy policy</a>.',
+      title: 'Depnes',
+    },
+  }
+);
+
+// validate authentication for private routes
+const requireAuth = (nextState, replace) => {
+  if (!auth.loggedIn()) {
+    replace({ pathname: '/login' })
+  }
+}
+*/
+
 // react-router setup with code-splitting
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
 export default (
-  <Route path='/' component={App}>
+  <Route path='/' component={App} >
     <IndexRoute
       getComponent={(nextState, cb) => {
         require.ensure([], require => {
@@ -32,7 +62,7 @@ export default (
       }}
     />
     <Route
-      path='/posts/:slug-:cuid'
+      path='/posts/:cuid'
       getComponent={(nextState, cb) => {
         require.ensure([], require => {
           cb(null, require('./modules/Post/pages/PostDetailPage/PostDetailPage').default);

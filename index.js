@@ -2,6 +2,16 @@
  * Entry Script
  */
 
+// https://github.com/webpack/webpack/issues/1754
+require.extensions['.scss'] = () => {
+    return;
+};
+require.extensions['.css'] = () => {
+    return;
+};
+/////////////////////////////////////////////////
+
+
 if (process.env.NODE_ENV === 'production') {
   process.env.webpackAssets = JSON.stringify(require('./dist/manifest.json'));
   process.env.webpackChunkAssets = JSON.stringify(require('./dist/chunk-manifest.json'));

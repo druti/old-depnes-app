@@ -1,6 +1,5 @@
 import Post from '../models/post';
 import cuid from 'cuid';
-import slug from 'limax';
 import sanitizeHtml from 'sanitize-html';
 
 /**
@@ -25,26 +24,23 @@ export function getPosts(req, res) {
  * @returns void
  */
 export function addPost(req, res) {
-  if (!req.body.post.name || !req.body.post.title || !req.body.post.content) {
+  if (!req.body.post.textContent || !req.body.post.content) {
+    console.log('missing params');
+    console.log(req.body.post);
     res.status(403).end();
   }
 
   const newPost = new Post(req.body.post);
 
   // Let's sanitize inputs
-  newPost.title = sanitizeHtml(newPost.title);
-  newPost.name = sanitizeHtml(newPost.name);
+  newPost.textContent = sanitizeHtml(newPost.textContent);
   newPost.content = sanitizeHtml(newPost.content);
 
-  newPost.slug = slug(newPost.title.toLowerCase(), { lowercase: true });
   newPost.cuid = cuid();
   newPost.save((err, saved) => {
-    console.log('post save callback');
     if (err) {
-      console.log('post save error');
       res.status(500).send(err);
     }
-    console.log('post save success');
     res.json({ post: saved });
   });
 }
