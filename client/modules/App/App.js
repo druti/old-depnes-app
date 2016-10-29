@@ -34,8 +34,8 @@ export class App extends Component {
         {this.state.isMounted && !window.devToolsExtension && process.env.NODE_ENV === 'development' && <DevTools />}
         <div>
           <Helmet
-            title="MERN Starter - Blog App"
-            titleTemplate="%s - Blog App"
+            title='MERN Starter - Blog App'
+            titleTemplate='%s - Blog App'
             meta={[
               { charset: 'utf-8' },
               {
@@ -45,6 +45,16 @@ export class App extends Component {
               {
                 name: 'viewport',
                 content: 'width=device-width, initial-scale=1',
+              },
+            ]}
+            link={[
+              {
+                rel: 'stylesheet',
+                href: 'https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css',
+              },
+              {
+                rel: 'stylesheet',
+                href: 'https://fonts.googleapis.com/icon?family=Material+Icons',
               },
             ]}
           />
