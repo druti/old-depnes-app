@@ -60,9 +60,9 @@ export default class AuthService extends EventEmitter {
     console.log('Authentication Error', error); // eslint-disable-line
   }
 
-  showUI() {
+  showUI(options) {
     // Call the show method to display the widget.
-    this.lock.show()
+    this.lock.show(options);
   }
 
   loggedIn() {

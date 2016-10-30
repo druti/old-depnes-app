@@ -15,7 +15,15 @@ class MasterLayout extends React.Component {
     this.state = {
       drawerActive: false,
       drawerPinned: false,
+      userProfile: null,
     };
+  }
+
+  componentWillMount() {
+    this.props.auth.on('profile_updated', profile => {
+      debugger;
+      this.setState(profile);
+    });
   }
 
   componentDidMount() {
@@ -64,7 +72,7 @@ class MasterLayout extends React.Component {
                   label='Profile'
                   onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
                 />
-                <Button label='Log out' onClick={() => auth.logout()} accent />
+                <Button label='Log out' onClick={() => { auth.logout(); window.location='/' }} accent />
               </div> :
               <div>
                 <Button label='Sign Up' onClick={() => auth.showUI({initialScreen: 'signUp'})} accent />
