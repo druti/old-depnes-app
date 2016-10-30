@@ -58,11 +58,14 @@ class MasterLayout extends React.Component {
           <AppBar theme={theme}>
             <IconButton icon='menu' inverse onClick={this.toggleDrawer}/>
             {auth.loggedIn() ?
-              <Button
-                accent
-                label='Profile'
-                onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
-              /> :
+              <div>
+                <Button
+                  accent
+                  label='Profile'
+                  onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
+                />
+                <Button label='Log out' onClick={() => auth.logout()} accent />
+              </div> :
               <div>
                 <Button label='Sign Up' onClick={() => auth.showUI({initialScreen: 'signUp'})} accent />
                 <Button label='Log In' onClick={() => auth.showUI({initialScreen: 'login'})} accent />
