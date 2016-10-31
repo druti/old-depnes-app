@@ -24,7 +24,7 @@ export function getPosts(req, res) {
  * @returns void
  */
 export function addPost(req, res) {
-  if (!req.body.post.textContent || !req.body.post.content) {
+  if (!req.body.post.content || !req.body.post.htmlContent || !req.body.post.textContent) {
     console.log('missing params');
     console.log(req.body.post);
     res.status(403).end();
@@ -33,8 +33,9 @@ export function addPost(req, res) {
   const newPost = new Post(req.body.post);
 
   // Let's sanitize inputs
-  newPost.textContent = sanitizeHtml(newPost.textContent);
   newPost.content = sanitizeHtml(newPost.content);
+  newPost.htmlContent = sanitizeHtml(newPost.htmlContent);
+  newPost.textContent = sanitizeHtml(newPost.textContent);
 
   newPost.cuid = cuid();
   newPost.save((err, saved) => {

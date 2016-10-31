@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 
-// Import Style
-import styles from '../../components/PostListItem/PostListItem.css';
+import Navigator from '../../components/Navigator/Navigator';
 
 // Import Actions
 import { fetchPost } from '../../PostActions';
@@ -16,9 +15,10 @@ export function PostDetailPage(props) {
   return (
     <div>
       <Helmet title={props.post.textContent.substring(0, 25)} />
-      <div className={`${styles['single-post']} ${styles['post-detail']}`}>
-        <p className={styles['post-desc']}>{props.post.content}</p>
-      </div>
+      <Navigator
+        paths={props.posts}
+        path={props.post}
+      />
     </div>
   );
 }
@@ -31,6 +31,7 @@ PostDetailPage.need = [params => {
 // Retrieve data from store as props
 function mapStateToProps(state, props) {
   return {
+    posts: getPosts(state),
     post: getPost(state, props.params.cuid),
   };
 }
@@ -41,6 +42,11 @@ PostDetailPage.propTypes = {
     content: PropTypes.string.isRequired,
     cuid: PropTypes.string.isRequired,
   }).isRequired,
+  posts: PropTypes.shape([{
+    textContent: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    cuid: PropTypes.string.isRequired,
+  }]).isRequired,
 };
 
 export default connect(mapStateToProps)(PostDetailPage);

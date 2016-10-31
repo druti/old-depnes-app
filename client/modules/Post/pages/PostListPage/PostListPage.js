@@ -24,9 +24,9 @@ class PostListPage extends Component {
     }
   };
 
-  handleAddPost = (textContent, content) => {
+  handleAddPost = (content, htmlContent, textContent) => {
     this.props.dispatch(toggleAddPost());
-    this.props.dispatch(addPostRequest({ textContent, content }));
+    this.props.dispatch(addPostRequest({ content, htmlContent, textContent }));
   };
 
   render() {

@@ -1,4 +1,5 @@
 import Post from './models/post';
+import cuid from 'cuid';
 
 export default function () {
   Post.count().exec((err, count) => {
@@ -6,38 +7,89 @@ export default function () {
       return;
     }
 
-    const content1 = `Sed ut perspiciatis unde omnis iste natus error
-      sit voluptatem accusantium doloremque laudantium, totam rem aperiam,
-      eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae
-      vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-      aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos
-      qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem
-      ipsum quia dolor sit amet. Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-      sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-      enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-      ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-      in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-      occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-      est laborum`;
+    const lorem1 = `Lorem ipsum dolor sit amet, dicam scaevola mea ut, ex qui habeo tractatos. Est eu pertinax gubergren, et pro officiis periculis. Ex nisl congue alterum mei, an tota illud scaevola sea. Pro quis singulis scripserit ei, ei facer graece nonumes his, pri ei alia ornatus alienum. Putant maluisset maiestatis pri in.
 
-    const content2 = `Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-      sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-      enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-      ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-      in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-      occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-      est laborum. Sed ut perspiciatis unde omnis iste natus error
-      sit voluptatem accusantium doloremque laudantium, totam rem aperiam,
-      eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae
-      vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-      aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos
-      qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem
-      ipsum quia dolor sit amet.`;
+    Per latine appetere cu, possit admodum deseruisse vel ei. Ne mandamus liberavisse nam, ei meis vocent voluptaria has. Duo apeirian legendos scriptorem ut. Ut iusto conclusionemque vis, pericula suavitate dissentiunt has id. Vix persius numquam qualisque id. Eu cum prompta qualisque, exerci tacimates has no.
 
-    const post1 = new Post({ name: 'Admin', title: 'Hello MERN', slug: 'hello-mern', cuid: 'cikqgkv4q01ck7453ualdn3hd', content: content1 });
-    const post2 = new Post({ name: 'Admin', title: 'Lorem Ipsum', slug: 'lorem-ipsum', cuid: 'cikqgkv4q01ck7453ualdn3hf', content: content2 });
+    Eam an lorem euismod, illud viris complectitur et eam. Eos augue aliquip ne, sed eros praesent erroribus ei, in usu veniam luptatum. His in everti platonem instructior, illum scripserit mel te. Quaestio incorrupte ad mel, in harum volutpat eos.
 
-    Post.create([post1, post2], (error) => {
+    Cu dicit utinam alienum sed, sed ei nullam audire interpretaris. At has liber principes. Nam eu case homero, errem invenire concludaturque ius ex. Viris facete pertinax eu his, quis accusata eum te.
+
+    Ex sint conceptam nec, te munere philosophia pri. Sit clita commodo euripidis ne. Ad pri iusto periculis, sea ad erant bonorum gloriatur. Diam praesent nam eu, tation delectus ullamcorper an duo.
+
+    `; // trailing line break is important because quill follows this convention.
+
+    let pathsInitialData = [
+      {
+        cuid: cuid(), 
+        content: {},
+        htmlContent: lorem1,
+        textContent: lorem1,
+      },
+    ];
+
+    for (let i = 0; i < 3; i++) {
+      let lastPath = pathsInitialData[pathsInitialData.length - 1];
+
+      let startIndex = lastPath.textContent.indexOf('.');
+      let endIndex = lastPath.textContent.indexOf('.', startIndex + 1);
+
+      let a = lastPath.textContent.slice(0, startIndex);
+      let b = lastPath.textContent.slice(endIndex);
+      let c = a + b;
+
+      let p = {
+        cuid: cuid(),
+        content: {},
+        htmlContent: c,
+        textContent: c,
+      };
+
+      pathsInitialData.push(p);
+    }
+
+    // TODO refactor or remove before anything else
+    for (let i = 0; i < 1; i++) {
+      let lastPath = pathsInitialData[0];
+
+      let startIndex = lastPath.textContent.indexOf('.');
+      let endIndex = lastPath.textContent.indexOf('.', startIndex + 1);
+
+      let a = lastPath.textContent.slice(0, startIndex);
+      let b = lastPath.textContent.slice(endIndex);
+      let c = a + '. Replacement sentence' + b;
+
+      let p = {
+        cuid: cuid(), 
+        content: {},
+        htmlContent: c,
+        textContent: c,
+      };
+
+      pathsInitialData.push(p);
+    }
+    // TODO end
+
+    for (let i = 0; i < pathsInitialData.length; i++) {
+      let p = pathsInitialData[i];
+
+      p.htmlContent = p.textContent.split(/\n/).map(function (block) {
+        if (block) {
+          return `<p>${block}</p>`;
+        } else {
+          return '<p><br></p>';
+        }
+      }).slice(0, -1).join('');
+    }
+
+    pathsInitialData = pathsInitialData.map(path => new Post({
+      content: path.content,
+      htmlContent: path.htmlContent,
+      textContent: path.textContent,
+      cuid: path.cuid,
+    }));
+
+    Post.create(pathsInitialData, (error) => {
       if (!error) {
         // console.log('ready to go....');
       }
