@@ -9,4 +9,8 @@ const postSchema = new Schema({
   dateAdded: { type: 'Date', default: Date.now, required: true },
 });
 
+if (process.env.NODE_ENV === 'development') {
+  postSchema.set('minimize', false);
+}
+
 export default mongoose.model('Post', postSchema);

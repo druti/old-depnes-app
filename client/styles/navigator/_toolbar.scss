@@ -1,0 +1,20 @@
+:global {
+  .ql-snow.ql-toolbar {
+  //  display: none;
+    background: #fff;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding-right: 40px;
+    white-space: nowrap;
+    z-index: 10000;
+
+    .ql-picker-options {
+      bottom: 100%;
+
+      .ql-picker-item {
+        display: block;
+      }
+    }
+  }
+}

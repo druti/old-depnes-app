@@ -1,5 +1,9 @@
 import React, { Component, PropTypes as Type } from 'react';
-import Quill from 'quill';
+
+const isClient = typeof window !== 'undefined'
+if (isClient) {
+  var Quill = require('quill');
+}
 
 class Editor extends Component {
   static propTypes = {

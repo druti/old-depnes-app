@@ -62,6 +62,10 @@ export class App extends Component {
                 rel: 'stylesheet',
                 href: 'https://fonts.googleapis.com/icon?family=Material+Icons',
               },
+              {
+                rel: 'stylesheet',
+                href: 'https://cdn.quilljs.com/1.1.3/quill.snow.css',
+              },
             ]}
           />
           <MasterLayout

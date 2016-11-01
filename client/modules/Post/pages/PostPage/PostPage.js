@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
-import { FormattedMessage } from 'react-intl';
 
 import Navigator from '../../components/Navigator/Navigator';
 
@@ -9,9 +8,9 @@ import Navigator from '../../components/Navigator/Navigator';
 import { fetchPost } from '../../PostActions';
 
 // Import Selectors
-import { getPost } from '../../PostReducer';
+import { getPost, getPosts } from '../../PostReducer';
 
-export function PostDetailPage(props) {
+export function PostPage(props) {
   return (
     <div>
       <Helmet title={props.post.textContent.substring(0, 25)} />
@@ -24,7 +23,7 @@ export function PostDetailPage(props) {
 }
 
 // Actions required to provide data for this component to render in sever side.
-PostDetailPage.need = [params => {
+PostPage.need = [params => {
   return fetchPost(params.cuid);
 }];
 
@@ -36,17 +35,16 @@ function mapStateToProps(state, props) {
   };
 }
 
-PostDetailPage.propTypes = {
-  post: PropTypes.shape({
-    textContent: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    cuid: PropTypes.string.isRequired,
-  }).isRequired,
-  posts: PropTypes.shape([{
-    textContent: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    cuid: PropTypes.string.isRequired,
-  }]).isRequired,
+
+const PostType = {
+  textContent: PropTypes.string.isRequired,
+  content: PropTypes.object.isRequired,
+  cuid: PropTypes.string.isRequired,
 };
 
-export default connect(mapStateToProps)(PostDetailPage);
+PostPage.propTypes = {
+  post: PropTypes.shape(PostType).isRequired,
+  posts: PropTypes.arrayOf(PropTypes.shape(PostType)).isRequired,
+};
+
+export default connect(mapStateToProps)(PostPage);

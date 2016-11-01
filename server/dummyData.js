@@ -21,7 +21,7 @@ export default function () {
 
     let pathsInitialData = [
       {
-        cuid: cuid(), 
+        cuid: cuid(),
         content: {},
         htmlContent: lorem1,
         textContent: lorem1,
@@ -60,7 +60,7 @@ export default function () {
       let c = a + '. Replacement sentence' + b;
 
       let p = {
-        cuid: cuid(), 
+        cuid: cuid(),
         content: {},
         htmlContent: c,
         textContent: c,
@@ -91,7 +91,7 @@ export default function () {
 
     Post.create(pathsInitialData, (error) => {
       if (!error) {
-        // console.log('ready to go....');
+        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DUMMY_DATA_INJECTED'); // eslint-disable-line
       }
     });
   });

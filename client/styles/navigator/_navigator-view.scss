@@ -1,0 +1,17 @@
+:global {
+  #navigator-view {
+    #cursor {
+      animation: blink 1s linear infinite;
+      background: #000;
+      padding-left: 3px;
+    }
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  @keyframes blink {
+    50% { background: transparent }
+  }
+}

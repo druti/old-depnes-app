@@ -9,10 +9,7 @@ import IntlWrapper from './modules/Intl/IntlWrapper';
 // Import Routes
 import routes from './routes';
 
-// Base stylesheet
-import './main.css';
-// Global stylesheet
-import './main.scss';
+import './styles/styles.js';
 
 export default function App(props) {
   return (

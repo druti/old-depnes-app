@@ -3,15 +3,15 @@ import { Link } from 'react-router';
 import { FormattedMessage } from 'react-intl';
 
 // Import Style
-import styles from './PostListItem.css';
+import styles from './PostListItem.css'; // eslint-disable-line
 
 function PostListItem(props) {
   return (
     <div className={styles['single-post']}>
-      <Link to={`/posts/${props.post.cuid}`} >
+      <Link to={`/paths/${props.post.cuid}`} >
         <p className={styles['post-desc']}>{props.post.textContent}</p>
       </Link>
-      <p className={styles['post-action']}><a href="#" onClick={props.onDelete}><FormattedMessage id="deletePost" /></a></p>
+      <p className={styles['post-action']}><a href='#' onClick={props.onDelete}><FormattedMessage id='deletePost' /></a></p>
       <hr className={styles.divider} />
     </div>
   );
@@ -19,8 +19,9 @@ function PostListItem(props) {
 
 PostListItem.propTypes = {
   post: PropTypes.shape({
+    content: PropTypes.object.isRequired,
+    htmlContent: PropTypes.string.isRequired,
     textContent: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
     cuid: PropTypes.string.isRequired,
   }).isRequired,
   onDelete: PropTypes.func.isRequired,

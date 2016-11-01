@@ -1,15 +1,12 @@
 import React, { PropTypes } from 'react';
 import $ from 'jquery';
 import EventEmitter from 'events';
-import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 
 import Editor from './Editor';
 import Toolbar from './Toolbar';
-import * as pathActions from '../../PostActions';
-
-window.$ = $; // TODO remove
+import { addPostRequest, fetchPosts } from '../../PostActions';
 
 const navigatorEmitter = new EventEmitter();
 
@@ -38,8 +35,12 @@ class Navigator extends React.Component {
     this.onEditorChange = this.onEditorChange.bind(this);
   }
 
+  componentWillMount() {
+    this.props.dispatch(fetchPosts());
+  }
+
   componentWillReceiveProps(nextProps) {
-    if (nextProps.path && nextProps.path.id !== this.props.path.id) {
+    if (nextProps.path && nextProps.path.cuid !== this.props.path.cuid) {
       const {
         content: editorContent,
         htmlContent: editorHtmlContent,
@@ -66,11 +67,15 @@ class Navigator extends React.Component {
       const { editorContent, editorHtmlContent, editorTextContent } = this.state;
 
       if (editorHtmlContent !== pathHtmlContent && editorTextContent.length) {
-        const createPathAction = pathActions
-          .addPostRequest(editorContent, editorHtmlContent, editorTextContent);
-        const newPathId = createPathAction.id;
+        const createPathAction = addPostRequest({
+          editorContent,
+          editorHtmlContent,
+          editorTextContent,
+        });
+        const newPathId = createPathAction.cuid;
 
-        this.props.dispatch(createPathAction);
+        const result = createPathAction(this.props.dispatch);
+        debugger;
 
         browserHistory.push(`/paths/${newPathId}`);
       }
@@ -89,7 +94,7 @@ class Navigator extends React.Component {
       goToNextMatchedPath(currentPath, paths, selection);
     }
     else {
-      goToNextConsecutivePath(paths, currentPath.id);
+      goToNextConsecutivePath(paths, currentPath);
     }
   }
 
@@ -161,7 +166,6 @@ class Navigator extends React.Component {
 }
 
 Navigator.propTypes = {
-  pathActions: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   path: PropTypes.object,
   paths: PropTypes.array,
@@ -221,7 +225,6 @@ function forceProperSelection(selection) {
   const originalFocusNode = focusNode;
 
   // normalize selection
-  debugger;
   anchorNode = findNearestTextNode(anchorNode, 'forwards');
   if (originalAnchorNode.nodeType !== 3) {
     anchorOffset = 0;
@@ -358,7 +361,6 @@ function goToNextMatchedPath(currentPath, paths, selection) {
     recreateSelection = true;
   }
 
-  debugger;
   if (anchorNode.nodeType === 3) {
     const newTextNodes = insertElementInTextNode(
       anchorNode,
@@ -436,7 +438,8 @@ function goToNextMatchedPath(currentPath, paths, selection) {
     return console.warn('No match found.');
   }
 
-  browserHistory.push(`/paths/${nextPath.id}`);
+  debugger;
+  browserHistory.push(`/paths/${nextPath.cuid}`);
 
   const nextEndOffset = nextPath.htmlContent.length - endHTML.length;
 
@@ -667,15 +670,13 @@ function createNewSelection(startNode, startOffset, endNode, endOffset) {
   return newSelection;
 }
 
-function goToNextConsecutivePath(paths, currentId) {
-  let newId = currentId + 1;
-
+function goToNextConsecutivePath(paths, currentPath) {
+  let nextPath;
+  let nextPathId;
   for (let i = 0; i < paths.length; i++) {
-    if (paths[i].id === newId) {
-      break;
-    }
-    if (i === paths.length - 1) {
-      newId = 0;
+    if (paths[i].cuid === currentPath.cuid) {
+      nextPath = paths[i + 1];
+      nextPathId = nextPath ? nextPath.cuid : paths[0].cuid;
     }
   }
 
@@ -686,21 +687,10 @@ function goToNextConsecutivePath(paths, currentId) {
     0,
   );
 
-  browserHistory.push(`/paths/${newId}`);
+  browserHistory.push(`/paths/${nextPathId}`);
 }
 
-
-function mapStateToProps({ paths }) {
-  return {
-    paths,
-  }
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    pathActions: bindActionCreators(pathActions, dispatch),
-    dispatch,
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Navigator);
+export default connect(
+  ({ posts }) => ({ paths: posts.data }),
+  dispatch => ({ dispatch })
+)(Navigator);
