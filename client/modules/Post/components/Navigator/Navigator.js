@@ -235,12 +235,14 @@ function forceProperSelection(selection) {
 
   // normalize selection
   anchorNode = findNearestTextNode(anchorNode, 'forwards');
+  /*
   if (anchorNode === originalAnchorNode) { // node was already a text node
     const contentBeforeAnchor = anchorNode.textContent.substring(0, anchorOffset);
     if (!contentBeforeAnchor.trim()) {
       anchorOffset = 0;
     }
   }
+  */
   if (originalAnchorNode.nodeType !== 3) {
     anchorOffset = 0;
   }
@@ -253,12 +255,14 @@ function forceProperSelection(selection) {
 
   // normalize selection
   focusNode = findNearestTextNode(focusNode, 'backwards');
+  /*
   if (focusNode === originalFocusNode) { // node was already a text node
     const contentAfterFocus = focusNode.textContent.substring(anchorOffset);
     if (!contentAfterFocus.trim()) {
       focusOffset = 0;
     }
   }
+  */
   if (originalFocusNode.nodeType !== 3) {
     focusOffset = focusNode.nodeValue.length;
   }
@@ -438,15 +442,21 @@ function goToNextMatchedPath(currentPath, paths, selection) {
   $('#cursor').remove();
 
   let navigatorHTML = $('#navigator-view').html();
+
+  // Sanitize since HTML coming from DB has been sanitized.
+  const sanitationOptions = {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img', 'span' ]),
+    allowedAttributes: Object.assign(
+      sanitizeHtml.defaults.allowedAttributes,
+      { span: [ 'id' ] }
+    ),
+  };
+  navigatorHTML = sanitizeHtml(navigatorHTML, sanitationOptions);
+
   const splitNavigatorHTML = navigatorHTML.split('<span id="__selectionAnchorOffset"></span>');
 
   let startHTML = splitNavigatorHTML[0];
   let endHTML = splitNavigatorHTML[1].split('<span id="__selectionFocusOffset"></span>')[1];
-
-  // Sanitize since HTML coming from DB has been sanitized.
-  const sanitationOptions = {};
-  startHTML = sanitizeHtml(startHTML, sanitationOptions);
-  endHTML = sanitizeHtml(endHTML, sanitationOptions);
 
   const startOffset = startHTML.length;
 
@@ -556,7 +566,11 @@ function getStartNode(navigatorNodes, startOffset) {
       }
 
       if (node.nodeType === 1) {
-        comparisonStartOffset += `<${nodeName}>`.length;
+        if (nodeName === 'BR' || nodeName === 'IMG') {
+          comparisonStartOffset += `<${nodeName} />`.length;
+        } else {
+          comparisonStartOffset += `<${nodeName}>`.length;
+        }
         if (node.style.cssText) {
           comparisonStartOffset += ` style="${node.style.cssText}"`.length;
         }
@@ -583,7 +597,11 @@ function getStartNode(navigatorNodes, startOffset) {
     if (comparisonStartOffset >= startOffset) {
       startNode = node;
     } else {
-      comparisonStartOffset += `<${nodeName}>`.length;
+      if (nodeName === 'BR' || nodeName === 'IMG') {
+        comparisonStartOffset += `<${nodeName} />`.length;
+      } else {
+        comparisonStartOffset += `<${nodeName}>`.length;
+      }
       if (node.style.cssText) {
         comparisonStartOffset += ` style="${node.style.cssText}"`.length;
       }
@@ -614,7 +632,11 @@ function getEndNode(navigatorNodes, endOffset) {
       let nodeName = node.nodeName;
 
       if (node.nodeType === 1) {
-        comparisonEndOffset += `<${nodeName}>`.length;
+        if (nodeName === 'BR' || nodeName === 'IMG') {
+          comparisonEndOffset += `<${nodeName} />`.length;
+        } else {
+          comparisonEndOffset += `<${nodeName}>`.length;
+        }
         if (node.style.cssText) {
           comparisonEndOffset += ` style="${node.style.cssText}"`.length;
         }
@@ -653,7 +675,11 @@ function getEndNode(navigatorNodes, endOffset) {
     if (comparisonEndOffset >= endOffset) {
       endNode = node;
     } else {
-      comparisonEndOffset += `<${nodeName}>`.length;
+      if (nodeName === 'BR' || nodeName === 'IMG') {
+        comparisonEndOffset += `<${nodeName} />`.length;
+      } else {
+        comparisonEndOffset += `<${nodeName}>`.length;
+      }
       if (node.style.cssText) {
         comparisonEndOffset += ` style="${node.style.cssText}"`.length;
       }

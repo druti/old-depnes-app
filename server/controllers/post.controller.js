@@ -33,7 +33,13 @@ export function addPost(req, res) {
     const newPost = new Post(req.body.post);
 
     // Let's sanitize inputs
-    const sanitationOptions = {};
+    const sanitationOptions = {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]),
+      allowedAttributes: Object.assign(
+        sanitizeHtml.defaults.allowedAttributes,
+        { span: [ 'id' ] }
+      ),
+    };
     console.log(newPost.htmlContent);
     newPost.htmlContent = sanitizeHtml(newPost.htmlContent, sanitationOptions);
     newPost.textContent = sanitizeHtml(newPost.textContent, sanitationOptions);
