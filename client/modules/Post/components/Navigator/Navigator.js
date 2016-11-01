@@ -6,7 +6,12 @@ import { connect } from 'react-redux';
 
 import Editor from './Editor';
 import Toolbar from './Toolbar';
+
+// Import Actions
 import { addPostRequest, fetchPosts } from '../../PostActions';
+
+// Import Selectors
+import { getPosts } from '../../PostReducer';
 
 const navigatorEmitter = new EventEmitter();
 
@@ -76,8 +81,10 @@ class Navigator extends React.Component {
 
         const result = createPathAction(this.props.dispatch);
         debugger;
-
-        browserHistory.push(`/paths/${newPathId}`);
+        result.then(res => {
+          debugger;
+          browserHistory.push(`/paths/${newPathId}`);
+        });
       }
     }
 
@@ -438,7 +445,6 @@ function goToNextMatchedPath(currentPath, paths, selection) {
     return console.warn('No match found.');
   }
 
-  debugger;
   browserHistory.push(`/paths/${nextPath.cuid}`);
 
   const nextEndOffset = nextPath.htmlContent.length - endHTML.length;
@@ -690,7 +696,11 @@ function goToNextConsecutivePath(paths, currentPath) {
   browserHistory.push(`/paths/${nextPathId}`);
 }
 
-export default connect(
-  ({ posts }) => ({ paths: posts.data }),
-  dispatch => ({ dispatch })
-)(Navigator);
+// Retrieve data from store as props
+function mapStateToProps(state, props) {
+  return {
+    paths: getPosts(state, props.path.cuid),
+  };
+}
+
+export default connect(mapStateToProps, dispatch => ({ dispatch }))(Navigator);

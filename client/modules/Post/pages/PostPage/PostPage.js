@@ -8,19 +8,22 @@ import Navigator from '../../components/Navigator/Navigator';
 import { fetchPost } from '../../PostActions';
 
 // Import Selectors
-import { getPost, getPosts } from '../../PostReducer';
+import { getPost } from '../../PostReducer';
 
-export function PostPage(props) {
+const PostPage = props => {
+  if (!props.path) {
+    return <h1>404 Not Found</h1>;
+  }
+
   return (
     <div>
-      <Helmet title={props.post.textContent.substring(0, 25)} />
+      <Helmet title={props.path.textContent.substring(0, 25)} />
       <Navigator
-        paths={props.posts}
-        path={props.post}
+        path={props.path}
       />
     </div>
   );
-}
+};
 
 // Actions required to provide data for this component to render in sever side.
 PostPage.need = [params => {
@@ -30,8 +33,7 @@ PostPage.need = [params => {
 // Retrieve data from store as props
 function mapStateToProps(state, props) {
   return {
-    posts: getPosts(state),
-    post: getPost(state, props.params.cuid),
+    path: getPost(state, props.params.cuid),
   };
 }
 
@@ -43,8 +45,8 @@ const PostType = {
 };
 
 PostPage.propTypes = {
-  post: PropTypes.shape(PostType).isRequired,
-  posts: PropTypes.arrayOf(PropTypes.shape(PostType)).isRequired,
+  dispatch: PropTypes.func.isRequired,
+  path: PropTypes.shape(PostType),
 };
 
-export default connect(mapStateToProps)(PostPage);
+export default connect(mapStateToProps, dispatch => ({ dispatch }))(PostPage);

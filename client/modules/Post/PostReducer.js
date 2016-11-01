@@ -3,6 +3,9 @@ import { ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
 const PostReducer = (state = { data: [] }, action) => {
   switch (action.type) {
     case ADD_POST :
+      if (!action.post) {
+        return state;
+      }
       return {
         data: [action.post, ...state.data],
       };

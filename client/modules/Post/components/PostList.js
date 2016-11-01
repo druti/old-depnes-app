@@ -1,11 +1,15 @@
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+
+// Import Selectors
+import { getPosts } from '../PostReducer';
 
 // Import Components
 import PostListItem from './PostListItem/PostListItem';
 
 function PostList(props) {
   return (
-    <div className="listView">
+    <div className='listView'>
       {
         props.posts.map(post => (
           <PostListItem
@@ -29,4 +33,11 @@ PostList.propTypes = {
   handleDeletePost: PropTypes.func.isRequired,
 };
 
-export default PostList;
+// Retrieve data from store as props
+function mapStateToProps(state) {
+  return {
+    posts: getPosts(state),
+  };
+}
+
+export default connect(mapStateToProps)(PostList);

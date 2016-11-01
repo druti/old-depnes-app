@@ -77,5 +77,13 @@ export default (
         });
       }}
     />
+    <Route
+      path='*'
+      getComponent={(nextState, cb) => {
+        require.ensure([], require => {
+          cb(null, require('./modules/Error/pages/404/404').default);
+        });
+      }}
+    />
   </Route>
 );

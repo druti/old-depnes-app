@@ -11,10 +11,9 @@ import { toggleAddPost } from '../../../App/AppActions';
 
 // Import Selectors
 import { getShowAddPost } from '../../../App/AppReducer';
-import { getPosts } from '../../PostReducer';
 
 class PostListPage extends Component {
-  componentDidMount() {
+  componentWillMount() {
     this.props.dispatch(fetchPosts());
   }
 
@@ -33,7 +32,7 @@ class PostListPage extends Component {
     return (
       <div>
         <PostCreateWidget addPost={this.handleAddPost} showAddPost={this.props.showAddPost} />
-        <PostList handleDeletePost={this.handleDeletePost} posts={this.props.posts} />
+        <PostList handleDeletePost={this.handleDeletePost} />
       </div>
     );
   }
@@ -46,16 +45,10 @@ PostListPage.need = [() => { return fetchPosts(); }];
 function mapStateToProps(state) {
   return {
     showAddPost: getShowAddPost(state),
-    posts: getPosts(state),
   };
 }
 
 PostListPage.propTypes = {
-  posts: PropTypes.arrayOf(PropTypes.shape({
-    content: PropTypes.object.isRequired,
-    htmlContent: PropTypes.string.isRequired,
-    textContent: PropTypes.string.isRequired,
-  })).isRequired,
   showAddPost: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
