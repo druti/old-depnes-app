@@ -3,6 +3,7 @@ import $ from 'jquery';
 import EventEmitter from 'events';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
+import sanitizeHtml from 'sanitize-html';
 
 import Editor from './Editor';
 import Toolbar from './Toolbar';
@@ -14,6 +15,11 @@ import { addPostRequest, fetchPosts } from '../../PostActions';
 import { getPosts } from '../../PostReducer';
 
 const navigatorEmitter = new EventEmitter();
+
+const isClient = typeof window !== 'undefined'
+if (isClient) {
+  window.$ = $;
+}
 
 class Navigator extends React.Component {
   constructor(props) {
@@ -72,18 +78,14 @@ class Navigator extends React.Component {
       const { editorContent, editorHtmlContent, editorTextContent } = this.state;
 
       if (editorHtmlContent !== pathHtmlContent && editorTextContent.length) {
-        const createPathAction = addPostRequest({
-          editorContent,
-          editorHtmlContent,
-          editorTextContent,
-        });
-        const newPathId = createPathAction.cuid;
+        const result = this.props.dispatch(addPostRequest({
+          content: editorContent,
+          htmlContent: editorHtmlContent,
+          textContent: editorTextContent,
+        }));
 
-        const result = createPathAction(this.props.dispatch);
-        debugger;
         result.then(res => {
-          debugger;
-          browserHistory.push(`/paths/${newPathId}`);
+          browserHistory.push(`/paths/${res.post.cuid}`);
         });
       }
     }
@@ -117,7 +119,7 @@ class Navigator extends React.Component {
   onEditorChange(delta, editor) {
     this.setState({
       editorContent: delta,
-      editorHtmlContent: editor.root.innerHTML,
+      editorHtmlContent: $(editor.root).html(),
       editorTextContent: editor.getText(),
     });
   }
@@ -233,6 +235,12 @@ function forceProperSelection(selection) {
 
   // normalize selection
   anchorNode = findNearestTextNode(anchorNode, 'forwards');
+  if (anchorNode === originalAnchorNode) { // node was already a text node
+    const contentBeforeAnchor = anchorNode.textContent.substring(0, anchorOffset);
+    if (!contentBeforeAnchor.trim()) {
+      anchorOffset = 0;
+    }
+  }
   if (originalAnchorNode.nodeType !== 3) {
     anchorOffset = 0;
   }
@@ -245,6 +253,12 @@ function forceProperSelection(selection) {
 
   // normalize selection
   focusNode = findNearestTextNode(focusNode, 'backwards');
+  if (focusNode === originalFocusNode) { // node was already a text node
+    const contentAfterFocus = focusNode.textContent.substring(anchorOffset);
+    if (!contentAfterFocus.trim()) {
+      focusOffset = 0;
+    }
+  }
   if (originalFocusNode.nodeType !== 3) {
     focusOffset = focusNode.nodeValue.length;
   }
@@ -300,7 +314,10 @@ function findNearestTextNode(node, direction) {
   const sibling = forwards ? node.nextSibling : node.previousSibling;
   const siblingTextNodes = getTextNodesInNode(sibling);
 
-  if (siblingTextNodes.length) {
+  if (siblingTextNodes.length && (
+      siblingTextNodes[0].textContent.length ||
+      siblingTextNodes[siblingTextNodes.length - 1].textContent.length
+    )) {
     return forwards ?
       siblingTextNodes[0] :
       siblingTextNodes[siblingTextNodes.length - 1];
@@ -323,7 +340,10 @@ function findNextTextNodeOrBlock(node, direction) {
   const sibling = forwards ? node.nextSibling : node.previousSibling;
   const siblingTextNodes = getTextNodesInNode(sibling);
 
-  if (siblingTextNodes.length) {
+  if (siblingTextNodes.length && (
+      siblingTextNodes[0].textContent.length ||
+      siblingTextNodes[siblingTextNodes.length - 1].textContent.length
+    )) {
     return forwards ?
       siblingTextNodes[0] :
       siblingTextNodes[siblingTextNodes.length - 1];
@@ -417,11 +437,16 @@ function goToNextMatchedPath(currentPath, paths, selection) {
 
   $('#cursor').remove();
 
-  const navigatorHTML = $('#navigator-view').html();
+  let navigatorHTML = $('#navigator-view').html();
   const splitNavigatorHTML = navigatorHTML.split('<span id="__selectionAnchorOffset"></span>');
 
   let startHTML = splitNavigatorHTML[0];
   let endHTML = splitNavigatorHTML[1].split('<span id="__selectionFocusOffset"></span>')[1];
+
+  // Sanitize since HTML coming from DB has been sanitized.
+  const sanitationOptions = {};
+  startHTML = sanitizeHtml(startHTML, sanitationOptions);
+  endHTML = sanitizeHtml(endHTML, sanitationOptions);
 
   const startOffset = startHTML.length;
 

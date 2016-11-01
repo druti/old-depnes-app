@@ -15,9 +15,7 @@ export default function () {
 
     Cu dicit utinam alienum sed, sed ei nullam audire interpretaris. At has liber principes. Nam eu case homero, errem invenire concludaturque ius ex. Viris facete pertinax eu his, quis accusata eum te.
 
-    Ex sint conceptam nec, te munere philosophia pri. Sit clita commodo euripidis ne. Ad pri iusto periculis, sea ad erant bonorum gloriatur. Diam praesent nam eu, tation delectus ullamcorper an duo.
-
-    `; // trailing line break is important because quill follows this convention.
+    Ex sint conceptam nec, te munere philosophia pri. Sit clita commodo euripidis ne. Ad pri iusto periculis, sea ad erant bonorum gloriatur. Diam praesent nam eu, tation delectus ullamcorper an duo.\n` // trailing line break is important because quill follows this convention.
 
     let pathsInitialData = [
       {
@@ -77,7 +75,7 @@ export default function () {
         if (block) {
           return `<p>${block}</p>`;
         } else {
-          return '<p><br></p>';
+          return '<p><br /></p>';
         }
       }).slice(0, -1).join('');
     }

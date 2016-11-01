@@ -21,7 +21,6 @@ class MasterLayout extends React.Component {
 
   componentWillMount() {
     this.props.auth.on('profile_updated', profile => {
-      debugger;
       this.setState(profile);
     });
   }

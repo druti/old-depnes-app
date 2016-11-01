@@ -28,22 +28,25 @@ export function addPost(req, res) {
     console.log('missing params');
     console.log(req.body.post);
     res.status(403).end();
+  } else {
+
+    const newPost = new Post(req.body.post);
+
+    // Let's sanitize inputs
+    const sanitationOptions = {};
+    console.log(newPost.htmlContent);
+    newPost.htmlContent = sanitizeHtml(newPost.htmlContent, sanitationOptions);
+    newPost.textContent = sanitizeHtml(newPost.textContent, sanitationOptions);
+    console.log(newPost.htmlContent);
+
+    newPost.cuid = cuid();
+    newPost.save((err, saved) => {
+      if (err) {
+        res.status(500).send(err);
+      }
+      res.json({ post: saved });
+    });
   }
-
-  const newPost = new Post(req.body.post);
-
-  // Let's sanitize inputs
-  newPost.content = sanitizeHtml(newPost.content);
-  newPost.htmlContent = sanitizeHtml(newPost.htmlContent);
-  newPost.textContent = sanitizeHtml(newPost.textContent);
-
-  newPost.cuid = cuid();
-  newPost.save((err, saved) => {
-    if (err) {
-      res.status(500).send(err);
-    }
-    res.json({ post: saved });
-  });
 }
 
 /**
