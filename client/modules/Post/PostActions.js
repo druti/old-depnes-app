@@ -1,11 +1,26 @@
 import callApi from '../../util/apiCaller';
 
 // Export Constants
+export const TOGGLE_MAKE_MODE = 'TOGGLE_MAKE_MODE';
+export const UPDATE_NAVIGATOR = 'UPDATE_NAVIGATOR';
 export const ADD_POST = 'ADD_POST';
 export const ADD_POSTS = 'ADD_POSTS';
 export const DELETE_POST = 'DELETE_POST';
 
 // Export Actions
+export function toggleMakeMode() {
+  return {
+    type: TOGGLE_MAKE_MODE,
+  };
+}
+
+export function updateNavigator(navigator) {
+  return {
+    type: UPDATE_NAVIGATOR,
+    navigator,
+  };
+}
+
 export function addPost(post) {
   return {
     type: ADD_POST,

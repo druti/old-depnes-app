@@ -3,14 +3,13 @@ import { connect } from 'react-redux';
 
 // Import Components
 import PostList from '../../components/PostList';
-import PostCreateWidget from '../../components/PostCreateWidget/PostCreateWidget';
 
 // Import Actions
 import { addPostRequest, fetchPosts, deletePostRequest } from '../../PostActions';
-import { toggleAddPost } from '../../../App/AppActions';
+import { toggleMakePath } from '../../../App/AppActions';
 
 // Import Selectors
-import { getShowAddPost } from '../../../App/AppReducer';
+import { getLetMakePath } from '../../../App/AppReducer';
 
 class PostListPage extends Component {
   componentWillMount() {
@@ -24,14 +23,13 @@ class PostListPage extends Component {
   };
 
   handleAddPost = (content, htmlContent, textContent) => {
-    this.props.dispatch(toggleAddPost());
+    this.props.dispatch(toggleMakePath());
     this.props.dispatch(addPostRequest({ content, htmlContent, textContent }));
   };
 
   render() {
     return (
       <div>
-        <PostCreateWidget addPost={this.handleAddPost} showAddPost={this.props.showAddPost} />
         <PostList handleDeletePost={this.handleDeletePost} />
       </div>
     );
@@ -44,12 +42,12 @@ PostListPage.need = [() => { return fetchPosts(); }];
 // Retrieve data from store as props
 function mapStateToProps(state) {
   return {
-    showAddPost: getShowAddPost(state),
+    letMakePath: getLetMakePath(state),
   };
 }
 
 PostListPage.propTypes = {
-  showAddPost: PropTypes.bool.isRequired,
+  letMakePath: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 

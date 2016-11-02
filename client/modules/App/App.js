@@ -7,10 +7,9 @@ import styles from './App.css'; // eslint-disable-line
 // Import Components
 import Helmet from 'react-helmet';
 import DevTools from './components/DevTools';
-import MasterLayout from '../../layouts/MasterLayout';
 
 // Import Actions
-import { toggleAddPost } from './AppActions';
+import { toggleMakePath } from './AppActions';
 import { switchLanguage } from '../../modules/Intl/IntlActions';
 
 export class App extends Component {
@@ -23,15 +22,19 @@ export class App extends Component {
     this.setState({isMounted: true}); // eslint-disable-line
   }
 
-  toggleAddPostSection = () => {
-    this.props.dispatch(toggleAddPost());
+  toggleMakePathSection = () => {
+    this.props.dispatch(toggleMakePath());
   };
 
   render() {
-    let children = null;
+    let child = null;
     if (this.props.children) {
-      children = React.cloneElement(this.props.children, {
-        auth: this.props.route.auth, //sends auth instance from route to children
+      child = React.cloneElement(this.props.children, {
+        auth: this.props.route.auth, //sends auth instance from route to child
+        params: this.props.params,
+        switchLanguage: lang => this.props.dispatch(switchLanguage(lang)),
+        intl: this.props.intl,
+        toggleMakePath: this.toggleMakePathSection,
       });
     }
 
@@ -68,14 +71,7 @@ export class App extends Component {
               },
             ]}
           />
-          <MasterLayout
-            auth={this.props.route.auth}
-            switchLanguage={lang => this.props.dispatch(switchLanguage(lang))}
-            intl={this.props.intl}
-            toggleAddPost={this.toggleAddPostSection}
-          >
-            {children}
-          </MasterLayout>
+          {child}
         </div>
       </div>
     );
@@ -83,6 +79,7 @@ export class App extends Component {
 }
 
 App.propTypes = {
+  params: PropTypes.object.isRequired,
   route: PropTypes.object.isRequired,
   children: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
@@ -96,4 +93,4 @@ function mapStateToProps(store) {
   };
 }
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, dispatch => ({ dispatch }))(App);

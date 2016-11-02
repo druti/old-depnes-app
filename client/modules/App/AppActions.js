@@ -1,9 +1,10 @@
+// TODO all master layout actions will go here
 // Export Constants
-export const TOGGLE_ADD_POST = 'TOGGLE_ADD_POST';
+export const TOGGLE_MAKE_PATH = 'TOGGLE_MAKE_PATH';
 
 // Export Actions
-export function toggleAddPost() {
+export function toggleMakePath() {
   return {
-    type: TOGGLE_ADD_POST,
+    type: TOGGLE_MAKE_PATH,
   };
 }

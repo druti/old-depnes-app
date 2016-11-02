@@ -1,16 +1,16 @@
 // Import Actions
-import { TOGGLE_ADD_POST } from './AppActions';
+import { TOGGLE_MAKE_PATH } from './AppActions';
 
 // Initial State
 const initialState = {
-  showAddPost: false,
+  letMakePath: false,
 };
 
 const AppReducer = (state = initialState, action) => {
   switch (action.type) {
-    case TOGGLE_ADD_POST:
+    case TOGGLE_MAKE_PATH:
       return {
-        showAddPost: !state.showAddPost,
+        letMakePath: !state.letMakePath,
       };
 
     default:
@@ -20,8 +20,8 @@ const AppReducer = (state = initialState, action) => {
 
 /* Selectors */
 
-// Get showAddPost
-export const getShowAddPost = state => state.app.showAddPost;
+// Get letMakePath
+export const getLetMakePath = state => state.app.letMakePath;
 
 // Export Reducer
 export default AppReducer;

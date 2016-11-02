@@ -5,6 +5,7 @@ import {AppBar} from 'react-toolbox/lib/app_bar';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 
 import DrawerMenu from './DrawerMenu';
+import Toolbar from '../modules/Post/components/Navigator/Toolbar';
 
 const theme = require('./masterLayout.scss');
 
@@ -50,7 +51,7 @@ class MasterLayout extends React.Component {
   };
 
   render() {
-    const { auth } = this.props;
+    const { params, auth } = this.props;
     return (
       <Layout>
         <NavDrawer
@@ -64,6 +65,7 @@ class MasterLayout extends React.Component {
         <Panel>
           <AppBar theme={theme}>
             <IconButton icon='menu' inverse onClick={this.toggleDrawer}/>
+            <Toolbar params={params} />
             {auth.loggedIn() ?
               <div>
                 <Button
@@ -71,7 +73,7 @@ class MasterLayout extends React.Component {
                   label='Profile'
                   onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
                 />
-                <Button label='Log out' onClick={() => { auth.logout(); window.location='/' }} accent />
+                <Button label='Log out' onClick={() => { auth.logout(); window.location='/' }} accent /> // TODO move to user panel
               </div> :
               <div>
                 <Button label='Sign Up' onClick={() => auth.showUI({initialScreen: 'signUp'})} accent />
@@ -89,6 +91,7 @@ class MasterLayout extends React.Component {
 }
 
 MasterLayout.propTypes = {
+  params: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   switchLanguage: PropTypes.func,
   intl: PropTypes.object,
