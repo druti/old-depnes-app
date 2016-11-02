@@ -7,15 +7,7 @@ export default function () {
       return;
     }
 
-    const lorem1 = `Lorem ipsum dolor sit amet, dicam scaevola mea ut, ex qui habeo tractatos. Est eu pertinax gubergren, et pro officiis periculis. Ex nisl congue alterum mei, an tota illud scaevola sea. Pro quis singulis scripserit ei, ei facer graece nonumes his, pri ei alia ornatus alienum. Putant maluisset maiestatis pri in.
-
-    Per latine appetere cu, possit admodum deseruisse vel ei. Ne mandamus liberavisse nam, ei meis vocent voluptaria has. Duo apeirian legendos scriptorem ut. Ut iusto conclusionemque vis, pericula suavitate dissentiunt has id. Vix persius numquam qualisque id. Eu cum prompta qualisque, exerci tacimates has no.
-
-    Eam an lorem euismod, illud viris complectitur et eam. Eos augue aliquip ne, sed eros praesent erroribus ei, in usu veniam luptatum. His in everti platonem instructior, illum scripserit mel te. Quaestio incorrupte ad mel, in harum volutpat eos.
-
-    Cu dicit utinam alienum sed, sed ei nullam audire interpretaris. At has liber principes. Nam eu case homero, errem invenire concludaturque ius ex. Viris facete pertinax eu his, quis accusata eum te.
-
-    Ex sint conceptam nec, te munere philosophia pri. Sit clita commodo euripidis ne. Ad pri iusto periculis, sea ad erant bonorum gloriatur. Diam praesent nam eu, tation delectus ullamcorper an duo.\n` // trailing line break is important because quill follows this convention.
+    const lorem1 = `Lorem ipsum dolor sit amet, dicam scaevola mea ut, ex qui habeo tractatos. Est eu pertinax gubergren, et pro officiis periculis. Ex nisl congue alterum mei, an tota illud scaevola sea. Pro quis singulis scripserit ei, ei facer graece nonumes his, pri ei alia ornatus alienum. Putant maluisset maiestatis pri in.\n\nPer latine appetere cu, possit admodum deseruisse vel ei. Ne mandamus liberavisse nam, ei meis vocent voluptaria has. Duo apeirian legendos scriptorem ut. Ut iusto conclusionemque vis, pericula suavitate dissentiunt has id. Vix persius numquam qualisque id. Eu cum prompta qualisque, exerci tacimates has no.\n\nEam an lorem euismod, illud viris complectitur et eam. Eos augue aliquip ne, sed eros praesent erroribus ei, in usu veniam luptatum. His in everti platonem instructior, illum scripserit mel te. Quaestio incorrupte ad mel, in harum volutpat eos.\n\nCu dicit utinam alienum sed, sed ei nullam audire interpretaris. At has liber principes. Nam eu case homero, errem invenire concludaturque ius ex. Viris facete pertinax eu his, quis accusata eum te.\n\nEx sint conceptam nec, te munere philosophia pri. Sit clita commodo euripidis ne. Ad pri iusto periculis, sea ad erant bonorum gloriatur. Diam praesent nam eu, tation delectus ullamcorper an duo.\n` // trailing line break is important because quill follows this convention.
 
     let pathsInitialData = [
       {

@@ -688,6 +688,14 @@ function getEndNode(navigatorNodes, endOffset) {
     }
 
     if (!endNode) {
+      if (index === navigatorNodes.length - 1) { // if it's the last node
+        const lastNode = node;
+        const textNodes = getTextNodesInNode(lastNode);
+        if (textNodes) {
+          endNode = textNodes[textNodes.length - 1];
+          focusOffset = endNode.nodeValue.length;
+        }
+      }
       return true;
     } else {
       return false;
@@ -718,6 +726,9 @@ function insertElementInTextNode(textNode, index, elStr) {
 }
 
 function createNewSelection(startNode, startOffset, endNode, endOffset) {
+  if (!startNode || !endNode) {
+    return;
+  }
   const range = document.createRange();
   range.setStart(startNode, startOffset);
   range.setEnd(endNode, endOffset);
