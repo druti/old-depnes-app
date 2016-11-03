@@ -1,0 +1,11 @@
+.navigatorToolbar {
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+:global(.ql-toolbar.ql-snow).editorToolbar {
+  display: inline-flex;
+  position: relative;
+  background: transparent;
+  border: none;
+}

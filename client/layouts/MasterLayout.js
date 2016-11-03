@@ -114,7 +114,6 @@ class MasterLayout extends React.Component {
                   label='Profile'
                   onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
                 />
-                <Button label='Log out' onClick={this.logOut} accent /> {/* TODO move to user panel */}
               </div> :
               <div className={theme.appBarUser}>
                 <Button label='Sign Up' onClick={this.signUp} accent />

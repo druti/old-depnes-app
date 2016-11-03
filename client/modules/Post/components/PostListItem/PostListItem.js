@@ -2,17 +2,14 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { FormattedMessage } from 'react-intl';
 
-// Import Style
-import styles from './PostListItem.css'; // eslint-disable-line
-
 function PostListItem(props) {
   return (
-    <div className={styles['single-post']}>
+    <div>
       <Link to={`/paths/${props.post.cuid}`} >
-        <p className={styles['post-desc']}>{props.post.textContent}</p>
+        <p>{props.post.textContent}</p>
       </Link>
-      <p className={styles['post-action']}><a href='#' onClick={props.onDelete}><FormattedMessage id='deletePost' /></a></p>
-      <hr className={styles.divider} />
+      <p><a href='#' onClick={props.onDelete}><FormattedMessage id='deletePost' /></a></p>
+      <hr />
     </div>
   );
 }

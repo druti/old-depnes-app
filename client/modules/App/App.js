@@ -1,9 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-// Import Style
-import styles from './App.css'; // eslint-disable-line
-
 // Import Components
 import Helmet from 'react-helmet';
 import DevTools from './components/DevTools';
@@ -69,6 +66,7 @@ export class App extends Component {
                 rel: 'stylesheet',
                 href: 'https://cdn.quilljs.com/1.1.3/quill.snow.css',
               },
+
             ]}
           />
           {child}

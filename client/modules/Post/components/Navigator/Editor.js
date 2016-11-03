@@ -20,6 +20,7 @@ class Editor extends Component {
 
   componentDidMount() {
     this.quill = new Quill('#editor', {
+      modules: { toolbar: '#navigator-editor-toolbar' },
       theme: 'snow',
     });
 

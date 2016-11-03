@@ -1,4 +1,5 @@
 var cssnext = require('postcss-cssnext');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var postcssFocus = require('postcss-focus');
 var postcssReporter = require('postcss-reporter');
 
@@ -22,8 +23,8 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /(\.scss|\.css)$/,
-        loader: 'style-loader!css-loader?localIdentName=' + cssModulesIdentName + '&modules&importLoaders=1&sourceMap!postcss-loader!sass-loader',
+        test: /\.scss$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?localIdentName=' + cssModulesIdentName + '&modules&importLoaders=1!postcss-loader!sass-loader'),
       },
       {
         test: /\.jpe?g$|\.gif$|\.png$|\.svg$/i,
@@ -31,6 +32,9 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new ExtractTextPlugin('app.css'),
+  ],
   postcss: () => [
     postcssFocus(),
     cssnext({

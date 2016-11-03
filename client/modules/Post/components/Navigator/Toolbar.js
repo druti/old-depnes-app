@@ -9,6 +9,8 @@ import { updateNavigator, toggleMakeMode, addPostRequest } from '../../PostActio
 // Import Selectors
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
 
+import styles from './styles.scss';
+
 import { navigatorEmitter } from './Navigator';
 
 class Toolbar extends Component {
@@ -70,7 +72,7 @@ class Toolbar extends Component {
 
   render() {
     return (
-      <div id='navigator-toolbar'>
+      <div id='navigator-toolbar' className={styles.navigatorToolbar}>
         <Button
           accent
           label='Next'
@@ -82,6 +84,19 @@ class Toolbar extends Component {
           disabled={!this.props.auth.loggedIn()}
           onClick={this.toggleMakeMode}
         />
+        {this.props.makeMode ? (
+          <div id='navigator-editor-toolbar' className={styles.editorToolbar}>
+            <select defaultValue='' className='ql-size'>
+              <option value='small'></option>
+              <option></option>
+              <option value='large'></option>
+              <option value='huge'></option>
+            </select>
+            <button className='ql-bold'></button>
+            <button className='ql-script' value='sub'></button>
+            <button className='ql-script' value='super'></button>
+          </div>
+        ) : null}
       </div>
     );
   }
