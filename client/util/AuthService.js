@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events'
+import { browserHistory } from 'react-router';
 import LogoImg from '../modules/App/assets/images/logo.png' // eslint-disable-line
 
 //import { isTokenExpired } from './jwtHelper' // TODO
@@ -21,8 +22,10 @@ export default class AuthService extends EventEmitter {
       'druti.auth0.com', {
         avatar: null,
         socialButtonStyle: 'small',
-        redirectUrl: 'http://localhost:3000',
-        responseType: 'code',
+        auth: {
+          redirectUrl: 'http://localhost:8000',
+          responseType: 'token',
+        },
         mustAcceptTerms: true,
         theme : {
           logo: LogoImg,
@@ -43,6 +46,7 @@ export default class AuthService extends EventEmitter {
   }
 
   _doAuthentication(authResult) {
+    debugger;
     // Saves the user token
     this.setToken(authResult.idToken)
     // Async loads the user profile data
@@ -51,6 +55,7 @@ export default class AuthService extends EventEmitter {
         console.log('Error loading the Profile', error); // eslint-disable-line
       } else {
         this.setProfile(profile)
+        browserHistory.push(JSON.parse(authResult.state).pathname);
       }
     })
   }

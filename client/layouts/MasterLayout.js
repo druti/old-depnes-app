@@ -18,6 +18,19 @@ class MasterLayout extends React.Component {
       drawerPinned: false,
       userProfile: null,
     };
+
+    if (typeof window !== 'undefined') {
+      this.authConfig = {
+        initialScreen: 'login',
+        auth: {
+          params: {
+            state: JSON.stringify({
+              pathname: window.location.pathname + window.location.search + window.location.hash,
+            }),
+          },
+        },
+      };
+    }
   }
 
   componentWillMount() {
@@ -50,6 +63,34 @@ class MasterLayout extends React.Component {
     }
   };
 
+  logIn = () => {
+    const { auth } = this.props;
+    auth.showUI(
+      Object.assign(
+        this.authConfig, {
+          initialScreen: 'login',
+        }
+      )
+    );
+  };
+
+  signUp = () => {
+    const { auth } = this.props;
+    auth.showUI(
+      Object.assign(
+        this.authConfig, {
+          initialScreen: 'signUp',
+        }
+      )
+    );
+  };
+
+  logOut = () => {
+    const { auth } = this.props;
+    auth.logout();
+    location.reload();
+  };
+
   render() {
     const { params, auth } = this.props;
     return (
@@ -65,19 +106,19 @@ class MasterLayout extends React.Component {
         <Panel>
           <AppBar theme={theme}>
             <IconButton icon='menu' inverse onClick={this.toggleDrawer}/>
-            <Toolbar params={params} />
+            <Toolbar auth={auth} params={params} />
             {auth.loggedIn() ?
-              <div>
+              <div className={theme.appBarUser}>
                 <Button
                   accent
                   label='Profile'
                   onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
                 />
-                <Button label='Log out' onClick={() => { auth.logout(); window.location='/' }} accent /> // TODO move to user panel
+                <Button label='Log out' onClick={this.logOut} accent /> {/* TODO move to user panel */}
               </div> :
-              <div>
-                <Button label='Sign Up' onClick={() => auth.showUI({initialScreen: 'signUp'})} accent />
-                <Button label='Log In' onClick={() => auth.showUI({initialScreen: 'login'})} accent />
+              <div className={theme.appBarUser}>
+                <Button label='Sign Up' onClick={this.signUp} accent />
+                <Button label='Log In' onClick={this.logIn} accent />
               </div>
             }
           </AppBar>

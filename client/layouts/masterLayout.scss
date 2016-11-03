@@ -1,4 +1,9 @@
 .appBar {
   background-color: #333;
-  justify-content: space-between;
+  justify-content: flex-start;
+}
+
+.appBarUser {
+  position: absolute;
+  right: 0;
 }

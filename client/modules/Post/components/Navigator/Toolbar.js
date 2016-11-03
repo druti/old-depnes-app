@@ -73,13 +73,14 @@ class Toolbar extends Component {
       <div id='navigator-toolbar'>
         <Button
           accent
-          label='Make'
-          onClick={this.toggleMakeMode}
+          label='Next'
+          onClick={this.nextPath}
         />
         <Button
           accent
-          label='Next'
-          onClick={this.nextPath}
+          label='Make'
+          disabled={!this.props.auth.loggedIn()}
+          onClick={this.toggleMakeMode}
         />
       </div>
     );
@@ -87,6 +88,7 @@ class Toolbar extends Component {
 }
 
 Toolbar.propTypes = {
+  auth: PropTypes.object.isRequired,
   params: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   makeMode: PropTypes.bool.isRequired,
