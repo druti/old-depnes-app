@@ -1,13 +1,11 @@
 import React, {PropTypes} from 'react';
 import $ from 'jquery';
 import {Layout, NavDrawer, Panel} from 'react-toolbox';
-import {AppBar} from 'react-toolbox/lib/app_bar';
-import {Button, IconButton} from 'react-toolbox/lib/button';
 
 import DrawerMenu from './DrawerMenu';
-import Toolbar from '../modules/Post/components/Navigator/Toolbar';
+import AppBar from '../modules/Post/components/Navigator/Toolbar';
 
-const theme = require('./masterLayout.scss');
+import theme from './masterLayout.scss'; // eslint-disable-line
 
 class MasterLayout extends React.Component {
   constructor() {
@@ -92,7 +90,7 @@ class MasterLayout extends React.Component {
   };
 
   render() {
-    const { params, auth } = this.props;
+    const { auth, params } = this.props;
     return (
       <Layout>
         <NavDrawer
@@ -104,23 +102,14 @@ class MasterLayout extends React.Component {
           <DrawerMenu/>
         </NavDrawer>
         <Panel>
-          <AppBar theme={theme}>
-            <IconButton icon='menu' inverse onClick={this.toggleDrawer}/>
-            <Toolbar auth={auth} params={params} />
-            {auth.loggedIn() ?
-              <div className={theme.appBarUser}>
-                <Button
-                  accent
-                  label='Profile'
-                  onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
-                />
-              </div> :
-              <div className={theme.appBarUser}>
-                <Button label='Sign Up' onClick={this.signUp} accent />
-                <Button label='Log In' onClick={this.logIn} accent />
-              </div>
-            }
-          </AppBar>
+          <AppBar
+            auth={auth}
+            params={params}
+            theme={theme}
+            toggleDrawer={this.toggleDrawer}
+            signUp={this.signUp}
+            logIn={this.logIn}
+          />
           <div style={{flex: 1, overflowY: 'auto', padding: '1.8rem'}}>
             {this.props.children}
           </div>

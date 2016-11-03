@@ -1,19 +1,21 @@
 import React, { Component, PropTypes } from 'react';
-import {Button} from 'react-toolbox/lib/button';
+import {AppBar as ToolboxAppBar} from 'react-toolbox/lib/app_bar';
+import {Button, IconButton} from 'react-toolbox/lib/button';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import sanitizeHtml from 'sanitize-html';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { updateNavigator, toggleMakeMode, addPostRequest } from '../../PostActions';
 
 // Import Selectors
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
 
-import styles from './styles.scss';
+import styles from './styles.scss'; // eslint-disable-line
 
 import { navigatorEmitter } from './Navigator';
 
-class Toolbar extends Component {
+class AppBar extends Component {
   constructor() {
     super();
     this.state = {};
@@ -71,40 +73,77 @@ class Toolbar extends Component {
   }
 
   render() {
+    const { auth, theme, toggleDrawer, signUp, logIn } = this.props;
     return (
-      <div id='navigator-toolbar' className={styles.navigatorToolbar}>
-        <Button
-          accent
-          label='Next'
-          onClick={this.nextPath}
-        />
-        <Button
-          accent
-          label='Make'
-          disabled={!this.props.auth.loggedIn()}
-          onClick={this.toggleMakeMode}
-        />
-        {this.props.makeMode ? (
-          <div id='navigator-editor-toolbar' className={styles.editorToolbar}>
-            <select defaultValue='' className='ql-size'>
-              <option value='small'></option>
-              <option></option>
-              <option value='large'></option>
-              <option value='huge'></option>
-            </select>
-            <button className='ql-bold'></button>
-            <button className='ql-script' value='sub'></button>
-            <button className='ql-script' value='super'></button>
+      <ToolboxAppBar theme={theme}>
+        <Scrollbars className={styles.navigatorAppBarContainer} id='navigator-toolbar'>
+          <div className={styles.navigatorAppBar}>
+            {!this.props.makeMode &&
+              <IconButton icon='menu' inverse onClick={toggleDrawer}/>
+            }
+            {!this.props.makeMode &&
+              <Button
+                accent
+                label='Next'
+                onClick={this.nextPath}
+              />
+            }
+            {!this.props.makeMode &&
+              <Button
+                accent
+                label='Make'
+                disabled={!auth.loggedIn()}
+                onClick={this.toggleMakeMode}
+              />
+            }
+            {!this.props.makeMode && auth.loggedIn() &&
+              <Button
+                accent
+                label='Profile'
+                onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
+              />
+            }
+            {!this.props.makeMode && !auth.loggedIn() &&
+              <Button label='Sign Up' onClick={signUp} accent />
+            }
+            {!this.props.makeMode && !auth.loggedIn() &&
+              <Button label='Log In' onClick={logIn} accent />
+            }
+            {this.props.makeMode &&
+              <Button
+                accent
+                label='Save'
+                disabled={!auth.loggedIn()}
+                onClick={this.toggleMakeMode}
+              />
+            }
+            {this.props.makeMode &&
+              <div id='navigator-editor-toolbar' className={styles.editorToolbar}>
+                <select defaultValue='' className='ql-size'>
+                  <option value='small'></option>
+                  <option></option>
+                  <option value='large'></option>
+                  <option value='huge'></option>
+                </select>
+                <button className='ql-bold'></button>
+                <button className='ql-script' value='sub'></button>
+                <button className='ql-script' value='super'></button>
+              </div>
+            }
           </div>
-        ) : null}
-      </div>
+        </Scrollbars>
+      </ToolboxAppBar>
     );
   }
 }
 
-Toolbar.propTypes = {
+AppBar.propTypes = {
   auth: PropTypes.object.isRequired,
   params: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
+  toggleDrawer: PropTypes.func.isRequired,
+  signUp: PropTypes.func.isRequired,
+  logIn: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
   makeMode: PropTypes.bool.isRequired,
   content: PropTypes.object,
@@ -700,4 +739,4 @@ function mapStateToProps(state, props) {
   };
 }
 
-export default connect(mapStateToProps, dispatch => ({ dispatch }))(Toolbar);
+export default connect(mapStateToProps, dispatch => ({ dispatch }))(AppBar);

@@ -17,8 +17,8 @@ export default class AuthService extends EventEmitter {
       return false
     }
     // Configure Auth0
-    this.lock = new Auth0Lock( // TODO remove hard coded credentials
-      'wsTRLfN6pOyjQDpfCYzTOzFYNnq0ycbz',
+    this.lock = new Auth0Lock(
+      'wsTRLfN6pOyjQDpfCYzTOzFYNnq0ycbz', // TODO remove hard coded credentials
       'druti.auth0.com', {
         avatar: null,
         socialButtonStyle: 'small',
@@ -46,7 +46,6 @@ export default class AuthService extends EventEmitter {
   }
 
   _doAuthentication(authResult) {
-    debugger;
     // Saves the user token
     this.setToken(authResult.idToken)
     // Async loads the user profile data

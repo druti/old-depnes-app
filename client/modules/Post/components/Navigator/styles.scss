@@ -1,11 +1,22 @@
-.navigatorToolbar {
+.navigatorAppBarContainer {
   white-space: nowrap;
-  overflow-x: auto;
+}
+
+.navigatorAppBar {
+  margin-top: 10px;
+  text-align: center;
+
+  @media (min-width: 480px) {
+    margin-top: 12px;
+  }
 }
 
 :global(.ql-toolbar.ql-snow).editorToolbar {
-  display: inline-flex;
+  height: 3.6rem;
+  display: inline-block;
+  padding: 5px 8px;
   position: relative;
   background: transparent;
   border: none;
+  vertical-align: middle;
 }
