@@ -1,17 +1,18 @@
 :global {
-  .ql-container.ql-snow {
-    border: none !important;
-    font-size: inherit;
-    line-height: inherit;
-    font-family: inherit;
-    padding: 0;
-
+  .ql-container {
     .ql-editor {
-      padding: 0;
+      .ql-size-large {
+        font-size: 2em;
+      }
+      .ql-align-center {
+        text-align: center;
+      }
+      .ql-align-right {
+        text-align: right;
+      }
+      .ql-align-justify {
+        text-align: justify;
+      }
     }
-  }
-
-  .quill ~ input {
-    margin-bottom: 3em;
   }
 }

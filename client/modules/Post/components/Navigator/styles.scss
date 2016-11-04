@@ -1,5 +1,16 @@
+.navigator {}
+
 .navigatorAppBarContainer {
   white-space: nowrap;
+}
+
+.separator {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 1rem;
+  height: 36px;
+  width: 1px;
+  background: #fff;
 }
 
 .navigatorAppBar {
@@ -12,15 +23,12 @@
 
   button {
     margin-left: 1rem;
+    &:last-child {
+      margin-right: 1rem;
+    }
   }
 }
 
-:global(.ql-toolbar.ql-snow).editorToolbar {
-  height: 3.6rem;
+.editorToolbar {
   display: inline-block;
-  padding: 5px 8px;
-  position: relative;
-  background: transparent;
-  border: none;
-  vertical-align: middle;
 }

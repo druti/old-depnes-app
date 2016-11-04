@@ -73,53 +73,117 @@ class AppBar extends Component {
   }
 
   render() {
-    const { auth, theme, toggleDrawer, signUp, logIn } = this.props;
+    const { auth, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
     return (
       <ToolboxAppBar theme={theme}>
         <Scrollbars className={styles.navigatorAppBarContainer} id='navigator-toolbar'>
           <div className={styles.navigatorAppBar}>
             <IconButton icon='menu' inverse onClick={toggleDrawer}/>
-            {!this.props.makeMode &&
+            {!makeMode &&
               <Button
                 accent
-                label='Next'
+                label='Read'
                 onClick={this.nextPath}
               />
             }
             <Button
-              accent={this.props.makeMode}
-              raised
-              label={this.props.makeMode ? 'Save' : 'Make'}
-              disabled={!auth.loggedIn()}
-              onClick={this.toggleMakeMode}
+              accent
+              raised={makeMode}
+              label={makeMode ? ' Save' : ' Write'}
+              onClick={auth.loggedIn() ? this.toggleMakeMode : signUp}
             />
-            {this.props.makeMode &&
+            {makeMode &&
               <div id='navigator-editor-toolbar' className={styles.editorToolbar}>
 
-                <button value='small' className='ql-size'>S</button>
-                <button value='' className='ql-size'>M</button>
-                <button value='large' className='ql-size'>L</button>
-                <button value='huge' className='ql-size'>XL</button>
+                <IconButton
+                  inverse
+                  className='ql-bold'
+                ><i className='fa fa-bold'/></IconButton>
+                <IconButton
+                  inverse
+                  className='ql-italic'
+                ><i className='fa fa-italic'/></IconButton>
+                <IconButton
+                  inverse
+                  className='ql-underline'
+                ><i className='fa fa-underline'/></IconButton>
+                <IconButton
+                  inverse
+                  className='ql-strike'
+                ><i className='fa fa-strikethrough'/></IconButton>
+                <span className={styles.separator}/>
 
-                <button value='sans-serif' className='ql-font'>Sans-serif</button>
-                <button value='serif' className='ql-font'>Serif</button>
-                <button value='monospace' className='ql-font'>Monospace</button>
+                <IconButton
+                  inverse
+                  className='ql-size'
+                  value='large'
+                ><i className='fa fa-header'/></IconButton>
+                <span className={styles.separator}/>
 
-                <button className='ql-bold'></button>
-                <button className='ql-italic'></button>
+
+                <IconButton
+                  inverse
+                  className='ql-list'
+                  value='ordered'
+                ><i className='fa fa-list-ol'/></IconButton>
+                <IconButton
+                  inverse
+                  className='ql-list'
+                  value='bullet'
+                ><i className='fa fa-list-ul'/></IconButton>
+                <span className={styles.separator}/>
+
+
+                <IconButton
+                  inverse
+                  className='ql-align'
+                  value=''
+                ><i className='fa fa-align-left'/></IconButton>
+                <IconButton
+                  inverse
+                  className='ql-align'
+                  value='center'
+                ><i className='fa fa-align-center'/></IconButton>
+                <IconButton
+                  inverse
+                  className='ql-align'
+                  value='right'
+                ><i className='fa fa-align-right'/></IconButton>
+                <IconButton
+                  inverse
+                  className='ql-align'
+                  value='justify'
+                ><i className='fa fa-align-justify'/></IconButton>
+                <span className={styles.separator}/>
+
+
+                <IconButton
+                  inverse
+                  className='ql-link'
+                ><i className='fa fa-link'/></IconButton>
+                <IconButton
+                  inverse
+                  className='ql-image'
+                ><i className='fa fa-image'/></IconButton>
+                <IconButton
+                  inverse
+                  className='ql-video'
+                ><i className='fa fa-film'/></IconButton>
 
               </div>
             }
-            <Button
-              accent
-              label='Profile'
-              onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
-            />
-            {!auth.loggedIn() &&
-              <Button label='Sign Up' onClick={signUp} accent />
+            {auth.loggedIn() &&
+              <Button
+                accent
+                label='Profile'
+                onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
+              />
             }
             {!auth.loggedIn() &&
               <Button label='Log In' onClick={logIn} accent />
+            }
+            {!auth.loggedIn() &&
+              <Button label='Sign Up' onClick={signUp} raised accent />
             }
           </div>
         </Scrollbars>

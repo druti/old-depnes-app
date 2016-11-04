@@ -6,6 +6,8 @@ import Helmet from 'react-helmet';
 
 import Editor from './Editor';
 
+import styles from './styles.scss'; // eslint-disable-line
+
 // Import Actions
 import { updateNavigator } from '../../PostActions';
 
@@ -77,7 +79,7 @@ class Navigator extends React.Component {
     }
 
     return (
-      <div className={this.props.className}>
+      <div className={styles.navigator}>
         <Helmet title={this.props.path.textContent.substring(0, 25)} />
         {View}
       </div>

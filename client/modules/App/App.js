@@ -64,7 +64,7 @@ export class App extends Component {
               },
               {
                 rel: 'stylesheet',
-                href: 'https://cdn.quilljs.com/1.1.3/quill.snow.css',
+                href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css',
               },
             ]}
           />
