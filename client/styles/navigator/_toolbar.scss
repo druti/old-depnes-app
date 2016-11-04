@@ -2,41 +2,41 @@
   .ql-snow.ql-toolbar {
     .ql-stroke,
     .ql-fill {
-      stroke: #ff4081 !important;
+      stroke: #fff !important;
     }
 
     .ql-script {
       .ql-fill {
-        fill: #ff4081 !important;
+        fill: #fff !important;
       }
       &:hover {
         .ql-fill {
-          stroke: #000 !important;
-          fill: #000 !important;
+          stroke: #ff4081 !important;
+          fill: #ff4081 !important;
         }
       }
     }
 
     .ql-size {
-      color: #ff4081 !important;
+      color: #fff !important;
     }
 
     .ql-picker-label,
     .ql-bold,
     .ql-script {
       &:hover {
-        color: #000 !important;
+        color: #ff4081 !important;
         .ql-stroke {
-          stroke: #000 !important;
+          stroke: #ff4081 !important;
         }
       }
     }
 
     .ql-active {
-      color: #000 !important;
+      color: #ff4081 !important;
       .ql-stroke,
       .ql-fill {
-        stroke: #000 !important;
+        stroke: #ff4081 !important;
       }
     }
   }

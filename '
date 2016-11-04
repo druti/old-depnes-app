@@ -95,19 +95,11 @@ class AppBar extends Component {
             />
             {this.props.makeMode &&
               <div id='navigator-editor-toolbar' className={styles.editorToolbar}>
-
                 <button value='small' className='ql-size'>S</button>
                 <button value='' className='ql-size'>M</button>
                 <button value='large' className='ql-size'>L</button>
                 <button value='huge' className='ql-size'>XL</button>
-
-                <button value='sans-serif' className='ql-font'>Sans-serif</button>
-                <button value='serif' className='ql-font'>Serif</button>
-                <button value='monospace' className='ql-font'>Monospace</button>
-
                 <button className='ql-bold'></button>
-                <button className='ql-italic'></button>
-
               </div>
             }
             <Button
