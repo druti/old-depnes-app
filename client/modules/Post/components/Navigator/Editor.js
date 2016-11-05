@@ -4,12 +4,13 @@ import Delta from 'quill-delta';
 const isClient = typeof window !== 'undefined'
 if (isClient) {
   var Quill = require('quill');
+  const Inline = Quill.import('blots/inline');
   const Block = Quill.import('blots/block');
+  const Embed = Quill.import('blots/embed');
 
-  class AuthorBlot extends Block {
-    static create(contentAuthorId, formatAuthorId) {
+  class AuthorBlot extends Inline {
+    static create({contentAuthorId, formatAuthorId}) {
       const node = super.create();
-      debugger;
       node.setAttribute('data-content-author-id', contentAuthorId);
       node.setAttribute('data-format-author-id', formatAuthorId);
       return node;
@@ -19,9 +20,6 @@ if (isClient) {
         contentAuthorId: node.getAttribute('data-content-author-id'),
         formatAuthorId: node.getAttribute('data-format-author-id'),
       }
-    }
-    format(name, value) {
-      debugger;
     }
   }
 
@@ -58,20 +56,20 @@ class Editor extends Component {
       contentChange.ops = contentChange.map(op => {
         if (op.insert) {
           const userId = auth.getProfile().user_id;
-          const attr = op.attribute || {};
-          op.attributes = Object.assign(attr, {
+          const newAttributes = Object.assign({}, op.attributes, {
             authors: {
               contentAuthorId: userId,
               formatAuthorId: userId,
             },
           });
           // delete format ownership if no formats in insert
-          !op.attribute ? delete op.attributes.authors.formatAuthorId : null;
+          !op.attributes ? delete newAttributes.authors.formatAuthorId : null;
+          op.attributes = newAttributes;
         } else if (op.retain){
           const userId = auth.getProfile().user_id;
-          const attr = op.attribute;
-          if (attr) {
-            op.attributes = Object.assign(attr, {
+          const attrs = op.attributes;
+          if (attrs) {
+            op.attributes = Object.assign(attrs, {
               authors: {
                 formatAuthorId: userId,
               },
