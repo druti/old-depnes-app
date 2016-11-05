@@ -13,6 +13,21 @@
       .ql-align-justify {
         text-align: justify;
       }
+
+
+      [data-format-author-id="google-oauth2|113984784132425890971"] {
+        background: rgba(255, 64, 129, .25);
+      }
+      [data-content-author-id="google-oauth2|113984784132425890971"] {
+        background: rgba(255, 64, 129, 1);
+      }
+
+      [data-format-author-id="auth0|58110ccdc881774137e1afe8"] {
+        background: rgba(36, 109, 255, .25);
+      }
+      [data-content-author-id="auth0|58110ccdc881774137e1afe8"] {
+        background: rgba(36, 109, 255, 1);
+      }
     }
   }
 }
