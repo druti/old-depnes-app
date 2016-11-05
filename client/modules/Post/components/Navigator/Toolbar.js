@@ -47,7 +47,16 @@ class AppBar extends Component {
     } = this.props.path;
 
     if (previousMakeModeState) {
-      const { content, htmlContent, textContent } = this.props;
+      let { content, htmlContent, textContent } = this.props;
+
+      const sanitationOptions = {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img', 'span' ]),
+        allowedAttributes: Object.assign(
+          sanitizeHtml.defaults.allowedAttributes,
+          { span: [ 'id' ] }
+        ),
+      };
+      htmlContent = sanitizeHtml(htmlContent, sanitationOptions);
 
       if (htmlContent !== pathHtmlContent && textContent.length) {
         const result = this.props.dispatch(addPostRequest({

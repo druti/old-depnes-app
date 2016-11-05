@@ -23,7 +23,7 @@ class Editor extends Component {
       modules: { toolbar: '#navigator-editor-toolbar' },
     });
 
-    this.quill.on('text-change', delta => this.props.onChange(delta, this.quill));
+    this.quill.on('text-change', () => this.props.onChange(this.quill.getContents(), this.quill));
 
     const notEmpty = !!Object.keys(this.props.content).length; // dummy data had an empty object
 
