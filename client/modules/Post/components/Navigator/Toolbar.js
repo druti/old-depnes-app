@@ -106,6 +106,10 @@ class AppBar extends Component {
 
                 <IconButton
                   inverse
+                  className='ql-authors'
+                ><i className='fa fa-user'/></IconButton>
+                <IconButton
+                  inverse
                   className='ql-bold'
                 ><i className='fa fa-bold'/></IconButton>
                 <IconButton
@@ -143,11 +147,6 @@ class AppBar extends Component {
                 <span className={styles.separator}/>
 
 
-                <IconButton
-                  inverse
-                  className='ql-align'
-                  value=''
-                ><i className='fa fa-align-left'/></IconButton>
                 <IconButton
                   inverse
                   className='ql-align'

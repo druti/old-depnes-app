@@ -47,6 +47,7 @@ class Navigator extends React.Component {
 
   render() {
     const {
+      auth,
       path,
       makeMode,
       content,
@@ -63,6 +64,7 @@ class Navigator extends React.Component {
     if (makeMode) {
       View = (
         <Editor
+          auth={auth}
           content={content}
           htmlContent={htmlContent}
           textContent={textContent}
@@ -88,6 +90,7 @@ class Navigator extends React.Component {
 }
 
 Navigator.propTypes = {
+  auth: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   makeMode: PropTypes.bool.isRequired,
   content: PropTypes.object,

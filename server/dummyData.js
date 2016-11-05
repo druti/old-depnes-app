@@ -1,5 +1,6 @@
 import Post from './models/post';
 import cuid from 'cuid';
+import Delta from 'quill-delta';
 
 export default function () {
   Post.count().exec((err, count) => {
@@ -12,7 +13,7 @@ export default function () {
     let pathsInitialData = [
       {
         cuid: cuid(),
-        content: {},
+        content: new Delta().insert(lorem1),
         htmlContent: lorem1,
         textContent: lorem1,
       },
@@ -30,7 +31,7 @@ export default function () {
 
       let p = {
         cuid: cuid(),
-        content: {},
+        content: new Delta().insert(c),
         htmlContent: c,
         textContent: c,
       };
@@ -51,7 +52,7 @@ export default function () {
 
       let p = {
         cuid: cuid(),
-        content: {},
+        content: new Delta().insert(c),
         htmlContent: c,
         textContent: c,
       };

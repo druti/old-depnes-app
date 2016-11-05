@@ -17,7 +17,7 @@ const PostPage = props => {
       switchLanguage={props.switchLanguage}
       intl={props.intl}
     >
-      <Navigator path={props.path} paths={props.paths} />
+      <Navigator auth={props.auth} path={props.path} paths={props.paths} />
     </MasterLayout>
   );
 };
@@ -29,8 +29,12 @@ PostPage.need = [() => {
 
 
 PostPage.propTypes = {
-  path: PropTypes.object,
-  paths: PropTypes.array,
+  auth: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
+  switchLanguage: PropTypes.func.isRequired,
+  intl: PropTypes.object.isRequired,
+  path: PropTypes.object.isRequired,
+  paths: PropTypes.array.isRequired,
 };
 
 // Retrieve data from store as props
