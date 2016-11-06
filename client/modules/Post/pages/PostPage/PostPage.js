@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import MasterLayout from '../../../../layouts/MasterLayout';
+import AuthorList from '../../components/AuthorList/AuthorList';
 import Navigator from '../../components/Navigator/Navigator';
 
 import { getPost, getPosts } from '../../PostReducer';
@@ -17,6 +18,7 @@ const PostPage = props => {
       switchLanguage={props.switchLanguage}
       intl={props.intl}
     >
+      <AuthorList />
       <Navigator auth={props.auth} path={props.path} paths={props.paths} />
     </MasterLayout>
   );

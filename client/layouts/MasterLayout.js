@@ -124,7 +124,7 @@ MasterLayout.propTypes = {
   auth: PropTypes.object.isRequired,
   switchLanguage: PropTypes.func,
   intl: PropTypes.object,
-  children: PropTypes.object,
+  children: PropTypes.array,
 };
 
 export default MasterLayout;
