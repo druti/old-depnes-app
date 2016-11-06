@@ -55,10 +55,6 @@ class Navigator extends React.Component {
       textContent,
     } = this.props;
 
-    if (!path) {
-      return <h1>404 Not Found</h1>;
-    }
-
     let View;
 
     if (makeMode) {

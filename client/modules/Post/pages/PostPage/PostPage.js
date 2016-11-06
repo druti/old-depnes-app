@@ -18,8 +18,12 @@ const PostPage = props => {
       switchLanguage={props.switchLanguage}
       intl={props.intl}
     >
-      <AuthorList />
-      <Navigator auth={props.auth} path={props.path} paths={props.paths} />
+    {props.path ?
+      <div>
+        <AuthorList path={props.path} />
+        <Navigator auth={props.auth} path={props.path} paths={props.paths} />
+      </div> :
+      <h1>404 Not Found</h1>}
     </MasterLayout>
   );
 };
@@ -35,7 +39,7 @@ PostPage.propTypes = {
   params: PropTypes.object.isRequired,
   switchLanguage: PropTypes.func.isRequired,
   intl: PropTypes.object.isRequired,
-  path: PropTypes.object.isRequired,
+  path: PropTypes.object,
   paths: PropTypes.array.isRequired,
 };
 

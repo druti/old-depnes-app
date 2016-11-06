@@ -1,11 +1,13 @@
 import React, {PropTypes} from 'react';
 import $ from 'jquery';
-import {Layout, NavDrawer, Panel} from 'react-toolbox';
+import {Layout, Panel} from 'react-toolbox';
+import {NavDrawer} from 'react-toolbox/lib/layout';
 
 import DrawerMenu from './DrawerMenu';
 import AppBar from '../modules/Post/components/Navigator/Toolbar';
 
 import theme from './masterLayout.scss'; // eslint-disable-line
+import drawerTheme from './drawerMenu.scss'; // eslint-disable-line
 
 class MasterLayout extends React.Component {
   constructor() {
@@ -42,6 +44,7 @@ class MasterLayout extends React.Component {
     // server for SSR
     this.lg = 840;
 
+    this.viewportW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     $(window).on('resize', () => {
       this.viewportW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     });
@@ -92,7 +95,7 @@ class MasterLayout extends React.Component {
   render() {
     const { auth, params } = this.props;
     return (
-      <Layout>
+      <Layout theme={drawerTheme}>
         <NavDrawer
           active={this.state.drawerActive}
           pinned={this.state.drawerPinned}
@@ -124,7 +127,7 @@ MasterLayout.propTypes = {
   auth: PropTypes.object.isRequired,
   switchLanguage: PropTypes.func,
   intl: PropTypes.object,
-  children: PropTypes.array,
+  children: PropTypes.object,
 };
 
 export default MasterLayout;

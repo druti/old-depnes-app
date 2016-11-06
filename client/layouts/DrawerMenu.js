@@ -5,11 +5,15 @@ import Link from '../mdl/Link';
 
 import Logo from '../modules/App/components/Logo/Logo';
 
+import styles from './drawerMenu.scss';
+
 const DrawerMenu = () => (
-  <Navigation type='vertical'>
+  <div className={styles.menuContainer}>
     <Logo />
-    <Link href='/paths' label='Paths' icon='explore'/>
-  </Navigation>
+    <Navigation type='vertical'>
+      <Link href='/paths' label='Paths'/>
+    </Navigation>
+  </div>
 );
 
 export default DrawerMenu;

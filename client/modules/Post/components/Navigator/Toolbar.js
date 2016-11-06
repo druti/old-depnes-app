@@ -183,7 +183,9 @@ class AppBar extends Component {
             {auth.loggedIn() &&
               <Button
                 accent
-                label='Profile'
+                raised
+                label={auth.getProfile().username || auth.getProfile().nickname}
+                className={styles.username}
                 onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
               />
             }

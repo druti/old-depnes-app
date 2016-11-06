@@ -3,7 +3,27 @@ import Avatar from 'react-toolbox/lib/avatar';
 import Chip from 'react-toolbox/lib/chip';
 import { Scrollbars } from 'react-custom-scrollbars';
 
-const PathAuthors = () => {
+const PathAuthors = ({ path }) => {
+  const ops = path.content.ops;
+  const contentAuthorIds = [];
+  const formatAuthorIds = [];
+  ops.forEach(op => {
+    if (op.attributes) {
+      if (op.attributes.authors) {
+        if (op.attributes.authors.contentAuthorId) {
+          formatAuthors.push(op.attributes.authors.contentAuthorId);
+        }
+        if (op.attributes.authors.formatAuthorId) {
+          formatAuthors.push(op.attributes.authors.formatAuthorId);
+        }
+      }
+    }
+  });
+  /* TODO merge contentAuthorIds and formatAuthorIds, scrapping duplicates
+   * fetch username/nickname for each user through auth0
+   * repalce authors below
+   */
+
   const authors = [];
   for (let i = 0; i < 50; i++) {
     authors.push(
@@ -30,6 +50,7 @@ const PathAuthors = () => {
 };
 
 PathAuthors.propTypes = {
+  path: PropTypes.object,
 };
 
 export default PathAuthors;
