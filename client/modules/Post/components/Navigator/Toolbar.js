@@ -58,7 +58,7 @@ class AppBar extends Component {
       };
       htmlContent = sanitizeHtml(htmlContent, sanitationOptions);
 
-      if (htmlContent !== pathHtmlContent && textContent.length) {
+      if (JSON.stringify(content) !== JSON.stringify(pathContent) && textContent.length) {
         const result = this.props.dispatch(addPostRequest({
           content,
           htmlContent,

@@ -27,27 +27,7 @@ if (isClient) {
   AuthorBlot.tagName = 'span';
   AuthorBlot.className = 'authors';
 
-  class AuthorBlockBlot extends Block {
-    static create({contentAuthorId, formatAuthorId}) {
-      const node = super.create();
-      node.setAttribute('data-content-author-id', contentAuthorId);
-      node.setAttribute('data-format-author-id', formatAuthorId);
-      return node;
-    }
-    static formats(node) {
-      return {
-        contentAuthorId: node.getAttribute('data-content-author-id'),
-        formatAuthorId: node.getAttribute('data-format-author-id'),
-      }
-    }
-  }
-
-  AuthorBlot.blotName = 'blockAuthors';
-  AuthorBlot.tagName = 'div';
-  AuthorBlot.className = 'block-authors';
-
   Quill.register(AuthorBlot);
-  Quill.register(AuthorBlockBlot);
 }
 
 class Editor extends Component {
