@@ -1,4 +1,5 @@
 import React, { Component, PropTypes as Type } from 'react';
+import Parchment from 'parchment';
 import Delta from 'quill-delta';
 
 const isClient = typeof window !== 'undefined'
@@ -6,7 +7,6 @@ if (isClient) {
   var Quill = require('quill');
   const Inline = Quill.import('blots/inline');
   const Block = Quill.import('blots/block');
-  const Embed = Quill.import('blots/embed');
 
   class AuthorBlot extends Inline {
     static create({contentAuthorId, formatAuthorId}) {
@@ -27,7 +27,27 @@ if (isClient) {
   AuthorBlot.tagName = 'span';
   AuthorBlot.className = 'authors';
 
+  class AuthorBlockBlot extends Block {
+    static create({contentAuthorId, formatAuthorId}) {
+      const node = super.create();
+      node.setAttribute('data-content-author-id', contentAuthorId);
+      node.setAttribute('data-format-author-id', formatAuthorId);
+      return node;
+    }
+    static formats(node) {
+      return {
+        contentAuthorId: node.getAttribute('data-content-author-id'),
+        formatAuthorId: node.getAttribute('data-format-author-id'),
+      }
+    }
+  }
+
+  AuthorBlot.blotName = 'blockAuthors';
+  AuthorBlot.tagName = 'div';
+  AuthorBlot.className = 'block-authors';
+
   Quill.register(AuthorBlot);
+  Quill.register(AuthorBlockBlot);
 }
 
 class Editor extends Component {
