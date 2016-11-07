@@ -37,9 +37,16 @@ class Editor extends Component {
   }
 
   componentDidMount() {
-    const { content, textContent, onChange, auth } = this.props;
+    const {
+      content,
+      textContent,
+      onChange,
+      auth,
+      makeMode
+    } = this.props;
 
     const quill = new Quill('#editor', {
+      readOnly: !makeMode,
       modules: { toolbar: '#navigator-editor-toolbar' },
     });
 

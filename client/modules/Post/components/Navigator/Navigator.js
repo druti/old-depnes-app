@@ -57,29 +57,17 @@ class Navigator extends React.Component {
 
     let View;
 
-    if (makeMode) {
-      View = (
+    return (
+      <div className={styles.navigator}>
+        <Helmet title={this.props.path.textContent.substring(0, 25)} />
         <Editor
+          readOnly={!makeMode}
           auth={auth}
           content={content}
           htmlContent={htmlContent}
           textContent={textContent}
           onChange={this.onEditorChange}
         />
-      );
-    } else {
-      View = (
-        <div
-          id='navigator-view'
-          dangerouslySetInnerHTML={{__html: this.props.path.htmlContent}}
-        />
-      );
-    }
-
-    return (
-      <div className={styles.navigator}>
-        <Helmet title={this.props.path.textContent.substring(0, 25)} />
-        {View}
       </div>
     );
   }
