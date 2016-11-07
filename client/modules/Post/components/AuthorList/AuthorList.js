@@ -11,10 +11,10 @@ const PathAuthors = ({ path }) => {
     if (op.attributes) {
       if (op.attributes.authors) {
         if (op.attributes.authors.contentAuthorId) {
-          formatAuthors.push(op.attributes.authors.contentAuthorId);
+          contentAuthorIds.push(op.attributes.authors.contentAuthorId);
         }
         if (op.attributes.authors.formatAuthorId) {
-          formatAuthors.push(op.attributes.authors.formatAuthorId);
+          formatAuthorIds.push(op.attributes.authors.formatAuthorId);
         }
       }
     }

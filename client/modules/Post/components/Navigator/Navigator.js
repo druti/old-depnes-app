@@ -50,10 +50,16 @@ class Navigator extends React.Component {
       auth,
       path,
       makeMode,
-      content,
-      htmlContent,
-      textContent,
+      content: editorContent,
+      textContent: editorTextContent,
+      htmlContent: editorHtmlContent,
     } = this.props;
+
+    const {
+      content: pathContent,
+      textContent: pathHtmlContent,
+      htmlContent: pathTextContent,
+    } = path;
 
     let View;
 
@@ -63,9 +69,12 @@ class Navigator extends React.Component {
         <Editor
           readOnly={!makeMode}
           auth={auth}
-          content={content}
-          htmlContent={htmlContent}
-          textContent={textContent}
+          content={editorContent}
+          htmlContent={editorHtmlContent}
+          textContent={editorTextContent}
+          pathContent={pathContent}
+          pathHtmlContent={pathHtmlContent}
+          pathTextContent={pathTextContent}
           onChange={this.onEditorChange}
         />
       </div>

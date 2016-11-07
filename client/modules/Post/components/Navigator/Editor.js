@@ -34,26 +34,43 @@ class Editor extends Component {
   constructor() {
     super();
     this.state = {};
+    this.initQuill = this.initQuill.bind(this);
   }
 
-  componentDidMount() {
-    const {
+  initQuill() {
+    let {
       content,
       textContent,
+      pathContent,
+      pathTextContent,
       onChange,
       auth,
-      makeMode
+      readOnly
     } = this.props;
 
+    content = readOnly ? pathContent : content;
+    textContent = readOnly ? pathTextContent : textContent;
+
+    this.toolbar = '#navigator-editor-toolbar';
+
+    // maintain selection
+    const previousSelection = this.quill ? this.quill.getSelection() : null;
+
     const quill = new Quill('#editor', {
-      readOnly: !makeMode,
-      modules: { toolbar: '#navigator-editor-toolbar' },
+      readOnly,
+      modules: {
+        toolbar: !readOnly ? this.toolbar : null,
+      },
     });
 
     if (content && Object.keys(content).length) { // dummy data had an empty object
       quill.setContents(content);
     } else {
       quill.setText(textContent);
+    }
+
+    if (previousSelection) {
+      quill.setSelection(previousSelection);
     }
 
     quill.on('text-change', (contentChange, oldContent, source) => {
@@ -90,6 +107,27 @@ class Editor extends Component {
     });
 
     this.quill = quill;
+  }
+
+  componentDidMount() {
+    this.initQuill();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const {
+      readOnly,
+      content,
+      pathContent,
+    } = this.props;
+
+    const quillContent = this.quill.getContents();
+    const quillReadOnly = this.quill.options.readOnly;
+
+    if (readOnly !== quillReadOnly) { // reinit with updated config
+      this.initQuill();
+    } else if (quillReadOnly && quillContent !== pathContent) {
+      this.initQuill();
+    }
   }
 
   render() {
