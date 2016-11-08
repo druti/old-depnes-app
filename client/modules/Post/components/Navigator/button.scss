@@ -1,0 +1,32 @@
+.button:not([disabled]),
+.flat:not([disabled]),
+.floating:not([disabled]),
+.toggle:not([disabled]),
+.neutral:not([disabled]),
+.raised:not([disabled]),
+.icon:not([disabled]),
+.toggle:not([disabled]) {
+  margin-left: 1rem;
+  &:last-child {
+    margin-right: 1rem;
+  }
+  &.flat,
+  &.raised {
+    color: #000;
+    &:hover {
+      background: #fff;
+    }
+  }
+  &.neutral,
+  &.icon {
+    &:hover {
+      background: #fff;
+    }
+    i {
+      color: #000;
+    }
+  }
+  &.raised {
+    background: #fff;
+  }
+}

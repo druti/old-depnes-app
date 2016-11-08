@@ -3,6 +3,8 @@ import Avatar from 'react-toolbox/lib/avatar';
 import Chip from 'react-toolbox/lib/chip';
 import { Scrollbars } from 'react-custom-scrollbars';
 
+import styles from './styles.scss';
+
 const PathAuthors = ({ path }) => {
   const ops = path.content.ops;
   const contentAuthorIds = [];
@@ -34,14 +36,12 @@ const PathAuthors = ({ path }) => {
   }
 
   return (
-    <div
-      style={{
-        margin: '1rem 0',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      <Scrollbars autoHeight style={{width: '100%'}}>
-        <div style={{marginBottom: '1rem'}}>
+    <div className={styles.container}>
+      <Scrollbars
+        autoHeight
+        className={styles.scrollBars}
+      >
+        <div className={styles.inner}>
           {authors}
         </div>
       </Scrollbars>

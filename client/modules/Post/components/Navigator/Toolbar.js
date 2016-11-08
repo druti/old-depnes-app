@@ -14,6 +14,7 @@ import { updateNavigator, toggleMakeMode, addPostRequest } from '../../PostActio
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
 
 import styles from './styles.scss'; // eslint-disable-line
+import buttonTheme from './button.scss'; // eslint-disable-line
 
 import { navigatorEmitter } from './Navigator';
 
@@ -31,13 +32,17 @@ class AppBar extends Component {
       paths,
     } = this.props;
 
-    const navigator = $('#depnes-navigator')[0].quill; // TODO
-    const navigatorSelection = navigator.getSelection(); // TODO
+    const $navigator = $('#depnes-navigator');
+    if (!$navigator.length) {
+      return goToNextConsecutivePath(path, paths);
+    }
+
+    const navigator = $navigator[0].quill;
+    const navigatorSelection = navigator.getSelection();
 
     if (navigatorSelection) {
       goToNextMatchedPath(path, paths, navigator, navigatorSelection);
-    }
-    else {
+    } else {
       goToNextConsecutivePath(path, paths);
     }
   }
@@ -83,15 +88,17 @@ class AppBar extends Component {
       <ToolboxAppBar theme={theme}>
         <Scrollbars className={styles.navigatorAppBarContainer} id='navigator-toolbar'>
           <div className={styles.navigatorAppBar}>
-            <IconButton icon='menu' inverse onClick={toggleDrawer}/>
+            <IconButton icon='menu' onClick={toggleDrawer} theme={buttonTheme} />
             {!makeMode &&
               <Button
+                theme={buttonTheme}
                 accent
                 label='Read'
                 onClick={this.nextPath}
               />
             }
             <Button
+              theme={buttonTheme}
               accent
               raised={makeMode}
               label={makeMode ? ' Save' : ' Write'}
@@ -101,29 +108,29 @@ class AppBar extends Component {
               <div id='navigator-editor-toolbar' className={styles.editorToolbar}>
 
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-authors'
                 ><i className='fa fa-user'/></IconButton>
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-bold'
                 ><i className='fa fa-bold'/></IconButton>
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-italic'
                 ><i className='fa fa-italic'/></IconButton>
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-underline'
                 ><i className='fa fa-underline'/></IconButton>
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-strike'
                 ><i className='fa fa-strikethrough'/></IconButton>
                 <span className={styles.separator}/>
 
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-size'
                   value='large'
                 ><i className='fa fa-header'/></IconButton>
@@ -131,12 +138,12 @@ class AppBar extends Component {
 
 
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-list'
                   value='ordered'
                 ><i className='fa fa-list-ol'/></IconButton>
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-list'
                   value='bullet'
                 ><i className='fa fa-list-ul'/></IconButton>
@@ -144,17 +151,17 @@ class AppBar extends Component {
 
 
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-align'
                   value='center'
                 ><i className='fa fa-align-center'/></IconButton>
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-align'
                   value='right'
                 ><i className='fa fa-align-right'/></IconButton>
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-align'
                   value='justify'
                 ><i className='fa fa-align-justify'/></IconButton>
@@ -162,15 +169,15 @@ class AppBar extends Component {
 
 
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-link'
                 ><i className='fa fa-link'/></IconButton>
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-image'
                 ><i className='fa fa-image'/></IconButton>
                 <IconButton
-                  inverse
+                  theme={buttonTheme}
                   className='ql-video'
                 ><i className='fa fa-film'/></IconButton>
 
@@ -178,6 +185,7 @@ class AppBar extends Component {
             }
             {auth.loggedIn() &&
               <Button
+                theme={buttonTheme}
                 accent
                 raised
                 label={auth.getProfile().username || auth.getProfile().nickname}
@@ -186,10 +194,10 @@ class AppBar extends Component {
               />
             }
             {!auth.loggedIn() &&
-              <Button label='Log In' onClick={logIn} accent />
+              <Button label='Log In' onClick={logIn} accent theme={buttonTheme} />
             }
             {!auth.loggedIn() &&
-              <Button label='Sign Up' onClick={signUp} raised accent />
+              <Button label='Sign Up' onClick={signUp} raised accent theme={buttonTheme} />
             }
           </div>
         </Scrollbars>
@@ -280,14 +288,17 @@ function stripAuthorAttributes(content) {
 }
 
 function goToNextConsecutivePath(currentPath, paths) {
-  let nextPathId;
-  for (let i = 0; i < paths.length; i++) {
-    if (paths[i].cuid === currentPath.cuid) {
-      const nextPath = paths[i + 1];
-      nextPathId = nextPath ? nextPath.cuid : paths[0].cuid;
+  if (currentPath) {
+    for (let i = 0; i < paths.length; i++) {
+      if (paths[i].cuid === currentPath.cuid) {
+        const nextPath = paths[i + 1];
+        const url = nextPath ? `/paths/${nextPath.cuid}` : '/paths';
+        browserHistory.push(url);
+      }
     }
+  } else {
+    browserHistory.push(`/paths/${paths[0].cuid}`);
   }
-  browserHistory.push(`/paths/${nextPathId}`);
 }
 
 function mapStateToProps(state, props) {

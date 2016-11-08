@@ -1,17 +1,18 @@
 .layout {
   .navDrawer {
-    background: #333;
+    background: #fafafa;
 
     .drawerContent {
-      background: #333;
-      border-color: #333;
+      background: #fafafa;
+      box-shadow: none;
+      border-color: rgba(0,0,0,.1);
       width: 24rem;
 
       .menuContainer {
         text-align: center;
 
         a {
-          color: #fff;
+          color: #000;
         }
       }
     }

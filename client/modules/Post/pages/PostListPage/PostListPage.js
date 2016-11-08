@@ -1,58 +1,44 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 
-// Import Components
-import PostList from '../../components/PostList';
+import MasterLayout from '../../../../layouts/MasterLayout';
+import PathList from '../../components/PathList';
 
-// Import Actions
-import { addPostRequest, fetchPosts, deletePostRequest } from '../../PostActions';
-import { toggleMakePath } from '../../../App/AppActions';
+import { getPost, getPosts } from '../../PostReducer';
+import { fetchPosts } from '../../PostActions';
 
-// Import Selectors
-import { getLetMakePath } from '../../../App/AppReducer';
-
-class PostListPage extends Component {
-  componentWillMount() {
-    this.props.dispatch(fetchPosts());
-  }
-
-  handleDeletePost = post => {
-    if (confirm('Do you want to delete this post')) { // eslint-disable-line
-      this.props.dispatch(deletePostRequest(post));
-    }
-  };
-
-  handleAddPost = (content, htmlContent, textContent) => {
-    this.props.dispatch(toggleMakePath());
-    this.props.dispatch(addPostRequest({ content, htmlContent, textContent }));
-  };
-
+class PathListPage extends Component {
   render() {
+    const { params, auth, switchLanguage, intl, paths } = this.props;
     return (
-      <div>
-        <PostList handleDeletePost={this.handleDeletePost} />
-      </div>
+      <MasterLayout
+        params={params}
+        auth={auth}
+        switchLanguage={switchLanguage}
+        intl={intl}
+      >
+        <PathList paths={paths} />
+      </MasterLayout>
     );
   }
 }
 
-// Actions required to provide data for this component to render in sever side.
-PostListPage.need = [() => { return fetchPosts(); }];
+PathListPage.need = [() => { return fetchPosts(); }];
 
-// Retrieve data from store as props
-function mapStateToProps(state) {
+PathListPage.propTypes = {
+  router: PropTypes.object,
+  auth: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
+  switchLanguage: PropTypes.func.isRequired,
+  intl: PropTypes.object.isRequired,
+  paths: PropTypes.array.isRequired,
+};
+
+function mapStateToProps(state, props) {
   return {
-    letMakePath: getLetMakePath(state),
+    paths: getPosts(state),
+    path: getPost(state, props.params.cuid),
   };
 }
 
-PostListPage.propTypes = {
-  letMakePath: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
-
-PostListPage.contextTypes = {
-  router: React.PropTypes.object,
-};
-
-export default connect(mapStateToProps)(PostListPage);
+export default connect(mapStateToProps)(PathListPage);

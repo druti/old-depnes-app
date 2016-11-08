@@ -64,7 +64,7 @@ class Navigator extends React.Component {
     let View;
 
     return (
-      <div className={styles.navigator}>
+      <div className={styles.container}>
         <Helmet title={this.props.path.textContent.substring(0, 25)} />
         <Editor
           readOnly={!makeMode}
