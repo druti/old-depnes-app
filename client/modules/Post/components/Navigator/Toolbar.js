@@ -92,14 +92,13 @@ class AppBar extends Component {
             {!makeMode &&
               <Button
                 theme={buttonTheme}
-                accent
                 label='Read'
                 onClick={this.nextPath}
               />
             }
             <Button
               theme={buttonTheme}
-              accent
+              primary={makeMode}
               raised={makeMode}
               label={makeMode ? ' Save' : ' Write'}
               onClick={auth.loggedIn() ? this.toggleMakeMode : signUp}
@@ -185,19 +184,18 @@ class AppBar extends Component {
             }
             {auth.loggedIn() &&
               <Button
+                primary={!makeMode}
                 theme={buttonTheme}
-                accent
-                raised
                 label={auth.getProfile().username || auth.getProfile().nickname}
                 className={styles.username}
                 onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
               />
             }
             {!auth.loggedIn() &&
-              <Button label='Log In' onClick={logIn} accent theme={buttonTheme} />
+              <Button label='Log In' onClick={logIn} theme={buttonTheme} />
             }
             {!auth.loggedIn() &&
-              <Button label='Sign Up' onClick={signUp} raised accent theme={buttonTheme} />
+              <Button label='Sign Up' onClick={signUp} theme={buttonTheme} />
             }
           </div>
         </Scrollbars>

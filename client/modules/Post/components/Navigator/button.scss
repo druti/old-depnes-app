@@ -1,32 +1,18 @@
-.button:not([disabled]),
-.flat:not([disabled]),
-.floating:not([disabled]),
-.toggle:not([disabled]),
-.neutral:not([disabled]),
-.raised:not([disabled]),
-.icon:not([disabled]),
-.toggle:not([disabled]) {
-  margin-left: 1rem;
+.button,
+.neutral {
+  margin-left: 1rem !important;
   &:last-child {
-    margin-right: 1rem;
+    margin-right: 1rem !important;
   }
-  &.flat,
-  &.raised {
-    color: #000;
-    &:hover {
-      background: #fff;
+}
+
+.neutral:not([disabled]) {
+  &.neutral {
+    &:hover,
+    &:global(.ql-active) {
+      i {
+        color: #3f51b5; 
+      }
     }
-  }
-  &.neutral,
-  &.icon {
-    &:hover {
-      background: #fff;
-    }
-    i {
-      color: #000;
-    }
-  }
-  &.raised {
-    background: #fff;
   }
 }
