@@ -51,17 +51,19 @@ class Editor extends Component {
     content = readOnly ? pathContent : content;
     textContent = readOnly ? pathTextContent : textContent;
 
-    this.toolbar = '#navigator-editor-toolbar';
+    this.toolbar = { container: '#navigator-editor-toolbar' };
 
     // maintain selection
     const previousSelection = this.quill ? this.quill.getSelection() : null;
 
-    const quill = new Quill('#editor', {
+    const editorElement = $('#depnes-navigator')[0];
+    const quill = new Quill(editorElement, {
       readOnly,
       modules: {
         toolbar: !readOnly ? this.toolbar : null,
       },
     });
+    editorElement.quill = quill;
 
     if (content && Object.keys(content).length) { // dummy data had an empty object
       quill.setContents(content);
@@ -131,7 +133,7 @@ class Editor extends Component {
   }
 
   render() {
-    return <div id='editor'></div>
+    return <div id='depnes-navigator'></div>
   }
 }
 
