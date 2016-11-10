@@ -10,8 +10,12 @@ export default function () {
 
     let pathsInitialData = [
       {
-        content: {},
-        cuid: cuid(),
+        content: {
+          ops: [],
+          formats: [],
+          authors: [],
+        },
+        cuid: 'blank',
       },
     ];
 

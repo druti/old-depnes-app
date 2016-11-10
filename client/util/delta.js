@@ -12,5 +12,5 @@ export function deltaToString(delta, strLength) {
       }
     }
   }
-  return str.slice(0, strLength);
+  return str.slice(0, strLength || str.length);
 }

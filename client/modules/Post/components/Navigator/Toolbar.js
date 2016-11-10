@@ -9,6 +9,8 @@ import Delta from 'quill-delta';
 import stringify from 'json-stable-stringify';
 import cuid from 'cuid';
 
+import { deltaToString } from '../../../../util/delta';
+
 import { addPost, fetchPosts, updateNavigator, toggleMakeMode, addPostRequest } from '../../PostActions';
 
 // Import Selectors
@@ -18,6 +20,11 @@ import styles from './styles.scss'; // eslint-disable-line
 import buttonTheme from './button.scss'; // eslint-disable-line
 
 import { navigatorEmitter } from './Navigator';
+
+const isClient = typeof window !== 'undefined'
+if (isClient) {
+  window.deltaToString = deltaToString;
+}
 
 class AppBar extends Component {
   constructor() {
@@ -292,8 +299,14 @@ function getNextPath(currentPath, paths, selection) {
     const bothEndTheSame =
       stringify(currentPathEndContent) === stringify(pathEndContent);
 
+    const bothStartTheSame2 =
+      deltaToString(currentPathStartContent) === deltaToString(pathStartContent);
+    const bothEndTheSame2 =
+      deltaToString(currentPathEndContent) === deltaToString(pathEndContent);
+
     debugger;
-    if (bothStartTheSame && bothEndTheSame) {
+    if ((bothStartTheSame && bothEndTheSame) ||
+        (bothStartTheSame2 && bothEndTheSame2)) {
       nextPath = path;
       nextPathSelectionLength = pathSelectionLength;
       break;

@@ -2,6 +2,8 @@ import React, { Component, PropTypes as Type } from 'react';
 import Parchment from 'parchment';
 import Delta from 'quill-delta';
 
+import styles from './styles.scss'; // eslint-disable-line
+
 const isClient = typeof window !== 'undefined'
 if (isClient) {
   var Quill = require('quill');
@@ -28,12 +30,14 @@ class Editor extends Component {
 
     this.toolbar = { container: '#navigator-editor-toolbar' };
 
+    // all paths end with a line break
+    const isEmpty = !content.ops || content.ops.length <= 1;
     // maintain selection
     const previousSelection = this.quill ? this.quill.getSelection() : null;
 
     const editorElement = $('#depnes-navigator')[0];
     const quill = new Quill(editorElement, {
-      placeholder: 'Compose an epic...',
+      placeholder: isEmpty ? 'Compose an epic...' : null,
       readOnly,
       modules: {
         toolbar: !readOnly ? this.toolbar : null,
@@ -41,7 +45,9 @@ class Editor extends Component {
     });
     editorElement.quill = quill;
 
-    if (content.ops && content.ops.length) {
+    if (isEmpty) {
+      quill.setText('');
+    } else {
       quill.setContents(this.restructureDelta(content));
     }
 
@@ -107,7 +113,7 @@ class Editor extends Component {
   }
 
   render() {
-    return <div id='depnes-navigator'></div>
+    return <div id='depnes-navigator' className={styles.navigator}></div>
   }
 }
 

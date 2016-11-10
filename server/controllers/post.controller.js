@@ -1,6 +1,41 @@
 import Post from '../models/post';
 import cuid from 'cuid';
-import sanitizeHtml from 'sanitize-html';
+
+function parseIn(path) {
+  function parseLastOp({ops, authors, formats}) {
+    if (!ops) return;
+    const lastOp = ops[ops.length-1];
+
+    if (!lastOp.insert) {
+      ops.pop();
+      authors.pop();
+      formats.pop();
+      parseLastOp(path);
+    }
+    if (!lastOp.insert.trimRight().length) {
+      ops.pop();
+      authors.pop();
+      formats.pop();
+      parseLastOp(path);
+    }
+
+    lastOp.insert.trimRight();
+  }
+
+  parseLastOp(path.content);
+}
+
+function parseOut(paths) {
+  paths.forEach(p => {
+    if (p.content.ops.length) {
+      p.content.ops.push({
+        insert: '\n'
+      });
+      p.content.formats.push(null);
+      p.content.authors.push(null);
+    }
+  });
+}
 
 /**
  * Get all posts
@@ -13,6 +48,9 @@ export function getPosts(req, res) {
     if (err) {
       res.status(500).send(err);
     }
+
+    parseOut(posts);
+
     res.json({ posts });
   });
 }
@@ -26,22 +64,14 @@ export function getPosts(req, res) {
 export function addPost(req, res) {
   if (!req.body.post.content) {
     console.log('missing params');
-    console.log(req.body.post);
     res.status(403).end();
   } else {
-
     const newPost = new Post(req.body.post);
 
-    // Let's sanitize inputs
-    const sanitationOptions = {
-      allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]),
-      allowedAttributes: Object.assign(
-        sanitizeHtml.defaults.allowedAttributes,
-        { span: [ 'id' ] }
-      ),
-    };
-
     newPost.cuid = cuid();
+
+    parseIn(newPost);
+
     newPost.save((err, saved) => {
       if (err) {
         res.status(500).send(err);
@@ -62,6 +92,9 @@ export function getPost(req, res) {
     if (err) {
       res.status(500).send(err);
     }
+
+    parseOut([post]);
+
     res.json({ post });
   });
 }
