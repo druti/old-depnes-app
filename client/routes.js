@@ -78,6 +78,14 @@ export default (
       }}
     />
     <Route
+      path='/paths/:cuid/new'
+      getComponent={(nextState, cb) => {
+        require.ensure([], require => {
+          cb(null, require('./modules/Post/pages/PathCreatePage/PathCreatePage').default);
+        });
+      }}
+    />
+    <Route
       path='*'
       getComponent={(nextState, cb) => {
         require.ensure([], require => {

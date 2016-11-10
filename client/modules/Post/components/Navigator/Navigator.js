@@ -35,8 +35,8 @@ class Navigator extends React.Component {
     navigatorEmitter.emit('componentDidUpdate');
   }
 
-  onEditorChange(delta) {
-    this.props.dispatch(updateEditorPath(delta));
+  onEditorChange(content) {
+    this.props.dispatch(updateEditorPath({content, cuid: this.props.path.cuid}));
   }
 
   render() {

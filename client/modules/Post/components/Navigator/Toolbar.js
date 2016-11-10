@@ -8,7 +8,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import Delta from 'quill-delta';
 import stringify from 'json-stable-stringify';
 
-import { updateNavigator, toggleMakeMode, addPostRequest } from '../../PostActions';
+import { updateClone, updateNavigator, toggleMakeMode, addPostRequest } from '../../PostActions';
 
 // Import Selectors
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
@@ -60,11 +60,13 @@ class AppBar extends Component {
       if (true) { // TODO
         const newPathContent = this.restructureDelta(path.content);
         debugger;
+        dispatch(updateClone(path.cuid));
+        debugger;
         this.savePath(newPathContent);
       }
       dispatch(toggleMakeMode());
     } else {
-      browserHistory.push('/paths/new');
+      browserHistory.push(`/paths/${path.cuid}/new`);
     }
   }
 

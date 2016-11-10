@@ -1,4 +1,4 @@
-import { UPDATE_EDITOR_PATH, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
+import { UPDATE_CLONE, UPDATE_EDITOR_PATH, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
 
 const initState = {
   navigator: {
@@ -19,7 +19,16 @@ const PostReducer = (state = initState, action) => {
       return {
         navigator: state.navigator,
         data: state.data.map(path => {
-          if (path.cuid === 'new') path.content = action.content;
+          if (path.cuid === action.path.cuid) path.content = action.path.content;
+          return path;
+        }),
+      };
+
+    case UPDATE_CLONE :
+      return {
+        navigator: state.navigator,
+        data: state.data.map(path => {
+          if (path.cuid === '_CLONE') path.cuid = action.cuid;
           return path;
         }),
       };

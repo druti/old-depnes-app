@@ -6,6 +6,7 @@ export const UPDATE_EDITOR_PATH = 'UPDATE_EDITOR_PATH';
 export const ADD_POST = 'ADD_POST';
 export const ADD_POSTS = 'ADD_POSTS';
 export const DELETE_POST = 'DELETE_POST';
+export const UPDATE_CLONE = 'UPDATE_CLONE';
 
 // Export Actions
 export function toggleMakeMode() {
@@ -14,10 +15,10 @@ export function toggleMakeMode() {
   };
 }
 
-export function updateEditorPath(content) {
+export function updateEditorPath(path) {
   return {
     type: UPDATE_EDITOR_PATH,
-    content,
+    path,
   };
 }
 
@@ -25,6 +26,13 @@ export function addPost(post) {
   return {
     type: ADD_POST,
     post,
+  };
+}
+
+export function updateClone(cuid) {
+  return {
+    type: UPDATE_CLONE,
+    cuid,
   };
 }
 
