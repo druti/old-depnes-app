@@ -77,7 +77,24 @@ class Editor extends Component {
 
     quill.on('text-change', (contentChange, oldContent, source) => {
       if (source === 'api') return;
-      const newContent = new Delta(oldContent).compose(contentChange);
+      const userId = auth.getProfile().user_id;
+      contentChange.ops.forEach(op => {
+        if (op.insert) {
+          const newAttributes = Object.assign({}, op.attributes, {
+            contentAuthorId: userId,
+            formatAuthorId: userId,
+          });
+          // delete format ownership if no formats in insert
+          !op.attributes ? delete newAttributes.formatAuthorId : null;
+          op.attributes = newAttributes;
+        } else if (op.retain){
+          const attrs = op.attributes;
+          if (attrs) {
+            op.attributes = Object.assign(attrs, { formatAuthorId: userId });
+          }
+        }
+      });
+      const newContent = new Delta(this.props.content).compose(contentChange);
       onChange(newContent, quill);
     });
 

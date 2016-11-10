@@ -59,24 +59,17 @@ class AppBar extends Component {
       auth,
     } = this.props;
 
-    const editorContent = new Delta(content);
-    const pathContent = new Delta(path.content);
-
     if (makeMode) {
-      const authorId = auth.getProfile().user_id;
-      const anonChanges = pathContent.diff(editorContent);
-      const authorChanges = this.associateChangesWithAuthor(anonChanges, authorId);
-      if (authorChanges.ops.length) {
-        let newContent = pathContent.compose(authorChanges);
-        newContent = this.restructureDelta(newContent);
+      if (JSON.stringify(content) !== JSON.stringify(path.content)) {
+        const newPathContent = this.restructureDelta(content);
         debugger;
-        this.savePath(newContent, htmlContent, textContent);
+        this.savePath(newPathContent, htmlContent, textContent);
       }
       dispatch(toggleMakeMode());
     } else {
       dispatch(updateNavigator({
         makeMode: !makeMode,
-        content: pathContent,
+        content: path.content,
       }));
     }
   }
@@ -119,7 +112,8 @@ class AppBar extends Component {
       }
       delete attributes.contentAuthorId;
       delete attributes.formatAuthorId;
-      delta.formats.push(op.attributes || null); // Push remaining quill formats
+      // Push remaining quill formats
+      delta.formats.push(Object.keys(attributes).length ? attributes : null);
       delete op.attributes; // keep content clean by separating attributes from content
     });
     return delta;
