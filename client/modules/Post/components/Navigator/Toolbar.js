@@ -7,8 +7,9 @@ import sanitizeHtml from 'sanitize-html';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Delta from 'quill-delta';
 import stringify from 'json-stable-stringify';
+import cuid from 'cuid';
 
-import { updateClone, updateNavigator, toggleMakeMode, addPostRequest } from '../../PostActions';
+import { addPost, fetchPosts, updateNavigator, toggleMakeMode, addPostRequest } from '../../PostActions';
 
 // Import Selectors
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
@@ -59,15 +60,10 @@ class AppBar extends Component {
       //if (JSON.stringify(content) !== JSON.stringify(path.content)) {
       if (true) { // TODO
         const newPathContent = this.restructureDelta(path.content);
-        debugger;
-        dispatch(updateClone(path.cuid));
-        debugger;
         this.savePath(newPathContent);
       }
-      dispatch(toggleMakeMode());
-    } else {
-      browserHistory.push(`/paths/${path.cuid}/new`);
     }
+    dispatch(toggleMakeMode());
   }
 
   associateChangesWithAuthor(delta, userId) {
