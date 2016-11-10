@@ -11,13 +11,11 @@ const PathAuthors = ({ path }) => {
   const formatAuthorIds = [];
   ops.forEach(op => {
     if (op.attributes) {
-      if (op.attributes.authors) {
-        if (op.attributes.authors.contentAuthorId) {
-          contentAuthorIds.push(op.attributes.authors.contentAuthorId);
-        }
-        if (op.attributes.authors.formatAuthorId) {
-          formatAuthorIds.push(op.attributes.authors.formatAuthorId);
-        }
+      if (op.attributes.contentAuthorId) {
+        contentAuthorIds.push(op.attributes.contentAuthorId);
+      }
+      if (op.attributes.formatAuthorId) {
+        formatAuthorIds.push(op.attributes.formatAuthorId);
       }
     }
   });

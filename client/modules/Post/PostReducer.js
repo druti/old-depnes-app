@@ -1,11 +1,8 @@
-import { UPDATE_NAVIGATOR, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
+import { UPDATE_EDITOR_PATH, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
 
 const initState = {
   navigator: {
     makeMode: false,
-    content: {},
-    htmlContent: '',
-    textContent: '',
   },
   data: [],
 };
@@ -18,10 +15,13 @@ const PostReducer = (state = initState, action) => {
         data: state.data,
       };
 
-    case UPDATE_NAVIGATOR :
+    case UPDATE_EDITOR_PATH :
       return {
-        navigator: Object.assign({}, state.navigator, action.navigator),
-        data: state.data,
+        navigator: state.navigator,
+        data: state.data.map(path => {
+          if (path.cuid === 'new') path.content = action.content;
+          return path;
+        }),
       };
 
     case ADD_POST :

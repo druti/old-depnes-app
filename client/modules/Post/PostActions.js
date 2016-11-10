@@ -2,7 +2,7 @@ import callApi from '../../util/apiCaller';
 
 // Export Constants
 export const TOGGLE_MAKE_MODE = 'TOGGLE_MAKE_MODE';
-export const UPDATE_NAVIGATOR = 'UPDATE_NAVIGATOR';
+export const UPDATE_EDITOR_PATH = 'UPDATE_EDITOR_PATH';
 export const ADD_POST = 'ADD_POST';
 export const ADD_POSTS = 'ADD_POSTS';
 export const DELETE_POST = 'DELETE_POST';
@@ -14,10 +14,10 @@ export function toggleMakeMode() {
   };
 }
 
-export function updateNavigator(navigator) {
+export function updateEditorPath(content) {
   return {
-    type: UPDATE_NAVIGATOR,
-    navigator,
+    type: UPDATE_EDITOR_PATH,
+    content,
   };
 }
 
@@ -33,8 +33,6 @@ export function addPostRequest(post) {
     return callApi('posts', 'post', {
       post: {
         content: post.content,
-        htmlContent: post.htmlContent,
-        textContent: post.textContent,
       },
     }).then(res => dispatch(addPost(res.post)));
   };

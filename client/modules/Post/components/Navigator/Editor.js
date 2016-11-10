@@ -5,31 +5,6 @@ import Delta from 'quill-delta';
 const isClient = typeof window !== 'undefined'
 if (isClient) {
   var Quill = require('quill');
-  const Inline = Quill.import('blots/inline');
-  const Block = Quill.import('blots/block');
-
-  /*
-  class AuthorBlot extends Inline {
-    static create({contentAuthorId, formatAuthorId}) {
-      const node = super.create();
-      node.setAttribute('data-content-author-id', contentAuthorId);
-      node.setAttribute('data-format-author-id', formatAuthorId);
-      return node;
-    }
-    static formats(node) {
-      return {
-        contentAuthorId: node.getAttribute('data-content-author-id'),
-        formatAuthorId: node.getAttribute('data-format-author-id'),
-      }
-    }
-  }
-
-  AuthorBlot.blotName = 'authors';
-  AuthorBlot.tagName = 'span';
-  AuthorBlot.className = 'authors';
-
-  Quill.register(AuthorBlot);
-  */
 }
 
 class Editor extends Component {
@@ -46,14 +21,10 @@ class Editor extends Component {
   initQuill() {
     let {
       content,
-      pathContent,
-      pathTextContent,
       onChange,
       auth,
       readOnly
     } = this.props;
-
-    content = readOnly ? pathContent : content;
 
     this.toolbar = { container: '#navigator-editor-toolbar' };
 
@@ -69,7 +40,9 @@ class Editor extends Component {
     });
     editorElement.quill = quill;
 
-    quill.setContents(this.restructureDelta(content));
+    if (content.ops.length) {
+      quill.setContents(this.restructureDelta(content));
+    }
 
     if (previousSelection) {
       quill.setSelection(previousSelection);
@@ -120,7 +93,6 @@ class Editor extends Component {
     const {
       readOnly,
       content,
-      pathContent,
     } = this.props;
 
     const quillContent = this.quill.getContents();
@@ -128,7 +100,7 @@ class Editor extends Component {
 
     if (readOnly !== quillReadOnly) { // reinit with updated config
       this.initQuill();
-    } else if (quillReadOnly && quillContent !== pathContent) {
+    } else if (quillReadOnly && quillContent !== content) {
       this.initQuill();
     }
   }
@@ -141,8 +113,6 @@ class Editor extends Component {
 Editor.propTypes = {
   auth: Type.object.isRequired,
   content: Type.object.isRequired,
-  htmlContent: Type.string.isRequired,
-  textContent: Type.string.isRequired,
   onChange: Type.func.isRequired,
 };
 

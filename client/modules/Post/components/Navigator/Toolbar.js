@@ -50,27 +50,21 @@ class AppBar extends Component {
 
   toggleMakeMode() { // eslint-disable-line
     const {
-      content,
-      htmlContent,
-      textContent,
-      makeMode,
       path,
+      makeMode,
       dispatch,
-      auth,
     } = this.props;
 
     if (makeMode) {
-      if (JSON.stringify(content) !== JSON.stringify(path.content)) {
-        const newPathContent = this.restructureDelta(content);
+      //if (JSON.stringify(content) !== JSON.stringify(path.content)) {
+      if (true) { // TODO
+        const newPathContent = this.restructureDelta(path.content);
         debugger;
-        this.savePath(newPathContent, htmlContent, textContent);
+        this.savePath(newPathContent);
       }
       dispatch(toggleMakeMode());
     } else {
-      dispatch(updateNavigator({
-        makeMode: !makeMode,
-        content: path.content,
-      }));
+      browserHistory.push('/paths/new');
     }
   }
 
@@ -119,14 +113,8 @@ class AppBar extends Component {
     return delta;
   }
 
-  savePath(content, htmlContent, textContent) {
-    const result = this.props.dispatch(
-      addPostRequest({
-        content,
-        htmlContent,
-        textContent,
-      })
-    );
+  savePath(content) {
+    const result = this.props.dispatch(addPostRequest({content}));
     // TODO toggle loading state
     result.then(res => {
       browserHistory.push(`/paths/${res.post.cuid}`);
@@ -260,9 +248,6 @@ AppBar.propTypes = {
   logIn: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
   makeMode: PropTypes.bool.isRequired,
-  content: PropTypes.object,
-  htmlContent: PropTypes.string,
-  textContent: PropTypes.string,
   path: PropTypes.object,
   paths: PropTypes.array,
   className: PropTypes.string,

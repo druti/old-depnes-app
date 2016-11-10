@@ -4,12 +4,14 @@ import EventEmitter from 'events';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 
+import { deltaToString } from '../../../../util/delta';
+
 import Editor from './Editor';
 
 import styles from './styles.scss'; // eslint-disable-line
 
 // Import Actions
-import { updateNavigator } from '../../PostActions';
+import { updateEditorPath } from '../../PostActions';
 
 // Import Selectors
 import { getNavigator } from '../../PostReducer';
@@ -33,48 +35,26 @@ class Navigator extends React.Component {
     navigatorEmitter.emit('componentDidUpdate');
   }
 
-  onEditorChange(delta, editor) {
-    this.props.dispatch(updateNavigator({
-      content: delta,
-      htmlContent: $(editor.root).html(),
-      textContent: editor.getText(),
-    }));
+  onEditorChange(delta) {
+    this.props.dispatch(updateEditorPath(delta));
   }
-
-  //onNavigatorViewClick() {
-  //  placeCursor();
-  //}
 
   render() {
     const {
       auth,
       path,
       makeMode,
-      content: editorContent,
-      textContent: editorTextContent,
-      htmlContent: editorHtmlContent,
     } = this.props;
-
-    const {
-      content: pathContent,
-      textContent: pathHtmlContent,
-      htmlContent: pathTextContent,
-    } = path;
 
     let View;
 
     return (
       <div className={styles.container}>
-        <Helmet title={this.props.path.textContent.substring(0, 25)} />
+        <Helmet title={deltaToString(path.content, 30)} />
         <Editor
-          readOnly={!makeMode}
           auth={auth}
-          content={editorContent}
-          htmlContent={editorHtmlContent}
-          textContent={editorTextContent}
-          pathContent={pathContent}
-          pathHtmlContent={pathHtmlContent}
-          pathTextContent={pathTextContent}
+          readOnly={!makeMode}
+          content={path.content}
           onChange={this.onEditorChange}
         />
       </div>
@@ -86,9 +66,6 @@ Navigator.propTypes = {
   auth: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   makeMode: PropTypes.bool.isRequired,
-  content: PropTypes.object,
-  htmlContent: PropTypes.string,
-  textContent: PropTypes.string,
   path: PropTypes.object,
   paths: PropTypes.array,
   className: PropTypes.string,

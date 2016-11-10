@@ -40,10 +40,6 @@ export function addPost(req, res) {
         { span: [ 'id' ] }
       ),
     };
-    console.log(newPost.htmlContent);
-    newPost.htmlContent = sanitizeHtml(newPost.htmlContent, sanitationOptions);
-    newPost.textContent = sanitizeHtml(newPost.textContent, sanitationOptions);
-    console.log(newPost.htmlContent);
 
     newPost.cuid = cuid();
     newPost.save((err, saved) => {
