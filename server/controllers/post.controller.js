@@ -24,7 +24,7 @@ export function getPosts(req, res) {
  * @returns void
  */
 export function addPost(req, res) {
-  if (!req.body.post.content || !req.body.post.htmlContent || !req.body.post.textContent) {
+  if (!req.body.post.content) {
     console.log('missing params');
     console.log(req.body.post);
     res.status(403).end();

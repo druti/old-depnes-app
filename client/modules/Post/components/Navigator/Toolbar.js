@@ -24,6 +24,7 @@ class AppBar extends Component {
     this.state = {};
     this.nextPath = this.nextPath.bind(this);
     this.toggleMakeMode = this.toggleMakeMode.bind(this);
+    this.savePath = this.savePath.bind(this);
   }
 
   nextPath() {
@@ -55,23 +56,21 @@ class AppBar extends Component {
       makeMode,
       path,
       dispatch,
+      auth,
     } = this.props;
 
-    const pathContent = path.content;
+    const editorContent = new Delta(content);
+    const pathContent = new Delta(path.content);
 
     if (makeMode) {
-      if (stringify(content) !== stringify(pathContent) && new Delta(content).length()) {
-        const result = dispatch(
-          addPostRequest({
-            content,
-            htmlContent,
-            textContent,
-          })
-        );
-        // TODO toggle loading state
-        result.then(res => {
-          browserHistory.push(`/paths/${res.post.cuid}`);
-        });
+      const authorId = auth.getProfile().user_id;
+      const anonChanges = pathContent.diff(editorContent);
+      const authorChanges = this.associateChangesWithAuthor(anonChanges, authorId);
+      if (authorChanges.ops.length) {
+        let newContent = pathContent.compose(authorChanges);
+        newContent = this.restructureDelta(newContent);
+        debugger;
+        this.savePath(newContent, htmlContent, textContent);
       }
       dispatch(toggleMakeMode());
     } else {
@@ -80,6 +79,64 @@ class AppBar extends Component {
         content: pathContent,
       }));
     }
+  }
+
+  associateChangesWithAuthor(delta, userId) {
+    const newDelta = new Delta(delta);
+    newDelta.ops.forEach(op => {
+      if (op.insert) {
+        const newAttributes = Object.assign({}, op.attributes, {
+          contentAuthorId: userId,
+          formatAuthorId: userId,
+        });
+        // delete format ownership if no formats in insert
+        !op.attributes ? delete newAttributes.formatAuthorId : null;
+        op.attributes = newAttributes;
+      } else if (op.retain){
+        const attrs = op.attributes;
+        if (attrs) {
+          op.attributes = Object.assign(attrs, { formatAuthorId: userId });
+        }
+      }
+    });
+    return newDelta;
+  }
+
+  restructureDelta(delta) {
+    delta = JSON.parse(JSON.stringify(delta));
+    delta.authors = [];
+    delta.formats = [];
+    delta.ops.forEach(op => {
+      const attributes = op.attributes || {};
+      if (attributes.contentAuthorId || attributes.formatAuthorId) {
+        // we use jquery extend here to strip undefined values from the merged obj
+        delta.authors.push($.extend({}, {
+          contentAuthorId: attributes.contentAuthorId,
+          formatAuthorId: attributes.formatAuthorId,
+        }));
+      } else {
+        delta.authors.push(null);
+      }
+      delete attributes.contentAuthorId;
+      delete attributes.formatAuthorId;
+      delta.formats.push(op.attributes || null); // Push remaining quill formats
+      delete op.attributes; // keep content clean by separating attributes from content
+    });
+    return delta;
+  }
+
+  savePath(content, htmlContent, textContent) {
+    const result = this.props.dispatch(
+      addPostRequest({
+        content,
+        htmlContent,
+        textContent,
+      })
+    );
+    // TODO toggle loading state
+    result.then(res => {
+      browserHistory.push(`/paths/${res.post.cuid}`);
+    });
   }
 
   render() {
@@ -106,10 +163,6 @@ class AppBar extends Component {
             {makeMode &&
               <div id='navigator-editor-toolbar' className={styles.editorToolbar}>
 
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-authors'
-                ><i className='fa fa-user'/></IconButton>
                 <IconButton
                   theme={buttonTheme}
                   className='ql-bold'
@@ -245,14 +298,13 @@ function getNextPath(currentPath, paths, selection) {
   const currentPathIndex = paths.indexOf(currentPath)
   paths = paths.slice(currentPathIndex + 1).concat(paths.slice(0, currentPathIndex));
 
-  const currentPathContent = stripAuthorAttributes(currentPath.content);
+  const currentPathContent = new Delta(cleanDelta(currentPath.content));
+  const currentPathStartContent = currentPathContent.slice(0, selection.index);
+  const currentPathEndContent = currentPathContent.slice(selection.index + selection.length);
 
   for (let i = 0; i < paths.length; i++) {
     let path = paths[i];
-    let pathContent = stripAuthorAttributes(path.content);
-
-    const currentPathStartContent = currentPathContent.slice(0, selection.index);
-    const currentPathEndContent = currentPathContent.slice(selection.index + selection.length);
+    let pathContent = new Delta(cleanDelta(path.content));
 
     const pathSelectionLength = pathContent.length() - currentPathStartContent.length() - currentPathEndContent.length();
     const pathStartContent = pathContent.slice(0, selection.index);
@@ -263,6 +315,7 @@ function getNextPath(currentPath, paths, selection) {
     const bothEndTheSame =
       stringify(currentPathEndContent) === stringify(pathEndContent);
 
+    debugger;
     if (bothStartTheSame && bothEndTheSame) {
       nextPath = path;
       nextPathSelectionLength = pathSelectionLength;
@@ -276,13 +329,12 @@ function getNextPath(currentPath, paths, selection) {
   };
 }
 
-function stripAuthorAttributes(content) {
-  return new Delta(content.ops.map(op => {
-    op = { ...op };
-    op.attributes = Object.assign({}, op.attributes);
-    op.attributes ? delete op.attributes.authors : null;
-    return op;
-  }));
+function cleanDelta(delta) {
+  delta = JSON.parse(JSON.stringify(delta));
+  delta.ops.forEach(op => delete op.attributes);
+  delete delta.authors;
+  delete delta.formats;
+  return delta;
 }
 
 function goToNextConsecutivePath(currentPath, paths) {
