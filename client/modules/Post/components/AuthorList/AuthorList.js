@@ -6,7 +6,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './styles.scss';
 
 const PathAuthors = ({ path }) => {
-  const ops = path.content.ops;
+  const ops = path.content.ops || [];
   const contentAuthorIds = [];
   const formatAuthorIds = [];
   ops.forEach(op => {

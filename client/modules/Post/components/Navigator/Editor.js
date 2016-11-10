@@ -33,6 +33,7 @@ class Editor extends Component {
 
     const editorElement = $('#depnes-navigator')[0];
     const quill = new Quill(editorElement, {
+      placeholder: 'Compose an epic...',
       readOnly,
       modules: {
         toolbar: !readOnly ? this.toolbar : null,
@@ -40,7 +41,7 @@ class Editor extends Component {
     });
     editorElement.quill = quill;
 
-    if (content.ops.length) {
+    if (content.ops && content.ops.length) {
       quill.setContents(this.restructureDelta(content));
     }
 

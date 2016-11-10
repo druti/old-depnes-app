@@ -3,6 +3,7 @@ import $ from 'jquery';
 import EventEmitter from 'events';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
+import Delta from 'quill-delta';
 
 import { deltaToString } from '../../../../util/delta';
 
@@ -21,6 +22,7 @@ export const navigatorEmitter = new EventEmitter();
 const isClient = typeof window !== 'undefined'
 if (isClient) {
   window.$ = $;
+  window.Delta = Delta;
 }
 
 class Navigator extends React.Component {
