@@ -31,7 +31,7 @@ class Editor extends Component {
     this.toolbar = { container: '#navigator-editor-toolbar' };
 
     // all paths end with a line break
-    const isEmpty = !content.ops || content.ops.length <= 1;
+    const isEmpty = !content.ops || !content.ops.length;
     // maintain selection
     const previousSelection = this.quill ? this.quill.getSelection() : null;
 
