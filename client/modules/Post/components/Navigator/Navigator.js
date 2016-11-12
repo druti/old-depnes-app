@@ -68,9 +68,9 @@ class Navigator extends Component {
     });
     //editorElement.quill = quill;
 
-    quill.on('selection-change', ({index, length}) => {
+    quill.on('selection-change', range => {
       //if (source === 'api') return;
-      dispatch(updateSelection(index, length))
+      dispatch(updateSelection(range))
     });
 
     quill.on('text-change', (change, oldContent, source) => {

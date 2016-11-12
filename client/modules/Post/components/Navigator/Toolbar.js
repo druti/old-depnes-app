@@ -60,7 +60,10 @@ class AppBar extends Component {
       return console.warn('No match found.'); // eslint-disable-line
     }
 
-    this.props.dispatch(updateSelection(selection.index, nextPathSelectionLength));
+    this.props.dispatch(updateSelection({
+      index: selection.index,
+      length: nextPathSelectionLength,
+    }));
 
     browserHistory.push(`/paths/${nextPath.cuid}`);
   }

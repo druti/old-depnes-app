@@ -15,10 +15,10 @@ export function toggleMakeMode() {
   };
 }
 
-export function updateSelection(index, length) {
+export function updateSelection(range) {
   return {
     type: UPDATE_SELECTION,
-    range: {index, length},
+    range,
   };
 }
 
