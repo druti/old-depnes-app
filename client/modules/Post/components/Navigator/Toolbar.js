@@ -3,15 +3,13 @@ import {AppBar as ToolboxAppBar} from 'react-toolbox/lib/app_bar';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
-import sanitizeHtml from 'sanitize-html';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Delta from 'quill-delta';
 import stringify from 'json-stable-stringify';
-import cuid from 'cuid';
 
-import { deltaToString } from '../../../../util/delta';
+import { deltaToContent, deltaToString } from '../../../../util/delta';
 
-import { addPost, fetchPosts, updateNavigator, toggleMakeMode, addPostRequest } from '../../PostActions';
+import { updateSelection, toggleMakeMode, addPostRequest } from '../../PostActions';
 
 // Import Selectors
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
@@ -19,11 +17,11 @@ import { getNavigator, getPost, getPosts } from '../../PostReducer';
 import styles from './styles.scss'; // eslint-disable-line
 import buttonTheme from './button.scss'; // eslint-disable-line
 
-import { navigatorEmitter } from './Navigator';
-
 const isClient = typeof window !== 'undefined'
 if (isClient) {
+  window.deltaToContent = deltaToContent;
   window.deltaToString = deltaToString;
+  window.Delta = Delta;
 }
 
 class AppBar extends Component {
@@ -31,6 +29,7 @@ class AppBar extends Component {
     super();
     this.state = {};
     this.nextPath = this.nextPath.bind(this);
+    this.goToNextMatchedPath = this.goToNextMatchedPath.bind(this);
     this.toggleMakeMode = this.toggleMakeMode.bind(this);
     this.savePath = this.savePath.bind(this);
   }
@@ -39,83 +38,52 @@ class AppBar extends Component {
     const {
       path,
       paths,
+      selection,
+      makeMode,
     } = this.props;
 
-    const $navigator = $('#depnes-navigator');
-    if (!$navigator.length) {
+    if (makeMode) {
       return goToNextConsecutivePath(path, paths);
     }
 
-    const navigator = $navigator[0].quill;
-    const navigatorSelection = navigator.getSelection();
-
-    if (navigatorSelection) {
-      goToNextMatchedPath(path, paths, navigator, navigatorSelection);
+    if (selection) {
+      this.goToNextMatchedPath(path, paths, navigator, selection);
     } else {
       goToNextConsecutivePath(path, paths);
     }
   }
 
+  goToNextMatchedPath(currentPath, paths, navigator, selection) {
+    const { nextPath, nextPathSelectionLength } = getNextPath(currentPath, paths, selection);
+
+    if (!nextPath) {
+      return console.warn('No match found.'); // eslint-disable-line
+    }
+
+    this.props.dispatch(updateSelection(selection.index, nextPathSelectionLength));
+
+    browserHistory.push(`/paths/${nextPath.cuid}`);
+  }
+
   toggleMakeMode() { // eslint-disable-line
     const {
+      auth,
       path,
       makeMode,
+      pathChanges,
       dispatch,
     } = this.props;
 
-    if (makeMode) {
-      //if (JSON.stringify(content) !== JSON.stringify(path.content)) {
-      if (true) { // TODO
-        const newPathContent = this.restructureDelta(path.content);
-        this.savePath(newPathContent);
-      }
+    if (makeMode && pathChanges.length) {
+      let newContent = associateChangesWithAuthor(
+        path,
+        pathChanges,
+        auth.getProfile().user_id
+      );
+      newContent = deltaToContent(newContent);
+      this.savePath(newContent);
     }
     dispatch(toggleMakeMode());
-  }
-
-  associateChangesWithAuthor(delta, userId) {
-    const newDelta = new Delta(delta);
-    newDelta.ops.forEach(op => {
-      if (op.insert) {
-        const newAttributes = Object.assign({}, op.attributes, {
-          contentAuthorId: userId,
-          formatAuthorId: userId,
-        });
-        // delete format ownership if no formats in insert
-        !op.attributes ? delete newAttributes.formatAuthorId : null;
-        op.attributes = newAttributes;
-      } else if (op.retain){
-        const attrs = op.attributes;
-        if (attrs) {
-          op.attributes = Object.assign(attrs, { formatAuthorId: userId });
-        }
-      }
-    });
-    return newDelta;
-  }
-
-  restructureDelta(delta) {
-    delta = JSON.parse(JSON.stringify(delta));
-    delta.authors = [];
-    delta.formats = [];
-    delta.ops.forEach(op => {
-      const attributes = op.attributes || {};
-      if (attributes.contentAuthorId || attributes.formatAuthorId) {
-        // we use jquery extend here to strip undefined values from the merged obj
-        delta.authors.push($.extend({}, {
-          contentAuthorId: attributes.contentAuthorId,
-          formatAuthorId: attributes.formatAuthorId,
-        }));
-      } else {
-        delta.authors.push(null);
-      }
-      delete attributes.contentAuthorId;
-      delete attributes.formatAuthorId;
-      // Push remaining quill formats
-      delta.formats.push(Object.keys(attributes).length ? attributes : null);
-      delete op.attributes; // keep content clean by separating attributes from content
-    });
-    return delta;
   }
 
   savePath(content) {
@@ -252,26 +220,14 @@ AppBar.propTypes = {
   signUp: PropTypes.func.isRequired,
   logIn: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
+  selection: PropTypes.object,
   makeMode: PropTypes.bool.isRequired,
+  pathChanges: PropTypes.array.isRequired,
   path: PropTypes.object,
   paths: PropTypes.array,
   className: PropTypes.string,
 };
 
-
-function goToNextMatchedPath(currentPath, paths, navigator, selection) {
-  const { nextPath, nextPathSelectionLength } = getNextPath(currentPath, paths, selection);
-
-  if (!nextPath) {
-    return console.warn('No match found.');
-  }
-
-  browserHistory.push(`/paths/${nextPath.cuid}`);
-
-  navigatorEmitter.once('componentDidUpdate', () => {
-    $('#depnes-navigator')[0].quill.setSelection(selection.index, nextPathSelectionLength);
-  });
-}
 
 
 function getNextPath(currentPath, paths, selection) {
@@ -304,7 +260,7 @@ function getNextPath(currentPath, paths, selection) {
     const bothEndTheSame2 =
       deltaToString(currentPathEndContent) === deltaToString(pathEndContent);
 
-    debugger;
+    debugger; // eslint-disable-line
     if ((bothStartTheSame && bothEndTheSame) ||
         (bothStartTheSame2 && bothEndTheSame2)) {
       nextPath = path;
@@ -341,11 +297,38 @@ function goToNextConsecutivePath(currentPath, paths) {
   }
 }
 
+function associateChangesWithAuthor(path, changes, userId) {
+  let newContent = JSON.parse(JSON.stringify(path.content));
+  changes.forEach(change => {
+    change.ops.forEach(op => {
+      if (op.insert) {
+        const newAttributes = Object.assign({}, op.attributes, {
+          contentAuthorId: userId,
+          formatAuthorId: userId,
+        });
+        // delete format ownership if no formats in insert
+        !op.attributes ? delete newAttributes.formatAuthorId : null;
+        op.attributes = newAttributes;
+      } else if (op.retain){
+        const attrs = op.attributes;
+        if (attrs) {
+          op.attributes = Object.assign(attrs, { formatAuthorId: userId });
+        }
+      }
+    });
+    newContent = new Delta(newContent).compose(change);
+  });
+  return newContent;
+}
+
 function mapStateToProps(state, props) {
+  const { makeMode, changes: pathChanges, selection } = getNavigator(state);
   return {
-    ...getNavigator(state),
     path: getPost(state, props.params.cuid),
     paths: getPosts(state),
+    selection,
+    makeMode,
+    pathChanges,
   };
 }
 

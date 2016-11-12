@@ -10,14 +10,9 @@ import { getPost, getPosts } from '../../PostReducer';
 // Import Actions
 import { fetchPosts } from '../../PostActions';
 
-class PathPage extends Component {
-  componentWillUpdate({params}) {
-    if (params.cuid !== this.props.params.cuid) {
-      this.props.dispatch(fetchPosts);
-    }
-  }
+class PathPage extends Component { // eslint-disable-line
   render() {
-    const { params, auth, switchLanguage, intl, path, paths, } = this.props;
+    const { params, auth, switchLanguage, intl, path, paths } = this.props;
     return (
       <MasterLayout
         params={params}

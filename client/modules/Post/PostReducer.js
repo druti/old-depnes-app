@@ -1,7 +1,9 @@
-import { UPDATE_CLONE, UPDATE_EDITOR_PATH, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
+import { UPDATE_SELECTION, UPDATE_EDITOR, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
 
 const initState = {
   navigator: {
+    selection: null,
+    changes: [], // full of quill-deltas
     makeMode: false,
   },
   data: [],
@@ -15,30 +17,18 @@ const PostReducer = (state = initState, action) => {
         data: state.data,
       };
 
-    case UPDATE_EDITOR_PATH :
-      return {
-        navigator: state.navigator,
-        data: state.data.map(path => {
-          if (path.cuid === action.path.cuid) path.content = action.path.content;
-          return path;
-        }),
-      };
+    case UPDATE_SELECTION :
+      return updateSelection(state, action);
 
-    case UPDATE_CLONE :
-      return {
-        navigator: state.navigator,
-        data: state.data.map(path => {
-          if (path.cuid === '_CLONE') path.cuid = action.cuid;
-          return path;
-        }),
-      };
+    case UPDATE_EDITOR :
+      return updateEditor(state, action);
 
     case ADD_POST :
       if (!action.post) {
         return state;
       }
       return {
-        navigator: state.navigator,
+        navigator: Object.assign({}, state.navigator, {changes: []}),
         data: [action.post, ...state.data],
       };
 
@@ -58,6 +48,18 @@ const PostReducer = (state = initState, action) => {
       return state;
   }
 };
+
+function updateSelection(state, action) {
+  state = JSON.parse(JSON.stringify(state));
+  state.navigator.selection = action.range;
+  return state;
+}
+
+function updateEditor(state, action) {
+  state = JSON.parse(JSON.stringify(state));
+  state.navigator.changes.push(action.change);
+  return state;
+}
 
 /* Selectors */
 

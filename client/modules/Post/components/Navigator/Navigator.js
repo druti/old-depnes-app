@@ -1,83 +1,131 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes as Type } from 'react';
+import { connect } from 'react-redux';
 import $ from 'jquery';
 import EventEmitter from 'events';
-import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
-import Delta from 'quill-delta';
 
 import { deltaToString } from '../../../../util/delta';
 
-import Editor from './Editor';
+import { updateSelection, updateEditor } from '../../PostActions';
+import { getNavigator } from '../../PostReducer';
+
+import PostPage from '../../pages/PostPage/PostPage';
 
 import styles from './styles.scss'; // eslint-disable-line
-
-// Import Actions
-import { updateEditorPath } from '../../PostActions';
-
-// Import Selectors
-import { getNavigator } from '../../PostReducer';
 
 export const navigatorEmitter = new EventEmitter();
 
 const isClient = typeof window !== 'undefined'
 if (isClient) {
+  var Quill = require('quill');
   window.$ = $;
-  window.Delta = Delta;
 }
 
-class Navigator extends React.Component {
-  constructor(props) {
-    super(props);
+class Navigator extends Component {
+  constructor() {
+    super();
+    this.state = {};
+    this.initQuill = this.initQuill.bind(this);
+  }
 
-    //this.onNavigatorViewClick = this.onNavigatorViewClick.bind(this);
-    this.onEditorChange = this.onEditorChange.bind(this);
+  componentDidMount() {
+    this.initQuill();
   }
 
   componentDidUpdate() {
-    navigatorEmitter.emit('componentDidUpdate');
-  }
-
-  onEditorChange(content) {
-    this.props.dispatch(updateEditorPath({content, cuid: this.props.path.cuid}));
-  }
-
-  render() {
     const {
-      auth,
       path,
       makeMode,
     } = this.props;
 
-    let View;
+    const readOnly = PostPage.quill.options.readOnly;
 
+    if (makeMode && readOnly) { // reinit with updated config
+      this.initQuill();
+    } else if (readOnly && path.cuid !== PostPage.renderedPathCuid) {
+      this.initQuill();
+    }
+  }
+
+  initQuill() {
+    let {
+      path,
+      selection,
+      makeMode,
+      dispatch,
+    } = this.props;
+
+    const isEmpty =
+      (path.content.ops.length === 1) && !path.content.ops[0].insert.trim();
+
+    const editorElement = $('#depnes-navigator')[0];
+    const quill = new Quill(editorElement, {
+      placeholder: isEmpty ? 'Compose an epic...' : null,
+      readOnly: !makeMode,
+      modules: {
+        toolbar: makeMode ? {container: '#navigator-editor-toolbar'} : null,
+      },
+    });
+    //editorElement.quill = quill;
+
+    quill.on('selection-change', ({index, length}) => {
+      //if (source === 'api') return;
+      dispatch(updateSelection(index, length))
+    });
+
+    quill.on('text-change', (change, oldContent, source) => {
+      if (source === 'api') return;
+      dispatch(updateEditor(change))
+    });
+
+    quill.setContents(this.restructureDelta(path.content));
+
+    if (selection) {
+      quill.setSelection(selection);
+    }
+
+    PostPage.quill = quill;
+    PostPage.renderedPathCuid = path.cuid;
+  }
+
+  restructureDelta(delta) {
+    if (!delta.authors) return delta;
+    delta = JSON.parse(JSON.stringify(delta));
+    delta.ops.forEach((op, i) => {
+      const authors = delta.authors[i];
+      const formats = delta.formats[i];
+      if (authors || formats) {
+        op.attributes = Object.assign({}, authors, formats);
+      }
+    });
+    delete delta.authors;
+    delete delta.formats;
+    return delta;
+  }
+
+  render() {
     return (
       <div className={styles.container}>
-        <Helmet title={deltaToString(path.content, 30)} />
-        <Editor
-          auth={auth}
-          readOnly={!makeMode}
-          content={path.content}
-          onChange={this.onEditorChange}
-        />
+        <Helmet title={deltaToString(this.props.path.content, 30)} />
+        <div id='depnes-navigator' className={styles.navigator}></div>
       </div>
     );
   }
 }
 
 Navigator.propTypes = {
-  auth: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  makeMode: PropTypes.bool.isRequired,
-  path: PropTypes.object,
-  paths: PropTypes.array,
-  className: PropTypes.string,
+  auth: Type.object.isRequired,
+  path: Type.object.isRequired,
+  selection: Type.object,
+  makeMode: Type.bool.isRequired,
+  dispatch: Type.func.isRequired,
 };
 
-// Retrieve data from store as props
 function mapStateToProps(state) {
   return {
     ...getNavigator(state),
   };
 }
 
-export default connect(mapStateToProps, dispatch => ({ dispatch }))(Navigator);
+export default connect(mapStateToProps)(Navigator);
+//export default connect(mapStateToProps, dispatch => ({ dispatch }))(Navigator);

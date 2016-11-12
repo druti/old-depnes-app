@@ -1,6 +1,4 @@
 import Post from './models/post';
-import cuid from 'cuid';
-import Delta from 'quill-delta';
 
 export default function () {
   Post.count().exec((err, count) => {
@@ -11,9 +9,9 @@ export default function () {
     let pathsInitialData = [
       {
         content: {
-          ops: [],
-          formats: [],
-          authors: [],
+          ops: [{insert: '\n'}],
+          formats: [null],
+          authors: [null],
         },
         cuid: 'blank',
       },

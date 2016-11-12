@@ -20,7 +20,6 @@
     "func-names": 0,
     "new-cap": 1,
     "no-shadow": 1,
-    "no-param-reassign": 1,
     "wrap-iife": 0,
     "no-use-before-define": 0,
     "import/namespace": 0,
