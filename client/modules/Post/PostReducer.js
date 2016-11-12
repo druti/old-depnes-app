@@ -1,20 +1,28 @@
 import { UPDATE_SELECTION, UPDATE_EDITOR, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
 
 const initState = {
+  data: [],
   navigator: {
     selection: null,
     changes: [], // full of quill-deltas
     makeMode: false,
   },
-  data: [],
+  blank: {
+    content: {
+      ops: [{insert: '\n'}],
+      authors: [null],
+    },
+    cuid: 'blank',
+  },
 };
 
 const PostReducer = (state = initState, action) => {
   switch (action.type) {
     case TOGGLE_MAKE_MODE :
       return {
-        navigator: Object.assign({}, state.navigator, { makeMode: !state.navigator.makeMode}),
+        blank: state.blank,
         data: state.data,
+        navigator: Object.assign({}, state.navigator, { makeMode: !state.navigator.makeMode}),
       };
 
     case UPDATE_SELECTION :
@@ -24,24 +32,20 @@ const PostReducer = (state = initState, action) => {
       return updateEditor(state, action);
 
     case ADD_POST :
-      if (!action.post) {
-        return state;
-      }
-      return {
-        navigator: Object.assign({}, state.navigator, {changes: []}),
-        data: [action.post, ...state.data],
-      };
+      return addPost(state, action);
 
     case ADD_POSTS :
       return {
-        navigator: state.navigator,
+        blank: state.blank,
         data: action.posts,
+        navigator: state.navigator,
       };
 
     case DELETE_POST :
       return {
-        navigator: state.navigator,
+        blank: state.blank,
         data: state.data.filter(post => post.cuid !== action.cuid),
+        navigator: state.navigator,
       };
 
     default:
@@ -59,6 +63,17 @@ function updateEditor(state, action) {
   state = JSON.parse(JSON.stringify(state));
   state.navigator.changes.push(action.change);
   return state;
+}
+
+function addPost(state, action) {
+  if (!action.post) {
+    return state;
+  }
+  return {
+    blank: state.blank,
+    data: [action.post, ...state.data],
+    navigator: Object.assign({}, state.navigator, {changes: []}),
+  };
 }
 
 /* Selectors */

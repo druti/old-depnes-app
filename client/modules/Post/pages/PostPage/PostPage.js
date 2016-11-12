@@ -5,14 +5,14 @@ import MasterLayout from '../../../../layouts/MasterLayout';
 import AuthorList from '../../components/AuthorList/AuthorList';
 import Navigator from '../../components/Navigator/Navigator';
 
-import { getPost, getPosts } from '../../PostReducer';
+import { getPost } from '../../PostReducer';
 
 // Import Actions
 import { fetchPosts } from '../../PostActions';
 
 class PathPage extends Component { // eslint-disable-line
   render() {
-    const { params, auth, switchLanguage, intl, path, paths } = this.props;
+    const { params, auth, switchLanguage, intl, path } = this.props;
     return (
       <MasterLayout
         params={params}
@@ -22,8 +22,8 @@ class PathPage extends Component { // eslint-disable-line
       >
       {path ?
         <div>
-          <AuthorList path={path} />
-          <Navigator auth={auth} path={path} paths={paths} />
+          <AuthorList auth={auth} path={path} />
+          <Navigator auth={auth} path={path} />
         </div> :
         <h1>404 Not Found</h1>}
       </MasterLayout>
@@ -43,14 +43,12 @@ PathPage.propTypes = {
   switchLanguage: PropTypes.func.isRequired,
   intl: PropTypes.object.isRequired,
   path: PropTypes.object,
-  paths: PropTypes.array.isRequired,
 };
 
 // Retrieve data from store as props
 function mapStateToProps(state, props) {
   return {
-    paths: getPosts(state),
-    path: getPost(state, props.params.cuid),
+    path: getPost(state, props.params.cuid) || state.posts.blank,
   };
 }
 

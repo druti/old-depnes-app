@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
-import Delta from 'quill-delta';
 
 import { deltaToString } from '../../../util/delta';
+
+import styles from './pathList.scss'; // eslint-disable-line
 
 import Card from './PathListItem/PathCard';
 
@@ -20,8 +21,8 @@ const PathList = (props) => {
   }
 
   return (
-    <div style={{display: 'flex', flexWrap: 'wrap', background: '#fafafa'}}>
-      {Cards}
+    <div className={styles.container}>
+      {Cards.length ? Cards : <div className={styles['no-paths']}><h4>Be the first to write something!</h4></div>}
     </div>
   );
 };

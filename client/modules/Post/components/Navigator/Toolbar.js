@@ -72,6 +72,10 @@ class AppBar extends Component {
       dispatch,
     } = this.props;
 
+    if (this.context.router.isActive({ pathname: '/paths'})) {
+      browserHistory.push('/paths/blank');
+    }
+
     if (makeMode && pathChanges.length) {
       let newContent = associateChangesWithAuthor(
         path,
@@ -93,13 +97,13 @@ class AppBar extends Component {
   }
 
   render() {
-    const { auth, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
+    const { auth, paths, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
     return (
       <ToolboxAppBar theme={theme}>
         <Scrollbars className={styles.navigatorAppBarContainer} id='navigator-toolbar'>
           <div className={styles.navigatorAppBar}>
             <IconButton icon='menu' onClick={toggleDrawer} theme={buttonTheme} />
-            {!makeMode &&
+            {!makeMode && paths.length &&
               <Button
                 theme={buttonTheme}
                 label='Read'
@@ -226,6 +230,9 @@ AppBar.propTypes = {
   className: PropTypes.string,
 };
 
+AppBar.contextTypes = {
+  router: PropTypes.object.isRequired,
+};
 
 
 function getNextPath(currentPath, paths, selection) {

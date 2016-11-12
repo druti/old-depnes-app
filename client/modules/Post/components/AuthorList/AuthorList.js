@@ -3,25 +3,26 @@ import Avatar from 'react-toolbox/lib/avatar';
 import Chip from 'react-toolbox/lib/chip';
 import { Scrollbars } from 'react-custom-scrollbars';
 
-import styles from './styles.scss';
+import styles from './styles.scss'; // eslint-disable-line
 
-const PathAuthors = ({ path }) => {
-  const ops = path.content.ops || [];
+const PathAuthors = ({ auth, path }) => {
+  const currentAuthor = { contentAuthorId: auth.getProfile().user_id };
+  const authorMap = path.content.authors || [currentAuthor];
   const contentAuthorIds = [];
   const formatAuthorIds = [];
-  ops.forEach(op => {
-    if (op.attributes) {
-      if (op.attributes.contentAuthorId) {
-        contentAuthorIds.push(op.attributes.contentAuthorId);
+  authorMap.forEach(authors => {
+    if (authors) {
+      if (authors.contentAuthorId) {
+        contentAuthorIds.push(authors.contentAuthorId);
       }
-      if (op.attributes.formatAuthorId) {
-        formatAuthorIds.push(op.attributes.formatAuthorId);
+      if (authors.formatAuthorId) {
+        formatAuthorIds.push(authors.formatAuthorId);
       }
     }
   });
   /* TODO merge contentAuthorIds and formatAuthorIds, scrapping duplicates
    * fetch username/nickname for each user through auth0
-   * repalce authors below
+   * replace authors below
    */
 
   const authors = [];
@@ -48,7 +49,8 @@ const PathAuthors = ({ path }) => {
 };
 
 PathAuthors.propTypes = {
-  path: PropTypes.object,
+  auth: PropTypes.object.isRequired,
+  path: PropTypes.object.isRequired,
 };
 
 export default PathAuthors;

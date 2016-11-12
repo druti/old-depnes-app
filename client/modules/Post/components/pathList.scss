@@ -1,0 +1,20 @@
+.container {
+  background: #fafafa;
+  display: flex;
+  flexWrap: wrap;
+  height: 100%;
+}
+
+.no-paths {
+  display: table;
+  height: 100%;
+  width: 100%;
+
+  h4 {
+    color: #f1f1f1;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+  }
+}
