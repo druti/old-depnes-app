@@ -84,7 +84,10 @@ export const getNavigator = state => state.posts.navigator;
 export const getPosts = state => state.posts.data;
 
 // Get post by cuid
-export const getPost = (state, cuid) => state.posts.data.filter(post => post.cuid === cuid)[0];
+export const getPost = (state, cuid, fallback = true) => {
+  const p = state.posts.data.filter(post => post.cuid === cuid)[0];
+  return p || (fallback && state.posts.blank);
+};
 
 // Export Reducer
 export default PostReducer;

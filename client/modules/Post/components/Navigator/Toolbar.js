@@ -34,6 +34,18 @@ class AppBar extends Component {
     this.savePath = this.savePath.bind(this);
   }
 
+  componentDidMount() {
+    const { makeMode, path, dispatch } = this.props;
+    const isBlank = path.cuid === 'blank';
+    const pathname = location.pathname;
+    // if the pathname is `/paths/*`
+    const onPathPage =
+      pathname.startsWith('/paths/') && pathname.length > '/paths/'.length;
+    if (!makeMode && isBlank && onPathPage) {
+      dispatch(toggleMakeMode());
+    }
+  }
+
   read() {
     const {
       path,
@@ -84,8 +96,9 @@ class AppBar extends Component {
       );
       newContent = deltaToContent(newContent);
       this.savePath(newContent);
+    } else {
+      dispatch(toggleMakeMode());
     }
-    dispatch(toggleMakeMode());
   }
 
   savePath(content) {
@@ -287,7 +300,7 @@ function cleanDelta(delta) {
 }
 
 function goToNextConsecutivePath(currentPath, paths) {
-  if (currentPath) {
+  if (currentPath && currentPath.cuid !== 'blank') {
     for (let i = 0; i < paths.length; i++) {
       if (paths[i].cuid === currentPath.cuid) {
         const nextPath = paths[i + 1];

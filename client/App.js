@@ -7,7 +7,7 @@ import { Router, browserHistory } from 'react-router';
 import IntlWrapper from './modules/Intl/IntlWrapper';
 
 // Import Routes
-import routes from './routes';
+import getRoutes from './routes';
 
 import './styles/index.scss';
 
@@ -16,7 +16,7 @@ export default function App(props) {
     <Provider store={props.store}>
       <IntlWrapper>
         <Router history={browserHistory}>
-          {routes}
+          {getRoutes(props.store)}
         </Router>
       </IntlWrapper>
     </Provider>

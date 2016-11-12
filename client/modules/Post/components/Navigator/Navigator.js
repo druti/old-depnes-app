@@ -40,7 +40,7 @@ class Navigator extends Component {
 
     const readOnly = PostPage.quill.options.readOnly;
 
-    if (makeMode && readOnly) { // reinit with updated config
+    if (makeMode === readOnly) { // reinit with updated config
       this.initQuill();
     } else if (readOnly && path.cuid !== PostPage.renderedPathCuid) {
       this.initQuill();

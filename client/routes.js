@@ -5,6 +5,7 @@ import { Route, IndexRoute } from 'react-router';
 import AuthService from './util/AuthService'
 import App from './modules/App/App';
 
+import { toggleMakeMode } from './modules/Post/PostActions';
 
 // require.ensure polyfill for node
 if (typeof require.ensure !== 'function') {
@@ -52,38 +53,48 @@ const requireAuth = (nextState, replace) => {
 
 // react-router setup with code-splitting
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
-export default (
-  <Route path='/' component={App} auth={auth}>
-    <IndexRoute
-      getComponent={(nextState, cb) => {
-        require.ensure([], require => {
-          cb(null, require('./modules/Post/pages/PostListPage/PostListPage').default);
-        });
-      }}
-    />
-    <Route
-      path='/paths'
-      getComponent={(nextState, cb) => {
-        require.ensure([], require => {
-          cb(null, require('./modules/Post/pages/PostListPage/PostListPage').default);
-        });
-      }}
-    />
-    <Route
-      path='/paths/:cuid'
-      getComponent={(nextState, cb) => {
-        require.ensure([], require => {
-          cb(null, require('./modules/Post/pages/PostPage/PostPage').default);
-        });
-      }}
-    />
-    <Route
-      path='*'
-      getComponent={(nextState, cb) => {
-        require.ensure([], require => {
-          cb(null, require('./modules/Error/pages/404/404').default);
-        });
-      }}
-    />
-  </Route>
-);
+export default function getRoutes(store) {
+  function exitMakeMode() {
+    const state = store.getState();
+    if (state.posts.navigator.makeMode) {
+      store.dispatch(toggleMakeMode());
+    }
+  }
+
+  return (
+    <Route path='/' component={App} auth={auth}>
+      <IndexRoute
+        getComponent={(nextState, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./modules/Post/pages/PostListPage/PostListPage').default);
+          });
+        }}
+      />
+      <Route
+        path='/paths'
+        getComponent={(nextState, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./modules/Post/pages/PostListPage/PostListPage').default);
+          });
+        }}
+      />
+      <Route
+        path='/paths/:cuid'
+        onLeave={exitMakeMode}
+        getComponent={(nextState, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./modules/Post/pages/PostPage/PostPage').default);
+          });
+        }}
+      />
+      <Route
+        path='*'
+        getComponent={(nextState, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./modules/Error/pages/404/404').default);
+          });
+        }}
+      />
+    </Route>
+  );
+}
