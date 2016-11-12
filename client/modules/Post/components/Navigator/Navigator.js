@@ -93,13 +93,11 @@ class Navigator extends Component {
     delta = JSON.parse(JSON.stringify(delta));
     delta.ops.forEach((op, i) => {
       const authors = delta.authors[i];
-      const formats = delta.formats[i];
-      if (authors || formats) {
-        op.attributes = Object.assign({}, authors, formats);
+      if (authors) {
+        op.attributes = Object.assign(op.attributes || {}, authors);
       }
     });
     delete delta.authors;
-    delete delta.formats;
     return delta;
   }
 

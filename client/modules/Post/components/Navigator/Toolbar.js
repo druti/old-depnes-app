@@ -28,23 +28,18 @@ class AppBar extends Component {
   constructor() {
     super();
     this.state = {};
-    this.nextPath = this.nextPath.bind(this);
+    this.read = this.read.bind(this);
     this.goToNextMatchedPath = this.goToNextMatchedPath.bind(this);
     this.toggleMakeMode = this.toggleMakeMode.bind(this);
     this.savePath = this.savePath.bind(this);
   }
 
-  nextPath() {
+  read() {
     const {
       path,
       paths,
       selection,
-      makeMode,
     } = this.props;
-
-    if (makeMode) {
-      return goToNextConsecutivePath(path, paths);
-    }
 
     if (selection) {
       this.goToNextMatchedPath(path, paths, navigator, selection);
@@ -108,7 +103,7 @@ class AppBar extends Component {
               <Button
                 theme={buttonTheme}
                 label='Read'
-                onClick={this.nextPath}
+                onClick={this.read}
               />
             }
             <Button
@@ -280,9 +275,7 @@ function getNextPath(currentPath, paths, selection) {
 
 function cleanDelta(delta) {
   delta = JSON.parse(JSON.stringify(delta));
-  delta.ops.forEach(op => delete op.attributes);
   delete delta.authors;
-  delete delta.formats;
   return delta;
 }
 

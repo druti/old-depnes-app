@@ -2,19 +2,20 @@ import Post from '../models/post';
 import cuid from 'cuid';
 
 function parseIn(path) {
-  const { ops, formats, authors } = path.content;
+  const { ops, authors } = path.content;
   const lastOp = ops[ops.length-1];
 
-  if (!lastOp.insert) {
+  if (!ops[0].insert || !lastOp.insert) {
     console.log('PathId: ', path.id); // eslint-disable-line
-    console.log('Operation: \n', lastOp); // eslint-disable-line
+    console.log('Operations: \n', ops); // eslint-disable-line
     return new Error('!!!!!!!!!!! Unexpected path content operation');
   }
+
+  ops[0].insert = ops[0].insert.slice(ops[0].indexOf(ops[0].insert.trim())); // trimStart()
 
   if (lastOp.insert.endsWith('\n') && lastOp.insert.trim().length) {
     lastOp.insert = lastOp.insert.substring(0, lastOp.insert.lastIndexOf('\n'));
     ops.push({insert: '\n'});
-    formats.push(null);
     authors.push(null);
   }
 }

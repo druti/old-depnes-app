@@ -10,7 +10,6 @@ export default function () {
       {
         content: {
           ops: [{insert: '\n'}],
-          formats: [null],
           authors: [null],
         },
         cuid: 'blank',
