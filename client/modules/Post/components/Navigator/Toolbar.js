@@ -53,7 +53,7 @@ class AppBar extends Component {
       selection,
     } = this.props;
 
-    if (selection) {
+    if (selection && selection.length) {
       this.goToNextMatchedPath(path, paths, navigator, selection);
     } else {
       goToNextConsecutivePath(path, paths);
@@ -86,7 +86,6 @@ class AppBar extends Component {
 
     if (this.context.router.isActive({ pathname: '/paths'})) {
       browserHistory.push('/paths/blank');
-      return dispatch(toggleMakeMode());
     }
 
     if (makeMode && pathChanges.length) {
@@ -98,6 +97,8 @@ class AppBar extends Component {
       newContent = deltaToContent(newContent);
       this.savePath(newContent);
     }
+
+    dispatch(toggleMakeMode());
   }
 
   savePath(content) {
