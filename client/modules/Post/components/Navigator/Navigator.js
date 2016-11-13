@@ -87,7 +87,7 @@ class Navigator extends Component {
         toolbar: makeMode ? {container: '#navigator-editor-toolbar'} : null,
       },
     });
-    //editorElement.quill = quill;
+    window.quill = quill;
 
     quill.on('selection-change', range => {
       //if (source === 'api') return;

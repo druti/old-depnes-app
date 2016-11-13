@@ -23,7 +23,8 @@ export default class AuthService extends EventEmitter {
         avatar: null,
         socialButtonStyle: 'small',
         auth: {
-          redirectUrl: 'http://localhost:8000',
+          redirectUrl: process.env.NODE_ENV === 'development' ?
+            'http://192.168.0.12:8000' : 'http://depnes.com',
           responseType: 'token',
         },
         mustAcceptTerms: true,

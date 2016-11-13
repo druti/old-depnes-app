@@ -72,7 +72,7 @@ function addPost(state, action) {
   return {
     blank: state.blank,
     data: [action.post, ...state.data],
-    navigator: Object.assign({}, state.navigator, {changes: []}),
+    navigator: Object.assign({}, state.navigator, {changes: [], selection: null}),
   };
 }
 

@@ -25,22 +25,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 
-const auth = new AuthService( // TODO remove hard coded credentials
-  'wsTRLfN6pOyjQDpfCYzTOzFYNnq0ycbz',
-  'druti.auth0.com', {
-    avatar: null,
-    redirectUrl: 'http://localhost:3000',
-    responseType: 'code',
-    mustAcceptTerms: true,
-    theme : {
-      primaryColor: '#333',
-    },
-    languageDictionary: {
-      signUpTerms: 'I agree to the <a href="/terms" target="_new">terms of service</a> and <a href="/privacy" target="_new">privacy policy</a>.',
-      title: 'Depnes',
-    },
-  }
-);
+const auth = new AuthService();
 
 /*
 // validate authentication for private routes

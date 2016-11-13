@@ -7,6 +7,8 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import Delta from 'quill-delta';
 import stringify from 'json-stable-stringify';
 
+import LinkButton from '../../../../mdl/Button';
+
 import { deltaToContent, deltaToString } from '../../../../util/delta';
 
 import { updateSelection, toggleMakeMode, addPostRequest } from '../../PostActions';
@@ -110,29 +112,42 @@ class AppBar extends Component {
   }
 
   render() {
-    const { auth, paths, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
+    const { auth, paths, pathChanges, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
     return (
       <ToolboxAppBar theme={theme}>
         <Scrollbars className={styles.navigatorAppBarContainer} id='navigator-toolbar'>
           <div className={styles.navigatorAppBar}>
             <IconButton icon='menu' onClick={toggleDrawer} theme={buttonTheme} />
-            {!makeMode && paths.length &&
+            {!makeMode && paths.length ?
               <Button
                 theme={buttonTheme}
                 label='Read'
                 onClick={this.read}
+              /> : null
+            }
+            {!makeMode &&
+              <Button
+                theme={buttonTheme}
+                primary={makeMode}
+                raised={makeMode}
+                label='Write'
+                onClick={auth.loggedIn() ? this.toggleMakeMode : signUp}
               />
             }
-            <Button
-              theme={buttonTheme}
-              primary={makeMode}
-              raised={makeMode}
-              label={makeMode ? ' Save' : ' Write'}
-              onClick={auth.loggedIn() ? this.toggleMakeMode : signUp}
-            />
+            {makeMode &&
+              <Button
+                theme={buttonTheme}
+                primary={makeMode}
+                raised={makeMode}
+                disabled={!pathChanges.length}
+                label='Save'
+                onClick={auth.loggedIn() ? this.toggleMakeMode : signUp}
+              />
+            }
             {makeMode &&
               <div id='navigator-editor-toolbar' className={styles.editorToolbar}>
 
+                <span className={styles.separator}/>
                 <IconButton
                   theme={buttonTheme}
                   className='ql-bold'
@@ -188,24 +203,17 @@ class AppBar extends Component {
                   value='justify'
                 ><i className='fa fa-align-justify'/></IconButton>
                 <span className={styles.separator}/>
-
-
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-link'
-                ><i className='fa fa-link'/></IconButton>
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-image'
-                ><i className='fa fa-image'/></IconButton>
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-video'
-                ><i className='fa fa-film'/></IconButton>
-
               </div>
             }
-            {auth.loggedIn() &&
+            {makeMode &&
+              <LinkButton
+                theme={buttonTheme}
+                raised={makeMode}
+                label='Cancel'
+                href='/paths'
+              />
+            }
+            {!makeMode && auth.loggedIn() &&
               <Button
                 primary={!makeMode}
                 theme={buttonTheme}
