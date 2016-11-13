@@ -1,9 +1,8 @@
-import { UPDATE_SELECTION, UPDATE_EDITOR, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
+import { UPDATE_EDITOR, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
 
 const initState = {
   data: [],
   navigator: {
-    selection: null,
     changes: [], // full of quill-deltas
     makeMode: false,
   },
@@ -24,9 +23,6 @@ const PostReducer = (state = initState, action) => {
         data: state.data,
         navigator: Object.assign({}, state.navigator, { makeMode: !state.navigator.makeMode}),
       };
-
-    case UPDATE_SELECTION :
-      return updateSelection(state, action);
 
     case UPDATE_EDITOR :
       return updateEditor(state, action);
@@ -53,12 +49,6 @@ const PostReducer = (state = initState, action) => {
   }
 };
 
-function updateSelection(state, action) {
-  state = JSON.parse(JSON.stringify(state));
-  state.navigator.selection = action.range;
-  return state;
-}
-
 function updateEditor(state, action) {
   state = JSON.parse(JSON.stringify(state));
   state.navigator.changes.push(action.change);
@@ -72,7 +62,7 @@ function addPost(state, action) {
   return {
     blank: state.blank,
     data: [action.post, ...state.data],
-    navigator: Object.assign({}, state.navigator, {changes: [], selection: null}),
+    navigator: Object.assign({}, state.navigator, {changes: []}),
   };
 }
 

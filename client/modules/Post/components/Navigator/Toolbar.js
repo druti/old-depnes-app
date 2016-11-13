@@ -7,11 +7,13 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import Delta from 'quill-delta';
 import stringify from 'json-stable-stringify';
 
-import LinkButton from '../../../../mdl/Button';
+import { LinkIconButton } from '../../../../mdl/Button';
+
+import PostPage from '../../pages/PostPage/PostPage';
 
 import { deltaToContent, deltaToString } from '../../../../util/delta';
 
-import { updateSelection, toggleMakeMode, addPostRequest } from '../../PostActions';
+import { toggleMakeMode, addPostRequest } from '../../PostActions';
 
 // Import Selectors
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
@@ -52,8 +54,9 @@ class AppBar extends Component {
     const {
       path,
       paths,
-      selection,
     } = this.props;
+
+    const selection = PostPage.quill.getSelection();
 
     if (selection && selection.length) {
       this.goToNextMatchedPath(path, paths, navigator, selection);
@@ -69,15 +72,15 @@ class AppBar extends Component {
       return console.warn('No match found.'); // eslint-disable-line
     }
 
-    this.props.dispatch(updateSelection({
+    PostPage.nextSelection = {
       index: selection.index,
       length: nextPathSelectionLength,
-    }));
+    };
 
     browserHistory.push(`/paths/${nextPath.cuid}`);
   }
 
-  toggleMakeMode() { // eslint-disable-line
+  toggleMakeMode(save = true) { // eslint-disable-line
     const {
       auth,
       path,
@@ -90,7 +93,7 @@ class AppBar extends Component {
       browserHistory.push('/paths/blank');
     }
 
-    if (makeMode && pathChanges.length) {
+    if (makeMode && pathChanges.length && save) {
       let newContent = associateChangesWithAuthor(
         path,
         pathChanges,
@@ -112,12 +115,26 @@ class AppBar extends Component {
   }
 
   render() {
-    const { auth, paths, pathChanges, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
+    const { auth, path, paths, pathChanges, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
     return (
       <ToolboxAppBar theme={theme}>
         <Scrollbars className={styles.navigatorAppBarContainer} id='navigator-toolbar'>
           <div className={styles.navigatorAppBar}>
-            <IconButton icon='menu' onClick={toggleDrawer} theme={buttonTheme} />
+            {makeMode && path.cuid === 'blank' &&
+              <LinkIconButton
+                theme={buttonTheme}
+                href='/paths'
+              ><i className='fa fa-times'/></LinkIconButton>
+            }
+            {makeMode && path.cuid !== 'blank' &&
+              <IconButton
+                theme={buttonTheme}
+                onClick={() => this.toggleMakeMode(false)}
+              ><i className='fa fa-times'/></IconButton>
+            }
+            {!makeMode &&
+              <IconButton icon='menu' onClick={toggleDrawer} theme={buttonTheme} />
+            }
             {!makeMode && paths.length ?
               <Button
                 theme={buttonTheme}
@@ -202,16 +219,7 @@ class AppBar extends Component {
                   className='ql-align'
                   value='justify'
                 ><i className='fa fa-align-justify'/></IconButton>
-                <span className={styles.separator}/>
               </div>
-            }
-            {makeMode &&
-              <LinkButton
-                theme={buttonTheme}
-                raised={makeMode}
-                label='Cancel'
-                href='/paths'
-              />
             }
             {!makeMode && auth.loggedIn() &&
               <Button
@@ -243,7 +251,6 @@ AppBar.propTypes = {
   signUp: PropTypes.func.isRequired,
   logIn: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
-  selection: PropTypes.object,
   makeMode: PropTypes.bool.isRequired,
   pathChanges: PropTypes.array.isRequired,
   path: PropTypes.object,
@@ -346,11 +353,10 @@ function associateChangesWithAuthor(path, changes, userId) {
 }
 
 function mapStateToProps(state, props) {
-  const { makeMode, changes: pathChanges, selection } = getNavigator(state);
+  const { makeMode, changes: pathChanges } = getNavigator(state);
   return {
     path: getPost(state, props.params.cuid),
     paths: getPosts(state),
-    selection,
     makeMode,
     pathChanges,
   };

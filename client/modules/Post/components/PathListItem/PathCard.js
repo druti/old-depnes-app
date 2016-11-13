@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 import { Card, CardTitle, CardText, CardActions } from 'react-toolbox/lib/card';
-import Button from '../../../../mdl/Button';
+import { LinkButton } from '../../../../mdl/Button';
 
 import cardTheme from './cardTheme.scss';
 
@@ -14,7 +14,7 @@ const PathCard = (props) => {
       />
       <CardText>{props.children}</CardText>
       <CardActions>
-        <Button label='Read' href={props.href} />
+        <LinkButton label='Read' href={props.href} />
       </CardActions>
     </Card>
   );

@@ -6,7 +6,7 @@ import Helmet from 'react-helmet';
 
 import { deltaToString } from '../../../../util/delta';
 
-import { updateSelection, updateEditor } from '../../PostActions';
+import { updateEditor } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
 
 import PostPage from '../../pages/PostPage/PostPage';
@@ -71,10 +71,11 @@ class Navigator extends Component {
   initQuill() {
     let {
       path,
-      selection,
       makeMode,
       dispatch,
     } = this.props;
+
+    const previousSelection = PostPage.quill ? PostPage.quill.getSelection() : null;
 
     const isEmpty =
       (path.content.ops.length === 1) && !path.content.ops[0].insert.trim();
@@ -89,11 +90,6 @@ class Navigator extends Component {
     });
     window.quill = quill;
 
-    quill.on('selection-change', range => {
-      //if (source === 'api') return;
-      dispatch(updateSelection(range))
-    });
-
     quill.on('text-change', (change, oldContent, source) => {
       if (source === 'api') return;
       dispatch(updateEditor(change))
@@ -101,8 +97,10 @@ class Navigator extends Component {
 
     quill.setContents(this.restructureDelta(path.content));
 
-    if (selection) {
-      quill.setSelection(selection);
+    if ((previousSelection && previousSelection.length) ||
+        PostPage.nextSelection && PostPage.nextSelection.length
+    ) {
+      quill.setSelection(PostPage.nextSelection || previousSelection);
     }
 
     PostPage.quill = quill;
@@ -135,7 +133,6 @@ class Navigator extends Component {
 Navigator.propTypes = {
   auth: Type.object.isRequired,
   path: Type.object.isRequired,
-  selection: Type.object,
   makeMode: Type.bool.isRequired,
   dispatch: Type.func.isRequired,
 };
