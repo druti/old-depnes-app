@@ -13,18 +13,10 @@ function parseIn(path) {
 
   ops[0].insert = ops[0].insert.slice(ops[0].insert.indexOf(ops[0].insert.trim())); // trimStart()
 
-  /*
-  console.log('before fuck storm?');
-  try {
-    if (!ops[0].insert) {
-      ops.pop();
-      authors.pop();
-    }
-  } catch (e) {
-    return new Error('!!!!!!!!!!! ', e);
+  if (!ops[0].insert.trim()) {
+    ops.shift();
+    authors.shift();
   }
-  console.log('after fuck storm?');
-  */
 
   if (lastOp.insert.endsWith('\n') && lastOp.insert.trim().length) {
     lastOp.insert = lastOp.insert.substring(0, lastOp.insert.lastIndexOf('\n'));
