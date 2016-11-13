@@ -30,7 +30,7 @@ import { match, RouterContext } from 'react-router';
 import Helmet from 'react-helmet';
 
 // Import required modules
-import routes from '../client/routes';
+import getRoutes from '../client/routes';
 import { fetchComponentData } from './util/fetchData';
 import posts from './routes/post.routes';
 import serverConfig from './config';
@@ -100,7 +100,9 @@ const renderError = err => {
 
 // Server Side Rendering based on routes matched by React-router.
 app.use((req, res, next) => {
-  match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
+  const store = configureStore();
+
+  match({ routes: getRoutes(store), location: req.url }, (err, redirectLocation, renderProps) => {
     if (err) {
       return res.status(500).end(renderError(err));
     }
@@ -112,8 +114,6 @@ app.use((req, res, next) => {
     if (!renderProps) {
       return next();
     }
-
-    const store = configureStore();
 
     return fetchComponentData(store, renderProps.components, renderProps.params)
       .then(() => {
