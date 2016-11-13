@@ -2,7 +2,6 @@ import callApi from '../../util/apiCaller';
 
 // Export Constants
 export const TOGGLE_MAKE_MODE = 'TOGGLE_MAKE_MODE';
-export const UPDATE_EDITOR = 'UPDATE_EDITOR';
 export const ADD_POST = 'ADD_POST';
 export const ADD_POSTS = 'ADD_POSTS';
 export const DELETE_POST = 'DELETE_POST';
@@ -11,13 +10,6 @@ export const DELETE_POST = 'DELETE_POST';
 export function toggleMakeMode() {
   return {
     type: TOGGLE_MAKE_MODE,
-  };
-}
-
-export function updateEditor(change) {
-  return {
-    type: UPDATE_EDITOR,
-    change,
   };
 }
 

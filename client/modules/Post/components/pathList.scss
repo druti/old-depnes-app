@@ -1,5 +1,10 @@
 .container {
   background: #fafafa;
+  height: 100%;
+}
+
+.inner {
+  background: #fafafa;
   display: flex;
   flex-wrap: wrap;
 }

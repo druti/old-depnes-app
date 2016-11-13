@@ -6,7 +6,6 @@ import Helmet from 'react-helmet';
 
 import { deltaToString } from '../../../../util/delta';
 
-import { updateEditor } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
 
 import PostPage from '../../pages/PostPage/PostPage';
@@ -72,8 +71,9 @@ class Navigator extends Component {
     let {
       path,
       makeMode,
-      dispatch,
     } = this.props;
+
+    PostPage.pathChanges = [];
 
     const previousSelection = PostPage.quill ? PostPage.quill.getSelection() : null;
 
@@ -92,7 +92,7 @@ class Navigator extends Component {
 
     quill.on('text-change', (change, oldContent, source) => {
       if (source === 'api') return;
-      dispatch(updateEditor(change))
+      PostPage.pathChanges.push(change);
     });
 
     quill.setContents(this.restructureDelta(path.content));

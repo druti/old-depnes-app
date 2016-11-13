@@ -1,4 +1,4 @@
-import { UPDATE_EDITOR, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
+import { TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
 
 const initState = {
   data: [],
@@ -24,9 +24,6 @@ const PostReducer = (state = initState, action) => {
         navigator: Object.assign({}, state.navigator, { makeMode: !state.navigator.makeMode}),
       };
 
-    case UPDATE_EDITOR :
-      return updateEditor(state, action);
-
     case ADD_POST :
       return addPost(state, action);
 
@@ -49,12 +46,6 @@ const PostReducer = (state = initState, action) => {
   }
 };
 
-function updateEditor(state, action) {
-  state = JSON.parse(JSON.stringify(state));
-  state.navigator.changes.push(action.change);
-  return state;
-}
-
 function addPost(state, action) {
   if (!action.post) {
     return state;
@@ -62,7 +53,6 @@ function addPost(state, action) {
   return {
     blank: state.blank,
     data: [action.post, ...state.data],
-    navigator: Object.assign({}, state.navigator, {changes: []}),
   };
 }
 

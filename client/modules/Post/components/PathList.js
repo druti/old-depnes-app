@@ -22,7 +22,9 @@ const PathList = (props) => {
 
   return (
     <div className={styles.container}>
-      {Cards.length ? Cards : <div className={styles['no-paths']}><h4>Be the first to write something!</h4></div>}
+      <div className={styles.inner}>
+        {Cards.length ? Cards : <div className={styles['no-paths']}><h4>Be the first to write something!</h4></div>}
+      </div>
     </div>
   );
 };

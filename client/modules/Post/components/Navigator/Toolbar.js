@@ -85,7 +85,6 @@ class AppBar extends Component {
       auth,
       path,
       makeMode,
-      pathChanges,
       dispatch,
     } = this.props;
 
@@ -93,14 +92,18 @@ class AppBar extends Component {
       browserHistory.push('/paths/blank');
     }
 
-    if (makeMode && pathChanges.length && save) {
-      let newContent = associateChangesWithAuthor(
-        path,
-        pathChanges,
-        auth.getProfile().user_id
-      );
-      newContent = deltaToContent(newContent);
-      this.savePath(newContent);
+    if (makeMode && save) {
+      if (PostPage.pathChanges.length) {
+        let newContent = associateChangesWithAuthor(
+          path,
+          PostPage.pathChanges,
+          auth.getProfile().user_id
+        );
+        newContent = deltaToContent(newContent);
+        this.savePath(newContent);
+      } else {
+        return alert('No changes to save.');
+      }
     }
 
     dispatch(toggleMakeMode());
@@ -115,7 +118,7 @@ class AppBar extends Component {
   }
 
   render() {
-    const { auth, path, paths, pathChanges, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
+    const { auth, path, paths, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
     return (
       <ToolboxAppBar theme={theme}>
         <Scrollbars className={styles.navigatorAppBarContainer} id='navigator-toolbar'>
@@ -156,7 +159,6 @@ class AppBar extends Component {
                 theme={buttonTheme}
                 primary={makeMode}
                 raised={makeMode}
-                disabled={!pathChanges.length}
                 label='Save'
                 onClick={auth.loggedIn() ? this.toggleMakeMode : signUp}
               />
@@ -252,7 +254,6 @@ AppBar.propTypes = {
   logIn: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
   makeMode: PropTypes.bool.isRequired,
-  pathChanges: PropTypes.array.isRequired,
   path: PropTypes.object,
   paths: PropTypes.array,
   className: PropTypes.string,
@@ -353,12 +354,10 @@ function associateChangesWithAuthor(path, changes, userId) {
 }
 
 function mapStateToProps(state, props) {
-  const { makeMode, changes: pathChanges } = getNavigator(state);
   return {
     path: getPost(state, props.params.cuid),
     paths: getPosts(state),
-    makeMode,
-    pathChanges,
+    ...getNavigator(state),
   };
 }
 

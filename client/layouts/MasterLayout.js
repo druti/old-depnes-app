@@ -113,7 +113,7 @@ class MasterLayout extends React.Component {
             signUp={this.signUp}
             logIn={this.logIn}
           />
-          <div style={{flex: 1, overflowY: 'auto', background: '#fafafa'}}>
+          <div style={{flex: 1, overflowY: 'auto', background: '#fff'}}>
             {this.props.children}
           </div>
         </Panel>
