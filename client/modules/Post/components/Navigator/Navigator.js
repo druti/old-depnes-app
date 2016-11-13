@@ -17,8 +17,29 @@ export const navigatorEmitter = new EventEmitter();
 
 const isClient = typeof window !== 'undefined'
 if (isClient) {
-  var Quill = require('quill');
   window.$ = $;
+  var Quill = require('quill');
+  /*
+  const Inline = Quill.import('blots/inline');
+  const Block = Quill.import('blots/block');
+
+  class AuthorBlot extends Inline {
+    static create(contentAuthorId) {
+      const node = super.create();
+      node.setAttribute('data-content-author-id', contentAuthorId);
+      return node;
+    }
+    static formats(node) {
+      return node.getAttribute('data-content-author-id');
+    }
+  }
+
+  AuthorBlot.blotName = 'contentAuthorId';
+  AuthorBlot.tagName = 'span';
+  AuthorBlot.className = 'contentAuthor';
+
+  Quill.register(AuthorBlot);
+  */
 }
 
 class Navigator extends Component {

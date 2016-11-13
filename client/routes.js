@@ -53,13 +53,13 @@ const requireAuth = (nextState, replace) => {
 
 // react-router setup with code-splitting
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
-export default function getRoutes(store) {
-  function exitMakeMode() {
+export const getRoutes = (store) => {
+  const exitMakeMode = () => {
     const state = store.getState();
     if (state.posts.navigator.makeMode) {
       store.dispatch(toggleMakeMode());
     }
-  }
+  };
 
   return (
     <Route path='/' component={App} auth={auth}>
@@ -97,4 +97,4 @@ export default function getRoutes(store) {
       />
     </Route>
   );
-}
+};

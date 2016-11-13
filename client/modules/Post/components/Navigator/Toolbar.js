@@ -86,6 +86,7 @@ class AppBar extends Component {
 
     if (this.context.router.isActive({ pathname: '/paths'})) {
       browserHistory.push('/paths/blank');
+      return dispatch(toggleMakeMode());
     }
 
     if (makeMode && pathChanges.length) {
@@ -96,8 +97,6 @@ class AppBar extends Component {
       );
       newContent = deltaToContent(newContent);
       this.savePath(newContent);
-    } else {
-      dispatch(toggleMakeMode());
     }
   }
 
