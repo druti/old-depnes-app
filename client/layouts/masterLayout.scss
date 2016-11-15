@@ -4,6 +4,7 @@
   box-shadow: none !important;
   padding: 0;
   justify-content: flex-start;
+  user-select: none;
 
   @media screen and (max-width: 600px) and (orientation: landscape) {
     height: 5.6rem;
