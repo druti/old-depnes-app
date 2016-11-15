@@ -89,6 +89,7 @@ class Navigator extends Component {
         PostPage.nextSelection && PostPage.nextSelection.length
     ) {
       quill.setSelection(PostPage.nextSelection || previousSelection);
+      delete PostPage.nextSelection;
     }
 
     PostPage.quill = quill;
@@ -111,6 +112,7 @@ class Navigator extends Component {
         PostPage.nextSelection && PostPage.nextSelection.length
     ) {
       PostPage.quill.setSelection(PostPage.nextSelection || previousSelection);
+      delete PostPage.nextSelection;
     }
 
     PostPage.pathChanges = [];

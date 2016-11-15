@@ -69,7 +69,7 @@ class AppBar extends Component {
     const { nextPath, nextPathSelectionLength } = getNextPath(currentPath, paths, selection);
 
     if (!nextPath) {
-      return console.warn('No match found.'); // eslint-disable-line
+      return window.alert('No match found.'); // eslint-disable-line
     }
 
     PostPage.nextSelection = {
@@ -102,7 +102,7 @@ class AppBar extends Component {
         newContent = deltaToContent(newContent);
         this.savePath(newContent);
       } else {
-        return alert('No changes to save.');
+        return window.alert('No changes to save.');
       }
     }
 
@@ -114,6 +114,7 @@ class AppBar extends Component {
     // TODO toggle loading state
     result.then(res => {
       browserHistory.push(`/paths/${res.post.cuid}`);
+      window.alert('New path created!');
     });
   }
 
