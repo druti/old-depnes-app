@@ -163,66 +163,69 @@ class AppBar extends Component {
                 onClick={auth.loggedIn() ? this.toggleMakeMode : signUp}
               />
             }
-            {makeMode &&
-              <div id='navigator-editor-toolbar' className={styles.editorToolbar}>
 
-                <span className={styles.separator}/>
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-bold'
-                ><i className='fa fa-bold'/></IconButton>
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-italic'
-                ><i className='fa fa-italic'/></IconButton>
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-underline'
-                ><i className='fa fa-underline'/></IconButton>
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-strike'
-                ><i className='fa fa-strikethrough'/></IconButton>
-                <span className={styles.separator}/>
+            <div
+              id='navigator-editor-toolbar'
+              style={makeMode ? null : { display: 'none' }}
+              className={styles.editorToolbar}
+            >
+              <span className={styles.separator}/>
+              <IconButton
+                theme={buttonTheme}
+                className='ql-bold'
+              ><i className='fa fa-bold'/></IconButton>
+              <IconButton
+                theme={buttonTheme}
+                className='ql-italic'
+              ><i className='fa fa-italic'/></IconButton>
+              <IconButton
+                theme={buttonTheme}
+                className='ql-underline'
+              ><i className='fa fa-underline'/></IconButton>
+              <IconButton
+                theme={buttonTheme}
+                className='ql-strike'
+              ><i className='fa fa-strikethrough'/></IconButton>
+              <span className={styles.separator}/>
 
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-size'
-                  value='large'
-                ><i className='fa fa-header'/></IconButton>
-                <span className={styles.separator}/>
-
-
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-list'
-                  value='ordered'
-                ><i className='fa fa-list-ol'/></IconButton>
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-list'
-                  value='bullet'
-                ><i className='fa fa-list-ul'/></IconButton>
-                <span className={styles.separator}/>
+              <IconButton
+                theme={buttonTheme}
+                className='ql-size'
+                value='large'
+              ><i className='fa fa-header'/></IconButton>
+              <span className={styles.separator}/>
 
 
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-align'
-                  value='center'
-                ><i className='fa fa-align-center'/></IconButton>
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-align'
-                  value='right'
-                ><i className='fa fa-align-right'/></IconButton>
-                <IconButton
-                  theme={buttonTheme}
-                  className='ql-align'
-                  value='justify'
-                ><i className='fa fa-align-justify'/></IconButton>
-              </div>
-            }
+              <IconButton
+                theme={buttonTheme}
+                className='ql-list'
+                value='ordered'
+              ><i className='fa fa-list-ol'/></IconButton>
+              <IconButton
+                theme={buttonTheme}
+                className='ql-list'
+                value='bullet'
+              ><i className='fa fa-list-ul'/></IconButton>
+              <span className={styles.separator}/>
+
+
+              <IconButton
+                theme={buttonTheme}
+                className='ql-align'
+                value='center'
+              ><i className='fa fa-align-center'/></IconButton>
+              <IconButton
+                theme={buttonTheme}
+                className='ql-align'
+                value='right'
+              ><i className='fa fa-align-right'/></IconButton>
+              <IconButton
+                theme={buttonTheme}
+                className='ql-align'
+                value='justify'
+              ><i className='fa fa-align-justify'/></IconButton>
+            </div>
+
             {!makeMode && auth.loggedIn() &&
               <Button
                 primary={!makeMode}

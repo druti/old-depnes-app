@@ -53,18 +53,7 @@ class Navigator extends Component {
   }
 
   componentDidUpdate() {
-    const {
-      path,
-      makeMode,
-    } = this.props;
-
-    const readOnly = PostPage.quill.options.readOnly;
-
-    if (makeMode === readOnly) { // reinit with updated config
-      this.initQuill();
-    } else if (readOnly && path.cuid !== PostPage.renderedPathCuid) {
-      this.initQuill();
-    }
+    this.updateQuill();
   }
 
   initQuill() {
@@ -72,8 +61,6 @@ class Navigator extends Component {
       path,
       makeMode,
     } = this.props;
-
-    PostPage.pathChanges = [];
 
     const previousSelection = PostPage.quill ? PostPage.quill.getSelection() : null;
 
@@ -83,19 +70,20 @@ class Navigator extends Component {
     const editorElement = $('#depnes-navigator')[0];
     const quill = new Quill(editorElement, {
       placeholder: isEmpty ? 'Compose an epic...' : null,
-      readOnly: !makeMode,
       modules: {
-        toolbar: makeMode ? {container: '#navigator-editor-toolbar'} : null,
+        toolbar: {container: '#navigator-editor-toolbar'},
       },
     });
     window.quill = quill;
+
+    quill.enable(makeMode);
+
+    quill.setContents(this.restructureDelta(path.content));
 
     quill.on('text-change', (change, oldContent, source) => {
       if (source === 'api') return;
       PostPage.pathChanges.push(change);
     });
-
-    quill.setContents(this.restructureDelta(path.content));
 
     if ((previousSelection && previousSelection.length) ||
         PostPage.nextSelection && PostPage.nextSelection.length
@@ -104,6 +92,28 @@ class Navigator extends Component {
     }
 
     PostPage.quill = quill;
+    PostPage.pathChanges = [];
+    PostPage.renderedPathCuid = path.cuid;
+  }
+
+  updateQuill() {
+    const { path, makeMode } = this.props;
+
+    const previousSelection = PostPage.quill.getSelection();
+
+    PostPage.quill.enable(makeMode);
+
+    if (path.cuid !== PostPage.renderedPathCuid) {
+      PostPage.quill.setContents(this.restructureDelta(path.content));
+    }
+
+    if ((previousSelection && previousSelection.length) ||
+        PostPage.nextSelection && PostPage.nextSelection.length
+    ) {
+      PostPage.quill.setSelection(PostPage.nextSelection || previousSelection);
+    }
+
+    PostPage.pathChanges = [];
     PostPage.renderedPathCuid = path.cuid;
   }
 

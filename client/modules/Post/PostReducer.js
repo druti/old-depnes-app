@@ -19,9 +19,9 @@ const PostReducer = (state = initState, action) => {
   switch (action.type) {
     case TOGGLE_MAKE_MODE :
       return {
-        blank: state.blank,
         data: state.data,
         navigator: Object.assign({}, state.navigator, { makeMode: !state.navigator.makeMode}),
+        blank: state.blank,
       };
 
     case ADD_POST :
@@ -29,16 +29,16 @@ const PostReducer = (state = initState, action) => {
 
     case ADD_POSTS :
       return {
-        blank: state.blank,
         data: action.posts,
         navigator: state.navigator,
+        blank: state.blank,
       };
 
     case DELETE_POST :
       return {
-        blank: state.blank,
         data: state.data.filter(post => post.cuid !== action.cuid),
         navigator: state.navigator,
+        blank: state.blank,
       };
 
     default:
@@ -51,8 +51,9 @@ function addPost(state, action) {
     return state;
   }
   return {
-    blank: state.blank,
     data: [action.post, ...state.data],
+    navigator: state.navigator,
+    blank: state.blank,
   };
 }
 
