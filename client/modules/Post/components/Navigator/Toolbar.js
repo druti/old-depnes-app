@@ -233,7 +233,7 @@ class AppBar extends Component {
                 theme={buttonTheme}
                 label={auth.getProfile().username || auth.getProfile().nickname}
                 className={styles.username}
-                onClick={() => /*eslint-disable*/console.log(auth.getProfile())/*eslint-enable*/ }
+                onClick={() => { auth.logout(); location.reload(); }}
               />
             }
             {!auth.loggedIn() &&
