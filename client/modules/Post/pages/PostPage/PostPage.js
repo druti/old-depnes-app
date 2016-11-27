@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import MasterLayout from '../../../../layouts/MasterLayout';
 import AuthorList from '../../components/AuthorList/AuthorList';
@@ -15,17 +16,17 @@ class PathPage extends Component { // eslint-disable-line
     const { params, auth, switchLanguage, intl, path } = this.props;
     return (
       <MasterLayout
-        params={params}
         auth={auth}
         switchLanguage={switchLanguage}
         intl={intl}
       >
-      {path ?
-        <div>
-          <AuthorList auth={auth} path={path} />
-          <Navigator auth={auth} path={path} />
-        </div> :
-        <h1>404 Not Found</h1>}
+        {path &&
+          <div>
+            <AuthorList auth={auth} path={path} />
+            <Navigator auth={auth} params={params} path={path} />
+          </div>}
+        {!path &&
+          <h1>404 Not Found</h1>}
       </MasterLayout>
     );
   }

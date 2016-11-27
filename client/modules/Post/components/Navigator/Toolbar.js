@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import {AppBar as ToolboxAppBar} from 'react-toolbox/lib/app_bar';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
-import { Scrollbars } from 'react-custom-scrollbars';
 import Delta from 'quill-delta';
 import stringify from 'json-stable-stringify';
+
+import ButtonBar from '../../../../components/ButtonBar';
 
 import { LinkIconButton } from '../../../../mdl/Button';
 
@@ -18,8 +18,8 @@ import { toggleMakeMode, addPostRequest } from '../../PostActions';
 // Import Selectors
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
 
-import styles from './styles.scss'; // eslint-disable-line
-import buttonTheme from './button.scss'; // eslint-disable-line
+import styles from './toolbar.scss'; // eslint-disable-line
+import buttonTheme from '../../../../layouts/button.scss'; // eslint-disable-line
 
 const isClient = typeof window !== 'undefined'
 if (isClient) {
@@ -28,7 +28,7 @@ if (isClient) {
   window.Delta = Delta;
 }
 
-class AppBar extends Component {
+class Toolbar extends Component {
   constructor() {
     super();
     this.state = {};
@@ -36,18 +36,6 @@ class AppBar extends Component {
     this.goToNextMatchedPath = this.goToNextMatchedPath.bind(this);
     this.toggleMakeMode = this.toggleMakeMode.bind(this);
     this.savePath = this.savePath.bind(this);
-  }
-
-  componentDidMount() {
-    const { makeMode, path, dispatch } = this.props;
-    const isBlank = path.cuid === 'blank';
-    const pathname = location.pathname;
-    // if the pathname is `/paths/*`
-    const onPathPage =
-      pathname.startsWith('/paths/') && pathname.length > '/paths/'.length;
-    if (!makeMode && isBlank && onPathPage) {
-      dispatch(toggleMakeMode());
-    }
   }
 
   read() {
@@ -119,55 +107,34 @@ class AppBar extends Component {
   }
 
   render() {
-    const { auth, path, paths, theme, toggleDrawer, signUp, logIn, makeMode } = this.props;
+    const { path, makeMode } = this.props;
     return (
-      <ToolboxAppBar theme={theme}>
-        <Scrollbars className={styles.navigatorAppBarContainer} id='navigator-toolbar'>
-          <div className={styles.navigatorAppBar}>
-            {makeMode && path.cuid === 'blank' &&
+      <div className={styles.container} style={makeMode ? null : { display: 'none' }}>
+        <ButtonBar theme={styles}>
+          <div id='navigator-toolbar'>
+            {path.cuid === 'blank' &&
               <LinkIconButton
                 theme={buttonTheme}
                 href='/paths'
               ><i className='fa fa-times'/></LinkIconButton>
             }
-            {makeMode && path.cuid !== 'blank' &&
+            {path.cuid !== 'blank' &&
               <IconButton
                 theme={buttonTheme}
                 onClick={() => this.toggleMakeMode(false)}
               ><i className='fa fa-times'/></IconButton>
             }
-            {!makeMode &&
-              <IconButton icon='menu' onClick={toggleDrawer} theme={buttonTheme} />
-            }
-            {!makeMode && paths.length ?
-              <Button
-                theme={buttonTheme}
-                label='Read'
-                onClick={this.read}
-              /> : null
-            }
-            {!makeMode &&
-              <Button
-                theme={buttonTheme}
-                primary={makeMode}
-                raised={makeMode}
-                label='Write'
-                onClick={auth.loggedIn() ? this.toggleMakeMode : signUp}
-              />
-            }
-            {makeMode &&
-              <Button
-                theme={buttonTheme}
-                primary={makeMode}
-                raised={makeMode}
-                label='Save'
-                onClick={auth.loggedIn() ? this.toggleMakeMode : signUp}
-              />
-            }
+
+            <Button
+              theme={buttonTheme}
+              primary
+              raised
+              label='Save'
+              onClick={this.toggleMakeMode}
+            />
 
             <div
               id='navigator-editor-toolbar'
-              style={makeMode ? null : { display: 'none' }}
               className={styles.editorToolbar}
             >
               <span className={styles.separator}/>
@@ -226,36 +193,16 @@ class AppBar extends Component {
                 value='justify'
               ><i className='fa fa-align-justify'/></IconButton>
             </div>
-
-            {!makeMode && auth.loggedIn() &&
-              <Button
-                primary={!makeMode}
-                theme={buttonTheme}
-                label={auth.getProfile().username || auth.getProfile().nickname}
-                className={styles.username}
-                onClick={() => { auth.logout(); location.reload(); }}
-              />
-            }
-            {!auth.loggedIn() &&
-              <Button label='Log In' onClick={logIn} theme={buttonTheme} />
-            }
-            {!auth.loggedIn() &&
-              <Button label='Sign Up' onClick={signUp} theme={buttonTheme} />
-            }
           </div>
-        </Scrollbars>
-      </ToolboxAppBar>
+        </ButtonBar>
+      </div>
     );
   }
 }
 
-AppBar.propTypes = {
+Toolbar.propTypes = {
   auth: PropTypes.object.isRequired,
   params: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
-  toggleDrawer: PropTypes.func.isRequired,
-  signUp: PropTypes.func.isRequired,
-  logIn: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
   makeMode: PropTypes.bool.isRequired,
   path: PropTypes.object,
@@ -263,7 +210,7 @@ AppBar.propTypes = {
   className: PropTypes.string,
 };
 
-AppBar.contextTypes = {
+Toolbar.contextTypes = {
   router: PropTypes.object.isRequired,
 };
 
@@ -365,4 +312,4 @@ function mapStateToProps(state, props) {
   };
 }
 
-export default connect(mapStateToProps, dispatch => ({ dispatch }))(AppBar);
+export default connect(mapStateToProps, dispatch => ({ dispatch }))(Toolbar);

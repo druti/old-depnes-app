@@ -1,0 +1,32 @@
+.appBar {
+  background-color: #fafafa;
+  border-top: 1px solid rgba(0,0,0,.1);
+  box-shadow: none !important;
+  padding: 0;
+  justify-content: flex-start;
+  user-select: none;
+
+  @media screen and (max-width: 600px) and (orientation: landscape) {
+    height: 5.6rem;
+  }
+}
+
+.separator {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 1rem;
+  height: 36px;
+  width: 1px;
+  background: rgba(0,0,0,.1);
+}
+
+.editorToolbar {
+  display: inline-block;
+}
+
+.container {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}

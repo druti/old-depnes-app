@@ -1,13 +1,17 @@
-import React, {PropTypes} from 'react';
 import $ from 'jquery';
-import {Layout, Panel} from 'react-toolbox';
-import {NavDrawer} from 'react-toolbox/lib/layout';
+import React, { PropTypes } from 'react';
+import { Layout, Panel } from 'react-toolbox';
+import { NavDrawer } from 'react-toolbox/lib/layout';
+import { Button, IconButton } from 'react-toolbox/lib/button';
 
+import ButtonBar from '../components/ButtonBar';
 import DrawerMenu from './DrawerMenu';
-import AppBar from '../modules/Post/components/Navigator/Toolbar';
+
+import { LinkButton } from '../mdl/Button';
 
 import theme from './masterLayout.scss'; // eslint-disable-line
 import drawerTheme from './drawerMenu.scss'; // eslint-disable-line
+import buttonTheme from './button.scss'; // eslint-disable-line
 
 class MasterLayout extends React.Component {
   constructor() {
@@ -93,7 +97,7 @@ class MasterLayout extends React.Component {
   };
 
   render() {
-    const { auth, params } = this.props;
+    const { auth } = this.props;
     return (
       <Layout theme={drawerTheme}>
         <NavDrawer
@@ -105,14 +109,32 @@ class MasterLayout extends React.Component {
           <DrawerMenu/>
         </NavDrawer>
         <Panel>
-          <AppBar
-            auth={auth}
-            params={params}
-            theme={theme}
-            toggleDrawer={this.toggleDrawer}
-            signUp={this.signUp}
-            logIn={this.logIn}
-          />
+          <ButtonBar theme={theme}>
+            <IconButton icon='menu' onClick={this.toggleDrawer} theme={buttonTheme} />
+            <Button
+              theme={buttonTheme}
+              label='Read'
+            />
+            <LinkButton
+              label='Write'
+              href='/paths/blank'
+              theme={buttonTheme}
+            />
+            {auth.loggedIn() &&
+              <Button
+                theme={buttonTheme}
+                label={auth.getProfile().username || auth.getProfile().nickname}
+                className={theme.username}
+                onClick={() => { auth.logout(); location.reload(); }}
+              />
+            }
+            {!auth.loggedIn() &&
+              <Button label='Log In' onClick={this.logIn} theme={buttonTheme} />
+            }
+            {!auth.loggedIn() &&
+              <Button label='Sign Up' onClick={this.signUp} theme={buttonTheme} />
+            }
+          </ButtonBar>
           <div style={{flex: 1, overflowY: 'auto', background: '#fff'}}>
             {this.props.children}
           </div>
@@ -123,11 +145,10 @@ class MasterLayout extends React.Component {
 }
 
 MasterLayout.propTypes = {
-  params: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   switchLanguage: PropTypes.func,
   intl: PropTypes.object,
-  children: PropTypes.object,
+  children: PropTypes.any.isRequired,
 };
 
 export default MasterLayout;

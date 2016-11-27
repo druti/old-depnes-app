@@ -3,10 +3,10 @@
   max-width: 740px;
   padding-left: 20px;
   padding-right: 20px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 9rem;
 
   @media (min-width: 480px) {
-    margin: 0 auto 4rem;
+    margin: 0 auto 11rem;
   }
 
   //p {
@@ -16,36 +16,6 @@
   //    font-size: 21px;
   //  }
   //}
-}
-
-.navigatorAppBarContainer {
-  white-space: nowrap;
-}
-
-.separator {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 1rem;
-  height: 36px;
-  width: 1px;
-  background: rgba(0,0,0,.1);
-}
-
-.navigatorAppBar {
-  text-align: center;
-  margin-top: 9px;
-
-  @media (min-width: 480px) {
-    margin-top: 12px;
-  }
-}
-
-.editorToolbar {
-  display: inline-block;
-}
-
-.username {
-  text-transform: none;
 }
 
 :global {

@@ -6,6 +6,7 @@ import AuthService from './util/AuthService'
 import App from './modules/App/App';
 
 import { toggleMakeMode } from './modules/Post/PostActions';
+import { getPost } from './modules/Post/PostReducer';
 
 // require.ensure polyfill for node
 if (typeof require.ensure !== 'function') {
@@ -39,6 +40,18 @@ const requireAuth = (nextState, replace) => {
 // react-router setup with code-splitting
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
 export default function getRoutes(store) {
+  const checkForBlank = (nextState, replace) => {
+    const reduxState = store.getState();
+    const cuid = nextState.params.cuid;
+    const path = getPost(reduxState, cuid);
+    if (!path || cuid === 'blank') {
+      store.dispatch(toggleMakeMode());
+      if (cuid !== 'blank') {
+        replace('/paths/blank');
+      }
+    }
+  };
+
   const exitMakeMode = () => {
     const state = store.getState();
     if (state.posts.navigator.makeMode) {
@@ -65,6 +78,7 @@ export default function getRoutes(store) {
       />
       <Route
         path='/paths/:cuid'
+        onEnter={checkForBlank}
         onLeave={exitMakeMode}
         getComponent={(nextState, cb) => {
           require.ensure([], require => {

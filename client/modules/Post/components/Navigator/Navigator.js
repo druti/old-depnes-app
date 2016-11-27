@@ -4,6 +4,8 @@ import $ from 'jquery';
 import EventEmitter from 'events';
 import Helmet from 'react-helmet';
 
+import Toolbar from './Toolbar';
+
 import { deltaToString } from '../../../../util/delta';
 
 import { getNavigator } from '../../PostReducer';
@@ -18,27 +20,6 @@ const isClient = typeof window !== 'undefined'
 if (isClient) {
   window.$ = $;
   var Quill = require('quill');
-  /*
-  const Inline = Quill.import('blots/inline');
-  const Block = Quill.import('blots/block');
-
-  class AuthorBlot extends Inline {
-    static create(contentAuthorId) {
-      const node = super.create();
-      node.setAttribute('data-content-author-id', contentAuthorId);
-      return node;
-    }
-    static formats(node) {
-      return node.getAttribute('data-content-author-id');
-    }
-  }
-
-  AuthorBlot.blotName = 'contentAuthorId';
-  AuthorBlot.tagName = 'span';
-  AuthorBlot.className = 'contentAuthor';
-
-  Quill.register(AuthorBlot);
-  */
 }
 
 class Navigator extends Component {
@@ -64,12 +45,12 @@ class Navigator extends Component {
 
     const previousSelection = PostPage.quill ? PostPage.quill.getSelection() : null;
 
-    const isEmpty =
-      (path.content.ops.length === 1) && !path.content.ops[0].insert.trim();
+    //const isEmpty =
+    //  (path.content.ops.length === 1) && !path.content.ops[0].insert.trim();
 
     const editorElement = $('#depnes-navigator')[0];
     const quill = new Quill(editorElement, {
-      placeholder: isEmpty ? 'Compose an epic...' : null,
+      placeholder: 'Compose an epic...',
       modules: {
         toolbar: {container: '#navigator-editor-toolbar'},
       },
@@ -133,10 +114,12 @@ class Navigator extends Component {
   }
 
   render() {
+    const { auth, params } = this.props;
     return (
       <div className={styles.container}>
         <Helmet title={deltaToString(this.props.path.content, 30)} />
         <div id='depnes-navigator' className={styles.navigator}></div>
+        <Toolbar auth={auth} params={params} />
       </div>
     );
   }
@@ -144,6 +127,7 @@ class Navigator extends Component {
 
 Navigator.propTypes = {
   auth: Type.object.isRequired,
+  params: Type.object.isRequired,
   path: Type.object.isRequired,
   makeMode: Type.bool.isRequired,
   dispatch: Type.func.isRequired,
