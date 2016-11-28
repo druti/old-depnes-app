@@ -41,6 +41,10 @@ const requireAuth = (nextState, replace) => {
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
 export default function getRoutes(store) {
   const checkForBlank = (nextState, replace) => {
+    const isServer = typeof window === 'undefined'
+    if (isServer) {
+      return
+    }
     const reduxState = store.getState();
     const cuid = nextState.params.cuid;
     const path = getPost(reduxState, cuid);
