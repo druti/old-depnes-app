@@ -101,6 +101,10 @@ class Toolbar extends Component {
     const result = this.props.dispatch(addPostRequest({content}));
     // TODO toggle loading state
     result.then(res => {
+      if (!res.post) {
+        window.alert('Error creating path');
+        return;
+      }
       browserHistory.push(`/paths/${res.post.cuid}`);
       window.alert('New path created!');
     });

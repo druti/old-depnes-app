@@ -28,14 +28,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 const auth = new AuthService();
 
-/*
 // validate authentication for private routes
 const requireAuth = (nextState, replace) => {
   if (!auth.loggedIn()) {
     replace({ pathname: '/login' })
   }
 }
-*/
 
 // react-router setup with code-splitting
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
@@ -45,10 +43,12 @@ export default function getRoutes(store) {
     if (isServer) {
       return
     }
+
     const reduxState = store.getState();
     const cuid = nextState.params.cuid;
     const path = getPost(reduxState, cuid);
     if (!path || cuid === 'blank') {
+      requireAuth(nextState, replace);
       store.dispatch(toggleMakeMode());
       if (cuid !== 'blank') {
         replace('/paths/blank');
@@ -69,6 +69,14 @@ export default function getRoutes(store) {
         getComponent={(nextState, cb) => {
           require.ensure([], require => {
             cb(null, require('./modules/Post/pages/PostListPage/PostListPage').default);
+          });
+        }}
+      />
+      <Route
+        path='/login'
+        getComponent={(nextState, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./modules/App/pages/Login/LoginPage').default);
           });
         }}
       />

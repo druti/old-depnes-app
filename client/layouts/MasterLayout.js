@@ -22,19 +22,6 @@ class MasterLayout extends React.Component {
       drawerPinned: false,
       userProfile: null,
     };
-
-    if (typeof window !== 'undefined') {
-      this.authConfig = {
-        initialScreen: 'login',
-        auth: {
-          params: {
-            state: JSON.stringify({
-              pathname: window.location.pathname + window.location.search + window.location.hash,
-            }),
-          },
-        },
-      };
-    }
   }
 
   componentWillMount() {
@@ -70,24 +57,16 @@ class MasterLayout extends React.Component {
 
   logIn = () => {
     const { auth } = this.props;
-    auth.showUI(
-      Object.assign(
-        this.authConfig, {
-          initialScreen: 'login',
-        }
-      )
-    );
+    auth.showUI({
+      initialScreen: 'login',
+    });
   };
 
   signUp = () => {
     const { auth } = this.props;
-    auth.showUI(
-      Object.assign(
-        this.authConfig, {
-          initialScreen: 'signUp',
-        }
-      )
-    );
+    auth.showUI({
+      initialScreen: 'signUp',
+    });
   };
 
   logOut = () => {

@@ -38,12 +38,16 @@ export default class AuthService extends EventEmitter {
         },
       }
     );
-    // Add callback for lock `authenticated` event
+    this.lock.on('hide', this._redirect.bind(this))
     this.lock.on('authenticated', this._doAuthentication.bind(this))
-    // Add callback for lock `authorization_error` event
     this.lock.on('authorization_error', this._authorizationError.bind(this))
-    // binds showUI function to keep this context
     this.showUI = this.showUI.bind(this)
+  }
+
+  _redirect() {
+    if (window.location.pathname === '/login') {
+      browserHistory.goBack();
+    }
   }
 
   _doAuthentication(authResult) {
@@ -54,8 +58,12 @@ export default class AuthService extends EventEmitter {
       if (error) {
         console.log('Error loading the Profile', error); // eslint-disable-line
       } else {
+        const state = JSON.parse(authResult.state);
+        const pathname = state.pathname;
         this.setProfile(profile)
-        browserHistory.push(JSON.parse(authResult.state).pathname);
+        if (pathname !== '/login') {
+          browserHistory.push(pathname);
+        }
       }
     })
   }
@@ -66,8 +74,21 @@ export default class AuthService extends EventEmitter {
   }
 
   showUI(options) {
-    // Call the show method to display the widget.
-    this.lock.show(options);
+    this.lock.show(
+      Object.assign({
+        auth: {
+          params: {
+            state: JSON.stringify({
+              pathname: window.location.pathname + window.location.search + window.location.hash,
+            }),
+          },
+        },
+      }, options)
+    );
+  }
+
+  hideUI(options) {
+    this.lock.hide();
   }
 
   loggedIn() {
