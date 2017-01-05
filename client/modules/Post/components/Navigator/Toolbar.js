@@ -129,6 +129,14 @@ class Toolbar extends Component {
               ><i className='fa fa-times'/></IconButton>
             }
 
+            {!makeMode &&
+              <Button
+                raised
+                theme={buttonTheme}
+                label='Prev'
+              />
+            }
+
             {auth.loggedIn() &&
               <Button
                 theme={buttonTheme}
@@ -145,6 +153,14 @@ class Toolbar extends Component {
                 raised
                 label='Edit'
                 href='/login'
+              />
+            }
+
+            {!makeMode &&
+              <Button
+                raised
+                label='Next'
+                theme={buttonTheme}
               />
             }
 

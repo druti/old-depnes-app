@@ -7,7 +7,11 @@ import PathList from '../../components/PathList';
 import { getPost, getPosts } from '../../PostReducer';
 import { fetchPosts } from '../../PostActions';
 
-class PathListPage extends Component {
+import { LinkButton } from '../../../../mdl/Button';
+
+import styles from './postListPage.scss'; // eslint-disable-line
+
+class PathListPage extends Component { // eslint-disable-line
   render() {
     const { params, auth, switchLanguage, intl, paths } = this.props;
     return (
@@ -17,6 +21,15 @@ class PathListPage extends Component {
         switchLanguage={switchLanguage}
         intl={intl}
       >
+        <div className={styles['cta-container']}>
+          <LinkButton
+            className={styles.cta}
+            primary
+            raised
+            label='Write'
+            href='/paths/blank'
+          />
+        </div>
         <PathList paths={paths} />
       </MasterLayout>
     );

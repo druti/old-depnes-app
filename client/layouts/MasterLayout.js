@@ -90,15 +90,6 @@ class MasterLayout extends React.Component {
         <Panel>
           <ButtonBar theme={theme}>
             <IconButton icon='menu' onClick={this.toggleDrawer} theme={buttonTheme} />
-            <Button
-              theme={buttonTheme}
-              label='Read'
-            />
-            <LinkButton
-              label='Write'
-              href='/paths/blank'
-              theme={buttonTheme}
-            />
             {auth.loggedIn() &&
               <Button
                 theme={buttonTheme}
