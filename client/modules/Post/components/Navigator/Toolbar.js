@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {Button, IconButton} from 'react-toolbox/lib/button';
+import { Button, IconButton } from 'react-toolbox/lib/button';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import Delta from 'quill-delta';
@@ -7,7 +7,7 @@ import stringify from 'json-stable-stringify';
 
 import ButtonBar from '../../../../components/ButtonBar';
 
-import { LinkIconButton } from '../../../../mdl/Button';
+import { LinkButton, LinkIconButton } from '../../../../mdl/Button';
 
 import PostPage from '../../pages/PostPage/PostPage';
 
@@ -111,35 +111,47 @@ class Toolbar extends Component {
   }
 
   render() {
-    const { path, makeMode } = this.props;
+    const { path, makeMode, auth } = this.props;
     return (
-      <div className={styles.container} style={makeMode ? null : { display: 'none' }}>
+      <div className={styles.container}>
         <ButtonBar theme={styles}>
           <div id='navigator-toolbar'>
-            {path.cuid === 'blank' &&
+            {path.cuid === 'blank' && makeMode &&
               <LinkIconButton
                 theme={buttonTheme}
                 href='/paths'
               ><i className='fa fa-times'/></LinkIconButton>
             }
-            {path.cuid !== 'blank' &&
+            {path.cuid !== 'blank' && makeMode &&
               <IconButton
                 theme={buttonTheme}
                 onClick={() => this.toggleMakeMode(false)}
               ><i className='fa fa-times'/></IconButton>
             }
 
-            <Button
-              theme={buttonTheme}
-              primary
-              raised
-              label='Save'
-              onClick={this.toggleMakeMode}
-            />
+            {auth.loggedIn() &&
+              <Button
+                theme={buttonTheme}
+                primary
+                raised
+                label={makeMode ? 'Save' : 'Edit'}
+                onClick={this.toggleMakeMode}
+              />
+            }
+            {!auth.loggedIn() &&
+              <LinkButton
+                theme={buttonTheme}
+                primary
+                raised
+                label='Edit'
+                href='/login'
+              />
+            }
 
             <div
               id='navigator-editor-toolbar'
               className={styles.editorToolbar}
+              style={makeMode ? null : { display: 'none' }}
             >
               <span className={styles.separator}/>
               <IconButton
