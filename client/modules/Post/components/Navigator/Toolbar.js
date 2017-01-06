@@ -32,13 +32,13 @@ class Toolbar extends Component {
   constructor() {
     super();
     this.state = {};
-    this.read = this.read.bind(this);
+    this.next = this.next.bind(this);
     this.goToNextMatchedPath = this.goToNextMatchedPath.bind(this);
     this.toggleMakeMode = this.toggleMakeMode.bind(this);
     this.savePath = this.savePath.bind(this);
   }
 
-  read() {
+  next() {
     const {
       path,
       paths,
@@ -134,6 +134,7 @@ class Toolbar extends Component {
                 raised
                 theme={buttonTheme}
                 label='Prev'
+                onClick={browserHistory.goBack}
               />
             }
 
@@ -161,6 +162,7 @@ class Toolbar extends Component {
                 raised
                 label='Next'
                 theme={buttonTheme}
+                onClick={this.next}
               />
             }
 

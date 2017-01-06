@@ -24,9 +24,11 @@ class PathPage extends Component { // eslint-disable-line
           <div>
             <AuthorList auth={auth} path={path} />
             <Navigator auth={auth} params={params} path={path} />
-          </div>}
+          </div>
+        }
         {!path &&
-          <h1>404 Not Found</h1>}
+          <h1>404 Not Found</h1>
+        }
       </MasterLayout>
     );
   }
