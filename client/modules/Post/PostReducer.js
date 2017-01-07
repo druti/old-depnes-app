@@ -11,6 +11,7 @@ const initState = {
       ops: [{insert: '\n'}],
       authors: [null],
     },
+    htmlContent: '',
     cuid: 'blank',
   },
 };

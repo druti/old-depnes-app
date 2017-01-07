@@ -77,6 +77,7 @@ class Toolbar extends Component {
     } = this.props;
 
     if (this.context.router.isActive({ pathname: '/paths'})) {
+      debugger; //eslint-disable-line
       browserHistory.push('/paths/blank');
     }
 
@@ -98,7 +99,12 @@ class Toolbar extends Component {
   }
 
   savePath(content) {
-    const result = this.props.dispatch(addPostRequest({content}));
+    const result = this.props.dispatch(
+      addPostRequest({
+        content,
+        htmlContent: PostPage.quill.root.innerHTML,
+      })
+    );
     // TODO toggle loading state
     result.then(res => {
       if (!res.post) {
@@ -134,7 +140,7 @@ class Toolbar extends Component {
                 raised
                 theme={buttonTheme}
                 label='Prev'
-                onClick={browserHistory.goBack}
+                onClick={browserHistory && browserHistory.goBack} // no bH during SSR
               />
             }
 
@@ -279,7 +285,6 @@ function getNextPath(currentPath, paths, selection) {
     const bothEndTheSame2 =
       deltaToString(currentPathEndContent) === deltaToString(pathEndContent);
 
-    debugger; // eslint-disable-line
     if ((bothStartTheSame && bothEndTheSame) ||
         (bothStartTheSame2 && bothEndTheSame2)) {
       nextPath = path;

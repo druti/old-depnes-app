@@ -35,7 +35,7 @@ class Navigator extends Component {
 
     const previousSelection = PostPage.quill ? PostPage.quill.getSelection() : null;
 
-    const editorElement = $('#depnes-navigator')[0];
+    const editorElement = $('#depnes-editor')[0];
     const quill = new Quill(editorElement, {
       placeholder: 'Compose an epic...',
       modules: {
@@ -77,7 +77,7 @@ class Navigator extends Component {
 
   render() {
     return (
-      <div id='depnes-navigator' className={styles.navigator}></div>
+      <div id='depnes-editor' className={styles.navigator}></div>
     );
   }
 }

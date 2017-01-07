@@ -20,11 +20,12 @@ export function addPost(post) {
   };
 }
 
-export function addPostRequest(post) {
+export function addPostRequest({ content, htmlContent }) {
   return (dispatch) => {
     return callApi('posts', 'post', {
       post: {
-        content: post.content,
+        content,
+        htmlContent,
       },
     }).then(res => dispatch(addPost(res.post)));
   };

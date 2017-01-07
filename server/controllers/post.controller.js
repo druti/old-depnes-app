@@ -48,7 +48,7 @@ export function getPosts(req, res) {
  * @returns void
  */
 export function addPost(req, res) {
-  if (!req.body.post.content) {
+  if (!req.body.post.content || !req.body.post.htmlContent) {
     console.log('missing params'); // eslint-disable-line
     res.status(403).end();
   } else {

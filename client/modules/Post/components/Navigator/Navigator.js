@@ -28,8 +28,8 @@ class Navigator extends Component {
             params={params}
             path={path}
           /> :
-          <div>
-            <h1>YOYO</h1>
+          <div className='ql-container'>
+            <div className='ql-editor' dangerouslySetInnerHTML={{ __html: path.htmlContent }}></div>
           </div>
         }
         <Toolbar auth={auth} params={params} />
