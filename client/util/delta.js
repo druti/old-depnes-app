@@ -25,11 +25,13 @@ export function deltaToContent(delta) {
   compactDelta.ops.forEach(op => {
     const attributes = op.attributes || {};
     if (attributes.contentAuthorId || attributes.formatAuthorId) {
-      // we use jquery extend here to strip undefined values from the merged obj
-      compactDelta.authors.push($.extend({}, {
+      const authors = {
         contentAuthorId: attributes.contentAuthorId,
         formatAuthorId: attributes.formatAuthorId,
-      }));
+      };
+      if (authors.contentAuthorId === 'undefined') delete authors.contentAuthorId;
+      if (authors.formatAuthorId === 'undefined') delete authors.formatAuthorId;
+      compactDelta.authors.push(authors);
     } else {
       compactDelta.authors.push(null);
     }

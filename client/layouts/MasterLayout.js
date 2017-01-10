@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import React, { PropTypes } from 'react';
 import { Layout, Panel } from 'react-toolbox';
 import { NavDrawer } from 'react-toolbox/lib/layout';
@@ -6,8 +5,6 @@ import { Button, IconButton } from 'react-toolbox/lib/button';
 
 import ButtonBar from '../components/ButtonBar';
 import DrawerMenu from './DrawerMenu';
-
-import { LinkButton } from '../mdl/Button';
 
 import theme from './masterLayout.scss'; // eslint-disable-line
 import drawerTheme from './drawerMenu.scss'; // eslint-disable-line
@@ -36,9 +33,9 @@ class MasterLayout extends React.Component {
     this.lg = 840;
 
     this.viewportW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    $(window).on('resize', () => {
+    window.onresize = () => {
       this.viewportW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    });
+    };
   }
 
   toggleDrawer = () => {

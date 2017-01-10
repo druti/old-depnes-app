@@ -17,6 +17,12 @@ class Navigator extends Component {
     this.state = {};
   }
 
+  componentDidMount() {
+    debugger;
+    const contentEl = this.refs.content;
+    debugger;
+  }
+
   render() {
     const { auth, params, makeMode, path } = this.props;
     return (
@@ -29,7 +35,7 @@ class Navigator extends Component {
             path={path}
           /> :
           <div className='ql-container'>
-            <div className='ql-editor' dangerouslySetInnerHTML={{ __html: path.htmlContent }}></div>
+            <div className='ql-editor' ref='content' dangerouslySetInnerHTML={{ __html: path.htmlContent }}></div>
           </div>
         }
         <Toolbar auth={auth} params={params} />

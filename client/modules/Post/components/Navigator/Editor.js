@@ -1,6 +1,5 @@
 import React, { Component, PropTypes as Type } from 'react';
 import { connect } from 'react-redux';
-import $ from 'jquery';
 import EventEmitter from 'events';
 
 import { getNavigator } from '../../PostReducer';
@@ -13,7 +12,6 @@ export const navigatorEmitter = new EventEmitter();
 
 const isClient = typeof window !== 'undefined'
 if (isClient) {
-  window.$ = $;
   var Quill = require('quill');
 }
 
@@ -35,7 +33,7 @@ class Navigator extends Component {
 
     const previousSelection = PostPage.quill ? PostPage.quill.getSelection() : null;
 
-    const editorElement = $('#depnes-editor')[0];
+    const editorElement = document.getElementById('#depnes-editor');
     const quill = new Quill(editorElement, {
       placeholder: 'Compose an epic...',
       modules: {
