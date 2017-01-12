@@ -5,6 +5,7 @@ import Helmet from 'react-helmet';
 import Editor from './Editor';
 import Toolbar from './Toolbar';
 
+import { elementContainsSelection } from '../../../../util/selection';
 import { deltaToString } from '../../../../util/delta';
 
 import { getNavigator } from '../../PostReducer';
@@ -15,12 +16,20 @@ class Navigator extends Component {
   constructor() {
     super();
     this.state = {};
+    this.handleContentClick = this.handleContentClick.bind(this);
   }
 
-  componentDidMount() {
-    debugger;
-    const contentEl = this.refs.content;
-    debugger;
+  handleContentClick() {
+    if (elementContainsSelection(this.refs.content)) {
+      console.log('content contains the selection');
+      this.initCustomSelect();
+    } else {
+      console.error('ERRRRROOOORRRRRRRRR');
+      debugger;
+    }
+  }
+
+  initCustomSelect() {
   }
 
   render() {
@@ -35,7 +44,12 @@ class Navigator extends Component {
             path={path}
           /> :
           <div className='ql-container'>
-            <div className='ql-editor' ref='content' dangerouslySetInnerHTML={{ __html: path.htmlContent }}></div>
+            <div
+              ref='content'
+              className='ql-editor'
+              onClick={this.handleContentClick}
+              dangerouslySetInnerHTML={{ __html: path.htmlContent }}
+            />
           </div>
         }
         <Toolbar auth={auth} params={params} />
