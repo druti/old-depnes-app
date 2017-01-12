@@ -6,11 +6,11 @@ export function insertElementInTextNode(elStr, textNode, index) {
     const afterText = nodeValue.slice(index);
     const beforeNode = document.createTextNode(beforeText);
     const afterNode = document.createTextNode(afterText);
-    const replacementStr = [beforeNode, elStr, afterNode].join('');
+    const replacementStr = [beforeText, elStr, afterText].join('');
 
     replaceNodeWith(textNode, replacementStr);
 
-    return [beforeNode, afterNode];
+    return { beforeNode, afterNode };
   }
 }
 
@@ -21,6 +21,7 @@ export function isNodeTypeText(node) {
 
 export function replaceNodeWith(node, htmlStr) {
   if(node.outerHTML) {
+    debugger; // eslint-disable-line
     node.outerHTML = htmlStr;
   } else {
     const parent = node.parentNode;
@@ -28,6 +29,6 @@ export function replaceNodeWith(node, htmlStr) {
     const replaceStr = `<!--${Math.random()} THIS DATA SHOULD BE REPLACED-->`;
     tmpNode.innerHTML = replaceStr;
     parent.replaceChild(tmpNode, node);
-    parent.innerHTML = parent.innerHTML.replace(replaceStr, htmlStr);
+    parent.innerHTML = parent.innerHTML.replace(`<div>${replaceStr}</div>`, htmlStr);
   }
 }

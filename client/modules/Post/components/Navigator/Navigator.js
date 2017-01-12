@@ -6,7 +6,10 @@ import Editor from './Editor';
 import Toolbar from './Toolbar';
 
 import { elementContainsSelection } from '../../../../util/selection';
+import { insertElementInTextNode, isNodeTypeText } from '../../../../util/domNode';
 import { deltaToString } from '../../../../util/delta';
+
+import { getDefaultSelectionOffsets } from './customSelect';
 
 import { getNavigator } from '../../PostReducer';
 
@@ -21,15 +24,35 @@ class Navigator extends Component {
 
   handleContentClick() {
     if (elementContainsSelection(this.refs.content)) {
-      console.log('content contains the selection');
+      console.log('content contains the selection'); // eslint-disable-line
       this.initCustomSelect();
     } else {
-      console.error('ERRRRROOOORRRRRRRRR');
-      debugger;
+      console.error('ERROR'); // eslint-disable-line
+      debugger; // eslint-disable-line
     }
   }
 
   initCustomSelect() {
+    const startMarker = '<span id="custom-select-start-marker"></span>';
+    const endMarker = '<span id="custom-select-end-marker"></span>';
+    const selection = window.getSelection();
+    const { anchorNode, anchorOffset } = selection;
+
+    if (isNodeTypeText(anchorNode)) {
+      const defaultOffsets = getDefaultSelectionOffsets(anchorNode, anchorOffset);
+
+      insertElementInTextNode(startMarker, anchorNode, defaultOffsets[0]);
+
+      const startMarkerEl = document.getElementById('custom-select-start-marker');
+      const afterNode = startMarkerEl.nextSibling;
+
+      insertElementInTextNode(endMarker, afterNode, defaultOffsets[1]);
+
+      console.log('initCustomSelect'); // eslint-disable-line
+    } else {
+      console.error('ERROR trying to init custom select, anchorNode is not a text node'); // eslint-disable-line
+      debugger; // eslint-disable-line
+    }
   }
 
   render() {
