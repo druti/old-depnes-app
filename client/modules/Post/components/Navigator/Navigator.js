@@ -5,7 +5,7 @@ import Helmet from 'react-helmet';
 import Editor from './Editor';
 import Toolbar from './Toolbar';
 
-import { elementContainsSelection } from '../../../../util/selection';
+import { elementContainsSelection, clearSelection } from '../../../../util/selection';
 import { insertElementInTextNode, nodeTypeText, replaceNodeWith } from '../../../../util/domNode';
 import { deltaToString } from '../../../../util/delta';
 
@@ -23,21 +23,44 @@ class Navigator extends Component {
   }
 
   handleContentClick() {
-    if (elementContainsSelection(this.refs.content)) {
-      if (nodeTypeText(window.getSelection().anchorNode)) {
-        if (Navigator.hasCS) {
-          this.updateCS();
-        } else {
-          this.initCS();
-        }
-      } else {
-        console.error('ERROR trying to init custom select, anchorNode is not a text node'); // eslint-disable-line
-        debugger; // eslint-disable-line
-      }
-    } else {
-      console.error('ERROR trying to init custom select, anchorNode is not in navigator'); // eslint-disable-line
-      debugger; // eslint-disable-line
+    let abort = false;
+    const sel = window.getSelection();
+
+    if (!sel.isCollapsed) {
+      // eslint-disable-next-line
+      console.log('Selection is not collapsed');
+      abort = true;
     }
+
+    const containedSel = elementContainsSelection(this.refs.content, sel);
+
+    if (!containedSel) {
+      // eslint-disable-next-line
+      console.warning('Selection is not in navigator');
+      abort = true;
+    }
+
+    if (!nodeTypeText(sel.anchorNode)) {
+      // eslint-disable-next-line
+      console.warning('AnchorNode is not a text node');
+      abort = true;
+    }
+
+    if (abort) {
+      if (Navigator.hasCS) {
+        this.destroyCS();
+      }
+      // eslint-disable-next-line
+      return console.log('Abort custom selection');
+    }
+
+    if (Navigator.hasCS) {
+      this.updateCS();
+    } else {
+      this.initCS();
+    }
+
+    clearSelection();
   }
 
   initCS() {
@@ -93,8 +116,10 @@ class Navigator extends Component {
 
   destroyCS() {
     this.removeAnchorMarker();
-    this.removeFocusMarker();
+    this.removeMiddleAnchorBlock();
     this.removeStartBlock();
+    this.removeMiddleFocusBlock();
+    this.removeFocusMarker();
     Navigator.hasCS = false;
   }
 
@@ -138,8 +163,8 @@ class Navigator extends Component {
       // move anchorMarker
       this.removeAnchorMarker();
       this.insertAnchorMarker(tempMarkerEl.nextSibling, 0);
-      const anchorMarkerEl = document.getElementById('c-s-a-m');
       this.removeMiddleAnchorBlock();
+      const anchorMarkerEl = document.getElementById('c-s-a-m');
       this.insertMiddleAnchorBlock(anchorMarkerEl.nextSibling);
     } else {
       // move focusMarker
@@ -148,8 +173,8 @@ class Navigator extends Component {
         tempMarkerEl.previousSibling,
         tempMarkerEl.previousSibling.nodeValue.length
       );
-      const focusMarkerEl = document.getElementById('c-s-f-m');
       this.removeMiddleFocusBlock();
+      const focusMarkerEl = document.getElementById('c-s-f-m');
       this.insertMiddleFocusBlock(focusMarkerEl.previousSibling);
     }
 

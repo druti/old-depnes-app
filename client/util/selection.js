@@ -10,3 +10,14 @@ export function elementContainsSelection(element, selection = window.getSelectio
     return false;
   }
 }
+
+export function clearSelection() {
+  var sel = window.getSelection ? window.getSelection() : document.selection;
+  if (sel) {
+    if (sel.removeAllRanges) {
+        sel.removeAllRanges();
+    } else if (sel.empty) {
+        sel.empty();
+    }
+  }
+}
