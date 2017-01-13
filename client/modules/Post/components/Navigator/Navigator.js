@@ -25,6 +25,7 @@ class Navigator extends Component {
   handleContentClick() {
     let abort = false;
     const sel = window.getSelection();
+    const containedSel = elementContainsSelection(this.refs.content, sel);
 
     if (!sel.isCollapsed) {
       // eslint-disable-next-line
@@ -32,39 +33,37 @@ class Navigator extends Component {
       abort = true;
     }
 
-    const containedSel = elementContainsSelection(this.refs.content, sel);
-
     if (!containedSel) {
       // eslint-disable-next-line
-      console.warning('Selection is not in navigator');
+      console.warn('Selection is not in navigator');
       abort = true;
     }
 
     if (!nodeTypeText(sel.anchorNode)) {
       // eslint-disable-next-line
-      console.warning('AnchorNode is not a text node');
+      console.warn('AnchorNode is not a text node');
       abort = true;
     }
 
     if (abort) {
       if (Navigator.hasCS) {
-        this.destroyCS();
+        clearSelection();
       }
       // eslint-disable-next-line
-      return console.log('Abort custom selection');
+      return console.log('Abort new custom selection');
     }
 
     if (Navigator.hasCS) {
-      this.updateCS();
+      this.updateCS(sel);
     } else {
-      this.initCS();
+      this.initCS(sel);
     }
 
     clearSelection();
   }
 
-  initCS() {
-    const { anchorNode, anchorOffset } = window.getSelection();
+  initCS(sel) {
+    const { anchorNode, anchorOffset } = sel;
     const defaultOffsets = getDefaultSelectionOffsets(anchorNode, anchorOffset);
 
     this.insertAnchorMarker(anchorNode, defaultOffsets[0]);
@@ -104,8 +103,8 @@ class Navigator extends Component {
     replaceNodeWith(textNode, `<span id='c-s-m-f-b'>${textNode.nodeValue}</span>`);
   }
 
-  updateCS() {
-    const { anchorNode, anchorOffset } = window.getSelection();
+  updateCS(sel) {
+    const { anchorNode, anchorOffset } = sel;
 
     if (anchorNode.parentNode.id === 'c-s-s-b') {
       return this.destroyCS();
