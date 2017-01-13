@@ -33,7 +33,7 @@ class Navigator extends Component {
 
     const previousSelection = PostPage.quill ? PostPage.quill.getSelection() : null;
 
-    const editorElement = document.getElementById('#depnes-editor');
+    const editorElement = document.getElementById('depnes-editor');
     const quill = new Quill(editorElement, {
       placeholder: 'Compose an epic...',
       modules: {

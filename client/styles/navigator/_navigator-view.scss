@@ -1,4 +1,19 @@
 :global {
+  .ql-container {
+    .ql-editor {
+      #c-s-s-b {
+        background: #3f51b5;
+      }
+      #c-s-m-a-b,
+      #c-s-m-f-b {
+        background: #3f51b5;
+      }
+    }
+  }
+}
+
+
+:global {
   #navigator-view {
     #cursor {
       animation: blink 1s linear infinite;
