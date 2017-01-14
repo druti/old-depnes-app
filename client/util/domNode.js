@@ -27,3 +27,25 @@ export function replaceNodeWith(node, htmlStr) {
     parent.innerHTML = parent.innerHTML.replace(`<div>${replaceStr}</div>`, htmlStr);
   }
 }
+
+export function getTextNodesInNode(n) {
+  const textNodes = [];
+
+  function getTextNodes(node) {
+    if (node.nodeType === 3) {
+      textNodes.push(node);
+    } else {
+      const childNodes = node.childNodes;
+
+      for (let i = 0; i < childNodes.length; i++) {
+        getTextNodes(childNodes[i]);
+      }
+    }
+  }
+
+  if (n) {
+    getTextNodes(n);
+  }
+
+  return textNodes;
+}
