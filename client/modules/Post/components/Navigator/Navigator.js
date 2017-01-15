@@ -116,21 +116,33 @@ class Navigator extends Component {
 
   insertMiddleBlocks() {
     const anchorMarker = document.getElementById('c-s-a-m');
+    const anchorBlock = document.getElementById('c-s-a-b');
     const startBlock = document.getElementById('c-s-s-b');
     const focusBlock = document.getElementById('c-s-f-b');
     const focusMarker = document.getElementById('c-s-f-m');
-    // if both markers have the same parent, return
+
     if (anchorMarker.parentNode === focusMarker.parentNode) {
       return;
     }
 
-    let middleBlockParent = anchorMarker.parentNode.nextSibling;
+    let node = anchorMarker.nextSibling;
 
-    while (middleBlockParent) {
-      if (middleBlockParent.contains(focusMarker)) {
-        const textNodes = getTextNodesInNode(middleBlockParent);
+    while (node) {
+      if (node === anchorBlock || node === startBlock) {
+        if (node.nextSibling) {
+          node = node.nextSibling;
+        }
+        else if (node.parentNode === this.refs.content) {
+          break;
+        } else {
+          node = node.parentNode.nextSibling;
+        }
+      }
+
+      let textNodes = getTextNodesInNode(node);
+
+      if (node.contains(focusMarker)) {
         const filteredTextNodes = [];
-
         for (let i = 0; i < textNodes.length; i++) {
           const tN = textNodes[i];
           const startBlockCon = startBlock.contains(tN);
@@ -140,22 +152,21 @@ class Navigator extends Component {
           }
           filteredTextNodes.push(tN);
         }
-
         filteredTextNodes.forEach(this.insertMiddleBlock);
         break;
       } else {
-        // replace all text nodes
-        const textNodes = getTextNodesInNode(middleBlockParent);
+        const parentNode = node.parentNode;
+        const nextSibling = node.nextSibling;
 
         textNodes.forEach(this.insertMiddleBlock);
 
-        if (middleBlockParent.nextSibling) {
-          middleBlockParent = middleBlockParent.nextSibling;
+        if (nextSibling) {
+          node = nextSibling;
         }
-        else if (middleBlockParent.parentNode === this.refs.content) {
+        else if (parentNode === this.refs.content) {
           break;
         } else {
-          middleBlockParent = middleBlockParent.parentNode;
+          node = parentNode.nextSibling;
         }
       }
     }
@@ -167,7 +178,7 @@ class Navigator extends Component {
     if (anchorNode.parentNode.id === 'c-s-s-b') {
       return this.destroyCS();
     } else {
-      return this.expandCS(anchorNode, anchorOffset);
+      return this.modifyCS(anchorNode, anchorOffset);
     }
   }
 
@@ -190,15 +201,24 @@ class Navigator extends Component {
     focusMarkerEl.parentNode.removeChild(focusMarkerEl);
   }
 
+  removeAnchorBlock() {
+    const anchorBlockEl = document.getElementById('c-s-a-b');
+    if (!anchorBlockEl) return;
+    replaceNodeWith(anchorBlockEl, anchorBlockEl.innerHTML);
+  }
+
   removeStartBlock() {
     const startBlockEl = document.getElementById('c-s-s-b');
     replaceNodeWith(startBlockEl, startBlockEl.innerHTML);
   }
 
-  removeAnchorBlock() {
-    const anchorBlockEl = document.getElementById('c-s-a-b');
-    if (!anchorBlockEl) return;
-    replaceNodeWith(anchorBlockEl, anchorBlockEl.innerHTML);
+  removeMiddleBlocks() {
+    const middleBlockEls = document.getElementsByClassName('c-s-m-b');
+    if (!middleBlockEls) return;
+    for (let i = 0; i < middleBlockEls.length; i++) {
+      const el = middleBlockEls[i];
+      replaceNodeWith(el, el.innerHTML);
+    }
   }
 
   removeFocusBlock() {
@@ -207,7 +227,7 @@ class Navigator extends Component {
     replaceNodeWith(focusBlockEl, focusBlockEl.innerHTML);
   }
 
-  expandCS(anchorNode, anchorOffset) {
+  modifyCS(anchorNode, anchorOffset) {
     const tempMarker = '<span id="c-s-t-m"></span>';
     insertElementInTextNode(tempMarker, anchorNode, anchorOffset);
 
@@ -238,6 +258,7 @@ class Navigator extends Component {
     tempMarkerEl = document.getElementById('c-s-t-m');
     tempMarkerEl.parentNode.removeChild(tempMarkerEl);
 
+    this.removeMiddleBlocks();
     this.insertMiddleBlocks();
   }
 
