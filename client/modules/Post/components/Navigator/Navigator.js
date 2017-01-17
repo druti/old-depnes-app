@@ -160,7 +160,8 @@ class Navigator extends Component {
       while (textNode) {
         if (focusMarkerParent) {
           const bitmask = focusMarker.compareDocumentPosition(textNode);
-          const textNodeIsAfterFocusMarker = bitmask === 4 || bitmask === 37;
+          const textNodeIsAfterFocusMarker =
+            bitmask === 4 || bitmask === 35 || bitmask === 37;
           // eslint-disable-next-line
           console.log(`Focus marker, text node comparison bitmask: ${bitmask}`);
           if (textNodeIsAfterFocusMarker) {
@@ -168,7 +169,11 @@ class Navigator extends Component {
             break;
           }
         }
+
         this.insertMiddleBlock(textNode);
+
+        if (node.nodeType === 3) break;
+
         textNode = getTextNode(node, filterFun);
       }
 
