@@ -11,7 +11,7 @@ import {
   insertElementInTextNode,
   nodeTypeText,
   replaceNodeWith,
-  getTextNodesInNode,
+  getTextNode,
 } from '../../../../util/domNode';
 
 import { deltaToString } from '../../../../util/delta';
@@ -118,7 +118,6 @@ class Navigator extends Component {
     const anchorMarker = document.getElementById('c-s-a-m');
     const anchorBlock = document.getElementById('c-s-a-b');
     const startBlock = document.getElementById('c-s-s-b');
-    const focusBlock = document.getElementById('c-s-f-b');
     const focusMarker = document.getElementById('c-s-f-m');
 
     if (anchorMarker.parentNode === focusMarker.parentNode) {
@@ -126,6 +125,7 @@ class Navigator extends Component {
     }
 
     let node = anchorMarker.nextSibling;
+    let focusMarkerReached = false;
 
     while (node) {
       if (node === anchorBlock || node === startBlock) {
@@ -139,35 +139,48 @@ class Navigator extends Component {
         }
       }
 
-      let textNodes = getTextNodesInNode(node);
+      const parentNode = node.parentNode;
+      const nextSibling = node.nextSibling;
+      const focusMarkerParent = node.contains(focusMarker);
 
-      if (node.contains(focusMarker)) {
-        const filteredTextNodes = [];
-        for (let i = 0; i < textNodes.length; i++) {
-          const tN = textNodes[i];
-          const startBlockCon = startBlock.contains(tN);
-          const focusBlockCon = focusBlock ? focusBlock.contains(tN) : false;
-          if (startBlockCon || focusBlockCon) {
+      const filterFun = childNode => {
+        if (childNode.className === 'c-s-m-b') {
+          return true;
+        }
+        if (childNode.id === 'c-s-s-b') {
+          return true;
+        }
+        if (childNode.id === 'c-s-f-b') {
+          return true;
+        }
+      }
+
+      let textNode = getTextNode(node, filterFun);
+
+      while (textNode) {
+        if (focusMarkerParent) {
+          const bitmask = focusMarker.compareDocumentPosition(textNode);
+          const textNodeIsAfterFocusMarker = bitmask === 4 || bitmask === 37;
+          // eslint-disable-next-line
+          console.log(`Focus marker, text node comparison bitmask: ${bitmask}`);
+          if (textNodeIsAfterFocusMarker) {
+            focusMarkerReached = true;
             break;
           }
-          filteredTextNodes.push(tN);
         }
-        filteredTextNodes.forEach(this.insertMiddleBlock);
+        this.insertMiddleBlock(textNode);
+        textNode = getTextNode(node, filterFun);
+      }
+
+      if (focusMarkerReached) break;
+
+      if (nextSibling) {
+        node = nextSibling;
+      }
+      else if (parentNode === this.refs.content) {
         break;
       } else {
-        const parentNode = node.parentNode;
-        const nextSibling = node.nextSibling;
-
-        textNodes.forEach(this.insertMiddleBlock);
-
-        if (nextSibling) {
-          node = nextSibling;
-        }
-        else if (parentNode === this.refs.content) {
-          break;
-        } else {
-          node = parentNode.nextSibling;
-        }
+        node = parentNode.nextSibling;
       }
     }
   }
@@ -188,6 +201,7 @@ class Navigator extends Component {
     this.removeStartBlock();
     this.removeFocusBlock();
     this.removeFocusMarker();
+    this.removeMiddleBlocks();
     Navigator.hasCS = false;
   }
 
@@ -215,9 +229,8 @@ class Navigator extends Component {
   removeMiddleBlocks() {
     const middleBlockEls = document.getElementsByClassName('c-s-m-b');
     if (!middleBlockEls) return;
-    for (let i = 0; i < middleBlockEls.length; i++) {
-      const el = middleBlockEls[i];
-      replaceNodeWith(el, el.innerHTML);
+    while (middleBlockEls.length > 0) {
+      replaceNodeWith(middleBlockEls[0], middleBlockEls[0].innerHTML);
     }
   }
 

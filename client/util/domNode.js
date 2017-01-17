@@ -49,3 +49,18 @@ export function getTextNodesInNode(n) {
 
   return textNodes;
 }
+
+export function getTextNode(node, filter) {
+  if (node.nodeType === 3) {
+    return node;
+  } else {
+    const childNodes = node.childNodes;
+
+    for (let i = 0; i < childNodes.length; i++) {
+      const childNode = childNodes[i];
+      if (filter(childNode)) continue;
+      const textNode = getTextNode(childNode, filter);
+      if (textNode) return textNode;
+    }
+  }
+}
