@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes as T } from 'react';
 import { Button, IconButton } from 'react-toolbox/lib/button';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
@@ -13,7 +13,7 @@ import PostPage from '../../pages/PostPage/PostPage';
 
 import { deltaToContent, deltaToString } from '../../../../util/delta';
 
-import { toggleMakeMode, addPostRequest } from '../../PostActions';
+import { toggleCustomSelect, toggleMakeMode, addPostRequest } from '../../PostActions';
 
 // Import Selectors
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
@@ -34,6 +34,7 @@ class Toolbar extends Component {
     this.state = {};
     this.next = this.next.bind(this);
     this.goToNextMatchedPath = this.goToNextMatchedPath.bind(this);
+    this.toggleCustomSelect = this.toggleCustomSelect.bind(this);
     this.toggleMakeMode = this.toggleMakeMode.bind(this);
     this.savePath = this.savePath.bind(this);
   }
@@ -57,7 +58,7 @@ class Toolbar extends Component {
     const { nextPath, nextPathSelectionLength } = getNextPath(currentPath, paths, selection);
 
     if (!nextPath) {
-      return window.alert('No match found.'); // eslint-disable-line
+      return window.alert('No match found.');
     }
 
     PostPage.nextSelection = {
@@ -68,7 +69,15 @@ class Toolbar extends Component {
     browserHistory.push(`/paths/${nextPath.cuid}`);
   }
 
-  toggleMakeMode(save = true) { // eslint-disable-line
+  toggleCustomSelect() {
+    const {
+      dispatch,
+    } = this.props;
+
+    dispatch(toggleCustomSelect());
+  }
+
+  toggleMakeMode(save = true) {
     const {
       auth,
       path,
@@ -77,7 +86,7 @@ class Toolbar extends Component {
     } = this.props;
 
     if (this.context.router.isActive({ pathname: '/paths'})) {
-      debugger; //eslint-disable-line
+      debugger; //eslint-disable-line no-debugger
       browserHistory.push('/paths/blank');
     }
 
@@ -117,7 +126,7 @@ class Toolbar extends Component {
   }
 
   render() {
-    const { path, makeMode, auth } = this.props;
+    const { path, customSelect, makeMode, auth } = this.props;
     return (
       <div className={styles.container}>
         <ButtonBar theme={styles}>
@@ -144,22 +153,30 @@ class Toolbar extends Component {
               />
             }
 
-            {auth.loggedIn() &&
-              <Button
-                theme={buttonTheme}
-                primary
-                raised
-                label={makeMode ? 'Save' : 'Edit'}
-                onClick={this.toggleMakeMode}
-              />
-            }
-            {!auth.loggedIn() &&
+            {!auth.loggedIn() && !customSelect &&
               <LinkButton
                 theme={buttonTheme}
                 primary
                 raised
                 label='Edit'
                 href='/login'
+              />
+            }
+            {customSelect &&
+              <Button
+                theme={buttonTheme}
+                onClick={() => this.toggleCustomSelect()}
+                primary
+                raised
+              ><i className='fa fa-times'/></Button>
+            }
+            {auth.loggedIn() && !customSelect &&
+              <Button
+                theme={buttonTheme}
+                primary
+                raised
+                label={makeMode ? 'Save' : 'Edit'}
+                onClick={this.toggleMakeMode}
               />
             }
 
@@ -241,17 +258,18 @@ class Toolbar extends Component {
 }
 
 Toolbar.propTypes = {
-  auth: PropTypes.object.isRequired,
-  params: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  makeMode: PropTypes.bool.isRequired,
-  path: PropTypes.object,
-  paths: PropTypes.array,
-  className: PropTypes.string,
+  auth: T.object.isRequired,
+  params: T.object.isRequired,
+  dispatch: T.func.isRequired,
+  customSelect: T.bool.isRequired,
+  makeMode: T.bool.isRequired,
+  path: T.object,
+  paths: T.array,
+  className: T.string,
 };
 
 Toolbar.contextTypes = {
-  router: PropTypes.object.isRequired,
+  router: T.object.isRequired,
 };
 
 

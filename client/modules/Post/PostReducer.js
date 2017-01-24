@@ -1,9 +1,10 @@
-import { TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
+import { TOGGLE_CUSTOM_SELECT, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
 
 const initState = {
   data: [],
   navigator: {
     changes: [], // full of quill-deltas
+    customSelect: false,
     makeMode: false,
   },
   blank: {
@@ -18,6 +19,13 @@ const initState = {
 
 const PostReducer = (state = initState, action) => {
   switch (action.type) {
+    case TOGGLE_CUSTOM_SELECT :
+      return {
+        data: state.data,
+        navigator: Object.assign({}, state.navigator, { customSelect: !state.navigator.customSelect}),
+        blank: state.blank,
+      };
+
     case TOGGLE_MAKE_MODE :
       return {
         data: state.data,

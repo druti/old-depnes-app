@@ -1,12 +1,19 @@
 import callApi from '../../util/apiCaller';
 
 // Export Constants
+export const TOGGLE_CUSTOM_SELECT = 'TOGGLE_CUSTOM_SELECT';
 export const TOGGLE_MAKE_MODE = 'TOGGLE_MAKE_MODE';
 export const ADD_POST = 'ADD_POST';
 export const ADD_POSTS = 'ADD_POSTS';
 export const DELETE_POST = 'DELETE_POST';
 
 // Export Actions
+export function toggleCustomSelect() {
+  return {
+    type: TOGGLE_CUSTOM_SELECT,
+  };
+}
+
 export function toggleMakeMode() {
   return {
     type: TOGGLE_MAKE_MODE,

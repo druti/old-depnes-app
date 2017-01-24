@@ -18,6 +18,7 @@ import { deltaToString } from '../../../../util/delta';
 
 import { getDefaultSelectionOffsets } from './customSelect';
 
+import { toggleCustomSelect } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
 
 import styles from './styles.scss'; // eslint-disable-line
@@ -27,6 +28,14 @@ class Navigator extends Component {
     super();
     this.state = {};
     this.handleContentClick = this.handleContentClick.bind(this);
+    this.initCS = this.initCS.bind(this);
+    this.updateCS = this.updateCS.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.customSelect && !this.props.customSelect) {
+      this.destroyCS();
+    }
   }
 
   handleContentClick() {
@@ -53,14 +62,14 @@ class Navigator extends Component {
     }
 
     if (abort) {
-      if (Navigator.hasCS) {
+      if (this.props.customSelect) {
         clearSelection();
       }
       // eslint-disable-next-line
       return console.log('Abort new custom selection');
     }
 
-    if (Navigator.hasCS) {
+    if (this.props.customSelect) {
       this.updateCS(sel);
     } else {
       this.initCS(sel);
@@ -85,7 +94,7 @@ class Navigator extends Component {
 
     this.insertStartBlock(beforeNode);
 
-    Navigator.hasCS = true;
+    this.props.dispatch(toggleCustomSelect());
   }
 
   insertAnchorMarker(textNode, index) {
@@ -194,9 +203,9 @@ class Navigator extends Component {
     const { anchorNode, anchorOffset } = sel;
 
     if (anchorNode.parentNode.id === 'c-s-s-b') {
-      return this.destroyCS();
+      this.props.dispatch(toggleCustomSelect());
     } else {
-      return this.modifyCS(anchorNode, anchorOffset);
+      this.modifyCS(anchorNode, anchorOffset);
     }
   }
 
@@ -207,7 +216,6 @@ class Navigator extends Component {
     this.removeFocusBlock();
     this.removeFocusMarker();
     this.removeMiddleBlocks();
-    Navigator.hasCS = false;
   }
 
   removeAnchorMarker() {
@@ -310,6 +318,7 @@ Navigator.propTypes = {
   auth: Type.object.isRequired,
   params: Type.object.isRequired,
   path: Type.object.isRequired,
+  customSelect: Type.bool.isRequired,
   makeMode: Type.bool.isRequired,
   dispatch: Type.func.isRequired,
 };
@@ -320,5 +329,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Navigator);
-//export default connect(mapStateToProps, dispatch => ({ dispatch }))(Navigator);
+export default connect(mapStateToProps, dispatch => ({ dispatch }))(Navigator);
