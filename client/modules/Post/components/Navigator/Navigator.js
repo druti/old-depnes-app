@@ -8,6 +8,7 @@ import Toolbar from './Toolbar';
 import { elementContainsSelection, clearSelection } from '../../../../util/selection';
 
 import {
+  findNearestTextNode,
   insertElementInTextNode,
   nodeTypeText,
   replaceNodeWith,
@@ -181,7 +182,7 @@ class Navigator extends Component {
 
         this.insertMiddleBlock(textNode);
 
-        if (node.nodeType === 3) break;
+        if (nodeTypeText(node)) break;
 
         textNode = getTextNode(node, filterFun);
       }
@@ -255,6 +256,11 @@ class Navigator extends Component {
     if (!focusBlockEl) return;
     replaceNodeWith(focusBlockEl, focusBlockEl.innerHTML);
   }
+  removeTempMarker() {
+    const tempMarkerEl = document.getElementById('c-s-t-m');
+    if (!tempMarkerEl) return;
+    tempMarkerEl.parentNode.removeChild(tempMarkerEl);
+  }
 
   modifyCS(anchorNode, anchorOffset) {
     const tempMarker = '<span id="c-s-t-m"></span>';
@@ -268,12 +274,20 @@ class Navigator extends Component {
     if (content.indexOf(tempMarker) < content.indexOf(startBlock)) {
       // move anchorMarker
       this.removeAnchorMarker();
-      this.insertAnchorMarker(tempMarkerEl.nextSibling, 0);
+      let textNode = tempMarkerEl.nextSibling;
+      if (!textNode || !nodeTypeText(textNode)) {
+        textNode = findNearestTextNode(tempMarkerEl, 'forwards');
+        const startBlockEl = document.getElementById('c-s-s-b');
+        if (startBlockEl.contains(textNode)) {
+          this.removeTempMarker();
+          return this.props.dispatch(toggleCustomSelect());
+        }
+      }
+      this.insertAnchorMarker(textNode, 0);
       this.removeAnchorBlock();
       const anchorMarkerEl = document.getElementById('c-s-a-m');
       if (!anchorMarkerEl) {
-        tempMarkerEl = document.getElementById('c-s-t-m');
-        tempMarkerEl.parentNode.removeChild(tempMarkerEl);
+        this.removeTempMarker();
         return this.props.dispatch(toggleCustomSelect());
       }
       this.insertAnchorBlock(anchorMarkerEl.nextSibling);
@@ -287,8 +301,7 @@ class Navigator extends Component {
       this.removeFocusBlock();
       const focusMarkerEl = document.getElementById('c-s-f-m');
       if (!focusMarkerEl) {
-        tempMarkerEl = document.getElementById('c-s-t-m');
-        tempMarkerEl.parentNode.removeChild(tempMarkerEl);
+        this.removeTempMarker();
         return this.props.dispatch(toggleCustomSelect());
       }
       this.insertFocusBlock(focusMarkerEl.previousSibling);

@@ -28,6 +28,25 @@ export function replaceNodeWith(node, htmlStr) {
   }
 }
 
+export function findNearestTextNode(node, direction) {
+  if (node.nodeType === 3) {
+    return node;
+  }
+
+  const forwards = direction !== 'backwards';
+  const sibling = forwards ? node.nextSibling : node.previousSibling;
+  const siblingTextNodes = getTextNodesInNode(sibling);
+
+  if (siblingTextNodes.length) {
+    return forwards ?
+      siblingTextNodes[0] :
+      siblingTextNodes[siblingTextNodes.length - 1];
+  } else {
+    const nextNode = sibling ? sibling : node.parentNode;
+    return findNearestTextNode(nextNode, direction);
+  }
+}
+
 export function getTextNodesInNode(n) {
   const textNodes = [];
 
