@@ -97,14 +97,14 @@ class Navigator extends Component {
     this.props.dispatch(toggleCustomSelect());
   }
 
-  insertAnchorMarker(textNode, index) {
+  insertAnchorMarker(node, index) {
     const anchorMarker = '<span id="c-s-a-m"></span>';
-    insertElementInTextNode(anchorMarker, textNode, index);
+    insertElementInTextNode(anchorMarker, node, index);
   }
 
-  insertFocusMarker(textNode, index) {
+  insertFocusMarker(node, index) {
     const focusMarker = '<span id="c-s-f-m"></span>';
-    insertElementInTextNode(focusMarker, textNode, index);
+    insertElementInTextNode(focusMarker, node, index);
   }
 
   insertStartBlock(textNode) {
@@ -220,11 +220,13 @@ class Navigator extends Component {
 
   removeAnchorMarker() {
     const anchorMarkerEl = document.getElementById('c-s-a-m');
+    if (!anchorMarkerEl) return;
     anchorMarkerEl.parentNode.removeChild(anchorMarkerEl);
   }
 
   removeFocusMarker() {
     const focusMarkerEl = document.getElementById('c-s-f-m');
+    if (!focusMarkerEl) return;
     focusMarkerEl.parentNode.removeChild(focusMarkerEl);
   }
 
@@ -236,6 +238,7 @@ class Navigator extends Component {
 
   removeStartBlock() {
     const startBlockEl = document.getElementById('c-s-s-b');
+    if (!startBlockEl) return;
     replaceNodeWith(startBlockEl, startBlockEl.innerHTML);
   }
 
@@ -268,6 +271,11 @@ class Navigator extends Component {
       this.insertAnchorMarker(tempMarkerEl.nextSibling, 0);
       this.removeAnchorBlock();
       const anchorMarkerEl = document.getElementById('c-s-a-m');
+      if (!anchorMarkerEl) {
+        tempMarkerEl = document.getElementById('c-s-t-m');
+        tempMarkerEl.parentNode.removeChild(tempMarkerEl);
+        return this.props.dispatch(toggleCustomSelect());
+      }
       this.insertAnchorBlock(anchorMarkerEl.nextSibling);
     } else {
       // move focusMarker
@@ -278,6 +286,11 @@ class Navigator extends Component {
       );
       this.removeFocusBlock();
       const focusMarkerEl = document.getElementById('c-s-f-m');
+      if (!focusMarkerEl) {
+        tempMarkerEl = document.getElementById('c-s-t-m');
+        tempMarkerEl.parentNode.removeChild(tempMarkerEl);
+        return this.props.dispatch(toggleCustomSelect());
+      }
       this.insertFocusBlock(focusMarkerEl.previousSibling);
     }
 
