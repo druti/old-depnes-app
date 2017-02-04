@@ -24,7 +24,7 @@ export default class AuthService extends EventEmitter {
         socialButtonStyle: 'small',
         auth: {
           redirectUrl: process.env.NODE_ENV === 'development' ?
-            'http://192.168.0.12:8000' : 'http://depnes.com',
+            'http://192.168.0.10:8000' : 'http://depnes.com',
           responseType: 'token',
         },
         mustAcceptTerms: true,
