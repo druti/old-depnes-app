@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import MasterLayout from '../../../../layouts/MasterLayout';
 import PathList from '../../components/PathList';
 
-import { getPost, getPosts } from '../../PostReducer';
+import { getPosts } from '../../PostReducer';
 import { fetchPosts } from '../../PostActions';
 
 import { LinkButton } from '../../../../mdl/Button';
@@ -47,10 +47,9 @@ PathListPage.propTypes = {
   paths: PropTypes.array.isRequired,
 };
 
-function mapStateToProps(state, props) {
+function mapStateToProps(state) {
   return {
     paths: getPosts(state),
-    path: getPost(state, props.params.cuid),
   };
 }
 

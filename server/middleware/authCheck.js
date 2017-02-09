@@ -1,14 +1,31 @@
-import jwt from 'express-jwt'
+import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import config from '../config';
 
-// Authentication middleware provided by express-jwt.
-// This middleware will check incoming requests for a valid
-// JWT on any routes that it is applied to.
-const authCheck = jwt({
-  secret: new Buffer(
-    'ZPAFgmIVTR8sDvXSTrT8qjUAsidlctE--ostC5WfRD7ww9PI0A9pZROWx-Sn_BNd',
-    'base64'
-  ),
-  audience: 'wsTRLfN6pOyjQDpfCYzTOzFYNnq0ycbz',
-});
+const User = mongoose.model('User');
 
-export default authCheck;
+export default (req, res, next) => {
+  if (!req.headers.authorization) {
+    return res.status(401).end();
+  }
+
+  // get the last part from authorization header string: "bearer token-value"
+  const token = req.headers.authorization.split(' ')[1];
+
+  // decode the token using secret key-phrase
+  return jwt.verify(token, config.jwtSecret, (err, decoded) => {
+    if (err) {
+      return res.status(401).end();
+    }
+
+    const userId = decoded.sub;
+
+    return User.findById(userId, (userErr, user) => {
+      if (userErr || !user) {
+        return res.status(401).end();
+      }
+
+      return next();
+    });
+  });
+};

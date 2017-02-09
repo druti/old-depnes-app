@@ -1,10 +1,10 @@
 import Express from 'express';
 import cors from 'cors';
 import compression from 'compression';
-import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import path from 'path';
 import IntlWrapper from '../client/modules/Intl/IntlWrapper';
+import serverConfig from './config';
 
 // Webpack Requirements
 import webpack from 'webpack';
@@ -22,7 +22,6 @@ if (process.env.NODE_ENV === 'development') {
   app.use(webpackHotMiddleware(compiler));
 }
 
-// React And Redux Setup
 import { configureStore } from '../client/store';
 import { Provider } from 'react-redux';
 import React from 'react';
@@ -33,28 +32,43 @@ import Helmet from 'react-helmet';
 // Import required modules
 import getRoutes from '../client/routes';
 import { fetchComponentData } from './util/fetchData';
-import posts from './routes/post.routes';
-import serverConfig from './config';
 
-// Set native promises as mongoose promise
-mongoose.Promise = global.Promise;
-
-// MongoDB Connection
-mongoose.connect(serverConfig.mongoURL, (error) => {
-  if (error) {
-    console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
-    throw error;
-  }
-  // dummyData();
-});
-
-// Apply body Parser and server public assets and routes
+// Apply body Parser and server public assets
 app.use(cors());
 app.use(compression());
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../dist')));
-app.use('/api', posts);
+
+
+import mongoose from 'mongoose';
+
+// Plug in native promises
+mongoose.Promise = global.Promise;
+
+// MongoDB Connection
+mongoose.connect(serverConfig.mongoURL, error => {
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Mongoose connection error: ${error}`);
+    throw error;
+  }
+});
+
+
+import passport from 'passport';
+import localSignupStrategy from './passport/local-signup';
+import localLoginStrategy from './passport/local-login';
+import authRoutes from './routes/auth';
+import pathRoutes from './routes/post';
+
+app.use(passport.initialize());
+passport.use('local-signup', localSignupStrategy);
+passport.use('local-signup', localLoginStrategy);
+
+app.use('/auth', authRoutes);
+app.use('/api', pathRoutes);
+
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
@@ -100,11 +114,19 @@ const renderError = err => {
   return renderFullPage(`Server Error${errTrace}`, {});
 };
 
-// Server Side Rendering based on routes matched by React-router.
-app.use((req, res, next) => {
+
+// Server Side Rendering based on routes matched by react-router.
+app.use('*', (req, res, next) => {
+  if(req.baseUrl.startsWith('/auth') || req.baseUrl.startsWith('/api')) {
+    return next();
+  }
+
   const store = configureStore();
 
-  match({ routes: getRoutes(store), location: req.url }, (err, redirectLocation, renderProps) => {
+  match({
+    routes: getRoutes(store),
+    location: req.url,
+  }, (err, redirectLocation, renderProps) => {
     if (err) {
       return res.status(500).end(renderError(err));
     }
