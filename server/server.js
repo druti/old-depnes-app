@@ -1,4 +1,6 @@
 import Express from 'express';
+import http from 'http';
+import httpProxy from 'http-proxy';
 import cors from 'cors';
 import compression from 'compression';
 import bodyParser from 'body-parser';
@@ -14,6 +16,12 @@ import webpackHotMiddleware from 'webpack-hot-middleware';
 
 // Initialize the Express App
 const app = new Express();
+const targetUrl = `http://${serverConfig.apiHost}:${serverConfig.apiPort}`;
+const server = new http.Server(app);
+const proxy = httpProxy.createProxyServer({
+  target: targetUrl,
+  ws: true,
+});
 
 // Run Webpack dev server in development mode
 if (process.env.NODE_ENV === 'development') {
@@ -21,6 +29,13 @@ if (process.env.NODE_ENV === 'development') {
   app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }));
   app.use(webpackHotMiddleware(compiler));
 }
+
+app.use((req, res, next) => {
+  console.log('!!!!!!!!!!!!!!!!!PATH', req.path);
+  res.setHeader('Service-Worker-Allowed', '*');
+  res.setHeader('X-Forwarded-For', req.ip);
+  return next();
+});
 
 import { configureStore } from '../client/store';
 import { Provider } from 'react-redux';
@@ -40,6 +55,31 @@ app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../dist')));
 
+// Proxy to API server
+app.use('/apii', (req, res) => {
+  proxy.web(req, res, { target: targetUrl });
+});
+
+app.use('/ws', (req, res) => {
+  proxy.web(req, res, { target: `${targetUrl}/ws` });
+});
+
+server.on('upgrade', (req, socket, head) => {
+  proxy.ws(req, socket, head);
+});
+
+// added the error handling to avoid https://github.com/nodejitsu/node-http-proxy/issues/527
+proxy.on('error', (error, req, res) => {
+  if (error.code !== 'ECONNRESET') {
+    console.error('proxy error', error);
+  }
+  if (!res.headersSent) {
+    res.writeHead(500, { 'content-type': 'application/json' });
+  }
+
+  const json = { error: 'proxy_error', reason: error.message };
+  res.end(JSON.stringify(json));
+});
 
 import mongoose from 'mongoose';
 
@@ -160,7 +200,7 @@ app.use('*', (req, res, next) => {
 });
 
 // start app
-app.listen(serverConfig.port, (error) => {
+server.listen(serverConfig.port, (error) => {
   if (!error) {
     console.log(`MERN is running on port: ${serverConfig.port}! Build something amazing!`); // eslint-disable-line
   }

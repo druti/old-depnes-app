@@ -37,6 +37,8 @@ export function getPosts(req, res) {
       res.status(500).send(err);
     }
 
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!POSTS', posts);
+
     res.json({ posts });
   });
 }
