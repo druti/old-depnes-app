@@ -2,7 +2,6 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 
-import AuthService from './util/AuthService'
 import App from './modules/App/App';
 
 import { toggleMakeMode } from './modules/Post/PostActions';
@@ -26,15 +25,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 
-const auth = new AuthService();
-
-// validate authentication for private routes
-const requireAuth = (nextState, replace) => {
-  if (!auth.loggedIn()) {
-    replace({ pathname: '/login' })
-  }
-}
-
 // react-router setup with code-splitting
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
 export default function getRoutes(store) {
@@ -48,7 +38,6 @@ export default function getRoutes(store) {
     const cuid = nextState.params.cuid;
     const path = getPost(reduxState, cuid);
     if (!path || cuid === 'blank') {
-      requireAuth(nextState, replace);
       store.dispatch(toggleMakeMode());
       if (cuid !== 'blank') {
         replace('/paths/blank');
@@ -64,7 +53,7 @@ export default function getRoutes(store) {
   };
 
   return (
-    <Route path='/' component={App} auth={auth}>
+    <Route path='/' component={App}>
       <IndexRoute
         getComponent={(nextState, cb) => {
           require.ensure([], require => {
