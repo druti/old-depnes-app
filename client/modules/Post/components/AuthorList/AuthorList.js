@@ -5,8 +5,8 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import styles from './styles.scss'; // eslint-disable-line
 
-const PathAuthors = ({ auth, path }) => {
-  const currentAuthor = { contentAuthorId: auth.getProfile().user_id };
+const PathAuthors = ({ user, path }) => {
+  const currentAuthor = { contentAuthorId: user.user_id };
   const authorMap = path.content.authors || [currentAuthor];
   const contentAuthorIds = [];
   const formatAuthorIds = [];
@@ -49,7 +49,7 @@ const PathAuthors = ({ auth, path }) => {
 };
 
 PathAuthors.propTypes = {
-  auth: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
   path: PropTypes.object.isRequired,
 };
 

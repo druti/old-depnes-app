@@ -27,7 +27,6 @@ export class App extends Component {
     let child = null;
     if (this.props.children) {
       child = React.cloneElement(this.props.children, {
-        auth: this.props.route.auth, //sends auth instance from route to child
         params: this.props.params,
         switchLanguage: lang => this.props.dispatch(switchLanguage(lang)),
         intl: this.props.intl,

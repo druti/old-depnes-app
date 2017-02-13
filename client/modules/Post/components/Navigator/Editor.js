@@ -81,7 +81,7 @@ class Navigator extends Component {
 }
 
 Navigator.propTypes = {
-  auth: Type.object.isRequired,
+  user: Type.object.isRequired,
   params: Type.object.isRequired,
   path: Type.object.isRequired,
   makeMode: Type.bool.isRequired,

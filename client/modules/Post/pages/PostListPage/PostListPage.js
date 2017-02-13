@@ -13,11 +13,11 @@ import styles from './postListPage.scss'; // eslint-disable-line
 
 class PathListPage extends Component { // eslint-disable-line
   render() {
-    const { params, auth, switchLanguage, intl, paths } = this.props;
+    const { params, switchLanguage, intl, paths } = this.props;
     return (
       <MasterLayout
         params={params}
-        auth={auth}
+        user={{}}
         switchLanguage={switchLanguage}
         intl={intl}
       >
@@ -40,7 +40,6 @@ PathListPage.need = [() => { return fetchPosts(); }];
 
 PathListPage.propTypes = {
   router: PropTypes.object,
-  auth: PropTypes.object.isRequired,
   params: PropTypes.object.isRequired,
   switchLanguage: PropTypes.func.isRequired,
   intl: PropTypes.object.isRequired,

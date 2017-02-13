@@ -315,13 +315,13 @@ class Navigator extends Component {
   }
 
   render() {
-    const { auth, params, makeMode, path } = this.props;
+    const { user, params, makeMode, path } = this.props;
     return (
       <div className={styles.container}>
         <Helmet title={deltaToString(this.props.path.content, 30)} />
         {makeMode ?
           <Editor
-            auth={auth}
+            user={user}
             params={params}
             path={path}
           /> :
@@ -334,14 +334,14 @@ class Navigator extends Component {
             />
           </div>
         }
-        <Toolbar auth={auth} params={params} />
+        <Toolbar user={user} params={params} />
       </div>
     );
   }
 }
 
 Navigator.propTypes = {
-  auth: Type.object.isRequired,
+  user: Type.object.isRequired,
   params: Type.object.isRequired,
   path: Type.object.isRequired,
   customSelect: Type.bool.isRequired,

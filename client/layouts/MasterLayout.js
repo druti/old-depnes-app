@@ -21,12 +21,6 @@ class MasterLayout extends React.Component {
     };
   }
 
-  componentWillMount() {
-    this.props.auth.on('profile_updated', profile => {
-      this.setState(profile);
-    });
-  }
-
   componentDidMount() {
     // `DidMount` instead of `WillMount` because window is not available on
     // server for SSR
@@ -39,7 +33,7 @@ class MasterLayout extends React.Component {
   }
 
   toggleDrawer = () => {
-    if (this.viewportW > this.lg) { 
+    if (this.viewportW > this.lg) {
       this.setState({
         drawerPinned: !this.state.drawerPinned,
         drawerActive: false,
@@ -53,27 +47,16 @@ class MasterLayout extends React.Component {
   };
 
   logIn = () => {
-    const { auth } = this.props;
-    auth.showUI({
-      initialScreen: 'login',
-    });
   };
 
   signUp = () => {
-    const { auth } = this.props;
-    auth.showUI({
-      initialScreen: 'signUp',
-    });
   };
 
   logOut = () => {
-    const { auth } = this.props;
-    auth.logout();
-    location.reload();
   };
 
   render() {
-    const { auth } = this.props;
+    const { user } = this.props;
     return (
       <Layout theme={drawerTheme}>
         <NavDrawer
@@ -87,18 +70,18 @@ class MasterLayout extends React.Component {
         <Panel>
           <ButtonBar theme={theme}>
             <IconButton icon='menu' onClick={this.toggleDrawer} theme={buttonTheme} />
-            {auth.loggedIn() &&
+            {user &&
               <Button
                 theme={buttonTheme}
-                label={auth.getProfile().username || auth.getProfile().nickname}
+                label={user.username || user.email}
                 className={theme.username}
-                onClick={() => { auth.logout(); location.reload(); }}
+                onClick={this.logOut()}
               />
             }
-            {!auth.loggedIn() &&
+            {!user &&
               <Button label='Log In' onClick={this.logIn} theme={buttonTheme} />
             }
-            {!auth.loggedIn() &&
+            {!user &&
               <Button label='Sign Up' onClick={this.signUp} theme={buttonTheme} />
             }
           </ButtonBar>
@@ -112,7 +95,7 @@ class MasterLayout extends React.Component {
 }
 
 MasterLayout.propTypes = {
-  auth: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
   switchLanguage: PropTypes.func,
   intl: PropTypes.object,
   children: PropTypes.any.isRequired,
