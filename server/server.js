@@ -31,7 +31,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use((req, res, next) => {
-  console.log('!!!!!!!!!!!!!!!!!PATH', req.path);
   res.setHeader('Service-Worker-Allowed', '*');
   res.setHeader('X-Forwarded-For', req.ip);
   return next();
@@ -56,7 +55,7 @@ app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../dist')));
 
 // Proxy to API server
-app.use('/apii', (req, res) => {
+app.use('/api', (req, res) => {
   proxy.web(req, res, { target: targetUrl });
 });
 
