@@ -1,21 +1,37 @@
 // Import Actions
-import { TOGGLE_MAKE_PATH } from './AppActions';
+import {
+  AUTH_USER,
+  UNAUTH_USER,
+  AUTH_ERROR,
+  PROTECTED_TEST,
+} from './AppActions';
 
 // Initial State
-const initialState = {
-  letMakePath: false,
+const initState = {
+  error: '',
+  message: '',
+  authenticated: false,
+  user: null,
 };
 
-const AppReducer = (state = initialState, action) => {
+const AppReducer = (state = initState, action) => {
   switch (action.type) {
-    case TOGGLE_MAKE_PATH:
+    case AUTH_USER:
       return {
-        letMakePath: !state.letMakePath,
+        ...state,
+        error: '',
+        message: '',
+        authenticated: true,
+        user: action.user,
       };
-
-    default:
-      return state;
+    case UNAUTH_USER:
+      return { ...state, authenticated: false, user: null };
+    case AUTH_ERROR:
+      return { ...state, error: action.payload };
+    case PROTECTED_TEST:
+      return { ...state, content: action.payload };
   }
+  return state;
 };
 
 /* Selectors */

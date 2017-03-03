@@ -70,6 +70,22 @@ export default function getRoutes(store) {
         }}
       />
       <Route
+        path='/register'
+        getComponent={(nextState, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./modules/App/pages/Register/RegisterPage').default);
+          });
+        }}
+      />
+      <Route
+        path='/user'
+        getComponent={(nextState, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./modules/App/pages/User/UserPage').default);
+          });
+        }}
+      />
+      <Route
         path='/paths'
         getComponent={(nextState, cb) => {
           require.ensure([], require => {

@@ -1,42 +1,64 @@
-import React, { PropTypes, Component } from 'react';
+import React, { PropTypes as T, Component } from 'react';
 import { connect } from 'react-redux';
-
-import styles from '../../../Post/components/pathList.scss'; // eslint-disable-line
-
+import { Field, reduxForm } from 'redux-form';
+import { loginUser } from '../../AppActions';
 import MasterLayout from '../../../../layouts/MasterLayout';
 
-import { fetchPosts } from '../../../Post/PostActions';
+const form = reduxForm({
+  form: 'login',
+});
 
 class LoginPage extends Component {
-  componentDidMount() {
-    this.props.auth.showUI();
+  handleFormSubmit(formProps) {
+    this.props.loginUser(formProps);
   }
-  componentWillUnmount() {
-    this.props.auth.hideUI();
+
+  renderAlert() {
+    if (this.props.errorMessage) {
+      return (
+        <div>
+          <span><strong>Error!</strong> {this.props.errorMessage}</span>
+        </div>
+      );
+    }
   }
+
   render() {
-    const { params, auth, switchLanguage, intl } = this.props;
+    const { params, switchLanguage, intl, handleSubmit } = this.props;
     return (
       <MasterLayout
         params={params}
-        auth={auth}
         switchLanguage={switchLanguage}
         intl={intl}
       >
-        <div className={styles['no-paths']}><h4>Login</h4></div>
+        <form onSubmit={handleSubmit(this.handleFormSubmit)}>
+          {this.renderAlert()}
+          <Field placeholder='email' name='email' component='input' type='text' />
+          <Field placeholder='password' name='password' component='input' type='password' />
+          <button type='submit'>Login</button>
+        </form>
       </MasterLayout>
     );
   }
 }
 
-LoginPage.need = [() => { return fetchPosts(); }];
+// LoginPage.need = [() => { return fetchPosts(); }];
 
 LoginPage.propTypes = {
-  router: PropTypes.object,
-  auth: PropTypes.object.isRequired,
-  params: PropTypes.object.isRequired,
-  switchLanguage: PropTypes.func.isRequired,
-  intl: PropTypes.object.isRequired,
+  router: T.object,
+  params: T.object.isRequired,
+  switchLanguage: T.func.isRequired,
+  intl: T.object.isRequired,
+  loginUser: T.func.isRequired,
+  handleSubmit: T.func.isRequired,
+  errorMessage: T.node,
 };
 
-export default connect()(LoginPage);
+function mapStateToProps(state) {
+  return {
+    errorMessage: state.app.error,
+    message: state.app.message,
+  };
+}
+
+export default connect(mapStateToProps, { loginUser })(form(LoginPage));

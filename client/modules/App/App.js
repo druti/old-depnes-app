@@ -6,7 +6,6 @@ import Helmet from 'react-helmet';
 import DevTools from './components/DevTools';
 
 // Import Actions
-import { toggleMakePath } from './AppActions';
 import { switchLanguage } from '../../modules/Intl/IntlActions';
 
 export class App extends Component {
@@ -19,10 +18,6 @@ export class App extends Component {
     this.setState({isMounted: true}); // eslint-disable-line
   }
 
-  toggleMakePathSection = () => {
-    this.props.dispatch(toggleMakePath());
-  };
-
   render() {
     let child = null;
     if (this.props.children) {
@@ -30,7 +25,6 @@ export class App extends Component {
         params: this.props.params,
         switchLanguage: lang => this.props.dispatch(switchLanguage(lang)),
         intl: this.props.intl,
-        toggleMakePath: this.toggleMakePathSection,
       });
     }
 
