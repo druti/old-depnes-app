@@ -31,7 +31,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use((req, res, next) => {
-  res.setHeader('Service-Worker-Allowed', '*');
   res.setHeader('X-Forwarded-For', req.ip);
   return next();
 });

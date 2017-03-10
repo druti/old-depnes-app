@@ -1,30 +1,6 @@
 import Post from '../models/post';
 import cuid from 'cuid';
 
-function parseIn(path) {
-  const { ops, authors } = path.content;
-  const lastOp = ops[ops.length-1];
-
-  if (!ops[0].insert || !lastOp.insert) {
-    console.log('PathId: ', path.id); // eslint-disable-line
-    console.log('Operations: \n', ops); // eslint-disable-line
-    return new Error('!!!!!!!!!!! Unexpected path content operation');
-  }
-
-  ops[0].insert = ops[0].insert.slice(ops[0].insert.indexOf(ops[0].insert.trim())); // trimStart()
-
-  if (!ops[0].insert.trim()) {
-    ops.shift();
-    authors.shift();
-  }
-
-  if (lastOp.insert.endsWith('\n') && lastOp.insert.trim().length) {
-    lastOp.insert = lastOp.insert.substring(0, lastOp.insert.lastIndexOf('\n'));
-    ops.push({insert: '\n'});
-    authors.push(null);
-  }
-}
-
 /**
  * Get all posts
  * @param req
@@ -37,6 +13,7 @@ export function getPosts(req, res) {
       res.status(500).send(err);
     }
 
+    // eslint-disable-next-line
     console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!POSTS', posts);
 
     res.json({ posts });
@@ -102,3 +79,28 @@ export function deletePost(req, res) {
     });
   });
 }
+
+function parseIn(path) {
+  const { ops, authors } = path.content;
+  const lastOp = ops[ops.length-1];
+
+  if (!ops[0].insert || !lastOp.insert) {
+    console.log('PathId: ', path.id); // eslint-disable-line
+    console.log('Operations: \n', ops); // eslint-disable-line
+    return new Error('!!!!!!!!!!! Unexpected path content operation');
+  }
+
+  ops[0].insert = ops[0].insert.slice(ops[0].insert.indexOf(ops[0].insert.trim())); // trimStart()
+
+  if (!ops[0].insert.trim()) {
+    ops.shift();
+    authors.shift();
+  }
+
+  if (lastOp.insert.endsWith('\n') && lastOp.insert.trim().length) {
+    lastOp.insert = lastOp.insert.substring(0, lastOp.insert.lastIndexOf('\n'));
+    ops.push({insert: '\n'});
+    authors.push(null);
+  }
+}
+
