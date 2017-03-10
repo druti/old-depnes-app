@@ -69,6 +69,7 @@ server.on('upgrade', (req, socket, head) => {
 // added the error handling to avoid https://github.com/nodejitsu/node-http-proxy/issues/527
 proxy.on('error', (error, req, res) => {
   if (error.code !== 'ECONNRESET') {
+    // eslint-disable-next-line no-console
     console.error('proxy error', error);
   }
   if (!res.headersSent) {
@@ -92,20 +93,6 @@ mongoose.connect(serverConfig.mongoURL, error => {
     throw error;
   }
 });
-
-
-import passport from 'passport';
-import localSignupStrategy from './passport/local-signup';
-import localLoginStrategy from './passport/local-login';
-import authRoutes from './routes/auth';
-import pathRoutes from './routes/post';
-
-app.use(passport.initialize());
-passport.use('local-signup', localSignupStrategy);
-passport.use('local-signup', localLoginStrategy);
-
-app.use('/auth', authRoutes);
-app.use('/api', pathRoutes);
 
 
 // Render Initial HTML
