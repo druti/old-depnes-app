@@ -53,21 +53,21 @@ export function fetchPosts() {
   };
 }
 
-export function fetchPost(cuid) {
+export function fetchPost(sid) {
   return (dispatch) => {
-    return callApi(`posts/${cuid}`).then(res => dispatch(addPost(res.post)));
+    return callApi(`posts/${sid}`).then(res => dispatch(addPost(res.post)));
   };
 }
 
-export function deletePost(cuid) {
+export function deletePost(sid) {
   return {
     type: DELETE_POST,
-    cuid,
+    sid,
   };
 }
 
-export function deletePostRequest(cuid) {
+export function deletePostRequest(sid) {
   return (dispatch) => {
-    return callApi(`posts/${cuid}`, 'delete').then(() => dispatch(deletePost(cuid)));
+    return callApi(`posts/${sid}`, 'delete').then(() => dispatch(deletePost(sid)));
   };
 }

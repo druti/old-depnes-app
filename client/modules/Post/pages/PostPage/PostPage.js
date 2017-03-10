@@ -49,7 +49,7 @@ PathPage.propTypes = {
 // Retrieve data from store as props
 function mapStateToProps(state, props) {
   return {
-    path: getPost(state, props.params.cuid),
+    path: getPost(state, props.params.sid),
   };
 }
 

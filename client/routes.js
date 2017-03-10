@@ -35,11 +35,11 @@ export default function getRoutes(store) {
     }
 
     const reduxState = store.getState();
-    const cuid = nextState.params.cuid;
-    const path = getPost(reduxState, cuid);
-    if (!path || cuid === 'blank') {
+    const sid = nextState.params.sid;
+    const path = getPost(reduxState, sid);
+    if (!path || sid === 'blank') {
       store.dispatch(toggleMakeMode());
-      if (cuid !== 'blank') {
+      if (sid !== 'blank') {
         replace('/paths/blank');
       }
     }
@@ -94,7 +94,7 @@ export default function getRoutes(store) {
         }}
       />
       <Route
-        path='/paths/:cuid'
+        path='/paths/:sid'
         onEnter={checkForBlank}
         onLeave={exitMakeMode}
         getComponent={(nextState, cb) => {

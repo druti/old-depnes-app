@@ -66,7 +66,7 @@ class Toolbar extends Component {
       length: nextPathSelectionLength,
     };
 
-    browserHistory.push(`/paths/${nextPath.cuid}`);
+    browserHistory.push(`/paths/${nextPath.sid}`);
   }
 
   toggleCustomSelect() {
@@ -95,7 +95,7 @@ class Toolbar extends Component {
         let newContent = associateChangesWithAuthor(
           path,
           PostPage.pathChanges,
-          auth.getProfile().user_id
+          auth.getProfile().usersid
         );
         newContent = deltaToContent(newContent);
         this.savePath(newContent);
@@ -120,7 +120,7 @@ class Toolbar extends Component {
         window.alert('Error creating path');
         return;
       }
-      browserHistory.push(`/paths/${res.post.cuid}`);
+      browserHistory.push(`/paths/${res.post.sid}`);
       window.alert('New path created!');
     });
   }
@@ -131,13 +131,13 @@ class Toolbar extends Component {
       <div className={styles.container}>
         <ButtonBar theme={styles}>
           <div id='navigator-toolbar'>
-            {path.cuid === 'blank' && makeMode &&
+            {path.sid === 'blank' && makeMode &&
               <LinkIconButton
                 theme={buttonTheme}
                 href='/paths'
               ><i className='fa fa-times'/></LinkIconButton>
             }
-            {path.cuid !== 'blank' && makeMode &&
+            {path.sid !== 'blank' && makeMode &&
               <IconButton
                 theme={buttonTheme}
                 onClick={() => this.toggleMakeMode(false)}
@@ -324,16 +324,16 @@ function cleanDelta(delta) {
 }
 
 function goToNextConsecutivePath(currentPath, paths) {
-  if (currentPath && currentPath.cuid !== 'blank') {
+  if (currentPath && currentPath.sid !== 'blank') {
     for (let i = 0; i < paths.length; i++) {
-      if (paths[i].cuid === currentPath.cuid) {
+      if (paths[i].sid === currentPath.sid) {
         const nextPath = paths[i + 1];
-        const url = nextPath ? `/paths/${nextPath.cuid}` : '/paths';
+        const url = nextPath ? `/paths/${nextPath.sid}` : '/paths';
         browserHistory.push(url);
       }
     }
   } else {
-    browserHistory.push(`/paths/${paths[0].cuid}`);
+    browserHistory.push(`/paths/${paths[0].sid}`);
   }
 }
 
@@ -363,7 +363,7 @@ function associateChangesWithAuthor(path, changes, userId) {
 
 function mapStateToProps(state, props) {
   return {
-    path: getPost(state, props.params.cuid),
+    path: getPost(state, props.params.sid),
     paths: getPosts(state),
     ...getNavigator(state),
   };

@@ -13,7 +13,7 @@ const initState = {
       authors: [null],
     },
     htmlContent: '',
-    cuid: 'blank',
+    sid: 'blank',
   },
 };
 
@@ -45,7 +45,7 @@ const PostReducer = (state = initState, action) => {
 
     case DELETE_POST :
       return {
-        data: state.data.filter(post => post.cuid !== action.cuid),
+        data: state.data.filter(post => post.sid !== action.sid),
         navigator: state.navigator,
         blank: state.blank,
       };
@@ -73,12 +73,12 @@ export const getNavigator = state => state.posts.navigator;
 // Get all posts
 export const getPosts = state => state.posts.data;
 
-// Get post by cuid
-export const getPost = (state, cuid) => {
-  if (cuid === 'blank') {
+// Get post by sid
+export const getPost = (state, sid) => {
+  if (sid === 'blank') {
     return state.posts.blank;
   }
-  return state.posts.data.filter(post => post.cuid === cuid)[0];
+  return state.posts.data.filter(post => post.sid === sid)[0];
 };
 
 // Export Reducer

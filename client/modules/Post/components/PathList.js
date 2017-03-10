@@ -12,7 +12,7 @@ const PathList = (props) => {
 
   for (let i = 0; i < paths.length; i++) {
     let path = paths[i];
-    const href = '/paths/' + path.cuid;
+    const href = '/paths/' + path.sid;
     Cards.push(
       <Card href={href} key={i}>
         {deltaToString(path.content, 200)}
@@ -32,7 +32,7 @@ const PathList = (props) => {
 PathList.propTypes = {
   paths: PropTypes.arrayOf(PropTypes.shape({
     content: PropTypes.object.isRequired,
-    cuid: PropTypes.string.isRequired,
+    sid: PropTypes.string.isRequired,
   })).isRequired,
 };
 
