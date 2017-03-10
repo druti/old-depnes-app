@@ -29,12 +29,12 @@ export function addPost(post) {
 
 export function addPostRequest({ content, htmlContent }) {
   return (dispatch) => {
-    return callApi('paths', 'post', {
+    return callApi('posts', 'post', {
       post: {
         content,
         htmlContent,
       },
-    }).then(res => dispatch(addPost(res.data)));
+    }).then(res => dispatch(addPost(res.posts)));
   };
 }
 
@@ -47,15 +47,15 @@ export function addPosts(posts) {
 
 export function fetchPosts() {
   return (dispatch) => {
-    return callApi('paths').then(res => {
-      dispatch(addPosts(res.data));
+    return callApi('posts').then(res => {
+      dispatch(addPosts(res.posts));
     });
   };
 }
 
 export function fetchPost(cuid) {
   return (dispatch) => {
-    return callApi(`paths/${cuid}`).then(res => dispatch(addPost(res.data)));
+    return callApi(`posts/${cuid}`).then(res => dispatch(addPost(res.post)));
   };
 }
 
@@ -68,6 +68,6 @@ export function deletePost(cuid) {
 
 export function deletePostRequest(cuid) {
   return (dispatch) => {
-    return callApi(`paths/${cuid}`, 'delete').then(() => dispatch(deletePost(cuid)));
+    return callApi(`posts/${cuid}`, 'delete').then(() => dispatch(deletePost(cuid)));
   };
 }
