@@ -1,28 +1,50 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
+import { browserHistory } from 'react-router';
 
 import MasterLayout from '../../../../layouts/MasterLayout';
 import AuthorList from '../../components/AuthorList/AuthorList';
 import Navigator from '../../components/Navigator/Navigator';
 
-import { getPost } from '../../PostReducer';
-import { fetchPosts } from '../../PostActions';
+import { getNavigator, getPost } from '../../PostReducer';
+import { toggleMakeMode, fetchPosts } from '../../PostActions';
+import { getUser } from '../../../Auth/AuthReducer';
 
-class PathPage extends Component { // eslint-disable-line
+class PostPage extends Component { // eslint-disable-line
+  componentWillMount() {
+    const { params, user, makeMode, dispatch } = this.props;
+
+    if (params.sid === 'blank') {
+      if (!user) {
+        browserHistory.replace('/login');
+      } else if (!makeMode) {
+        dispatch(toggleMakeMode());
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    const { makeMode, dispatch } = this.props;
+
+    if (makeMode) {
+      dispatch(toggleMakeMode());
+    }
+  }
+
   render() {
-    const { params, switchLanguage, intl, path } = this.props;
+    const { params, switchLanguage, intl, post } = this.props;
     return (
       <MasterLayout
         switchLanguage={switchLanguage}
         intl={intl}
       >
-        {path &&
+        {post &&
           <div>
-            <AuthorList params={params} path={path} />
-            <Navigator params={params} path={path} />
+            <AuthorList params={params} path={post} />
+            <Navigator params={params} path={post} />
           </div>
         }
-        {!path &&
+        {!post &&
           <h1>404 Not Found</h1>
         }
       </MasterLayout>
@@ -31,23 +53,28 @@ class PathPage extends Component { // eslint-disable-line
 }
 
 // Actions required to provide data for this component to render in sever side.
-PathPage.need = [() => {
+PostPage.need = [() => {
   return fetchPosts();
 }];
 
 
-PathPage.propTypes = {
-  params: PropTypes.object.isRequired,
-  switchLanguage: PropTypes.func.isRequired,
-  intl: PropTypes.object.isRequired,
-  path: PropTypes.object,
+PostPage.propTypes = {
+  user: T.object,
+  dispatch: T.func.isRequired,
+  params: T.object.isRequired,
+  switchLanguage: T.func.isRequired,
+  makeMode: T.bool.isRequired,
+  intl: T.object.isRequired,
+  post: T.object,
 };
 
 // Retrieve data from store as props
 function mapStateToProps(state, props) {
   return {
-    path: getPost(state, props.params.sid),
+    ...getNavigator(state),
+    post: getPost(state, props.params.sid),
+    user: getUser(state),
   };
 }
 
-export default connect(mapStateToProps, dispatch => ({dispatch}))(PathPage);
+export default connect(mapStateToProps, dispatch => ({dispatch}))(PostPage);

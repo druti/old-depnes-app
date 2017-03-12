@@ -4,9 +4,6 @@ import { Route, IndexRoute } from 'react-router';
 
 import App from './modules/App/App';
 
-import { toggleMakeMode } from './modules/Post/PostActions';
-import { getPost } from './modules/Post/PostReducer';
-
 // require.ensure polyfill for node
 if (typeof require.ensure !== 'function') {
   require.ensure = function requireModule(deps, callback) {
@@ -26,34 +23,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 // react-router setup with code-splitting
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
-export default function getRoutes(store) {
-  const checkForBlank = (nextState, replace) => {
-    const isServer = typeof window === 'undefined';
-    if (isServer) {
-      return;
-    }
-
-    const reduxState = store.getState();
-    const sid = nextState.params.sid;
-    const path = getPost(reduxState, sid);
-    if (!path || sid === 'blank') {
-      if (!reduxState.auth.user) {
-        replace({ pathname: '/login' });
-      }
-      store.dispatch(toggleMakeMode());
-      if (sid !== 'blank') {
-        replace('/paths/blank');
-      }
-    }
-  };
-
-  const exitMakeMode = () => {
-    const state = store.getState();
-    if (state.posts.navigator.makeMode) {
-      store.dispatch(toggleMakeMode());
-    }
-  };
-
+export default function getRoutes() {
   return (
     <Route path='/' component={App}>
       <IndexRoute
@@ -97,8 +67,6 @@ export default function getRoutes(store) {
       />
       <Route
         path='/paths/:sid'
-        onEnter={checkForBlank}
-        onLeave={exitMakeMode}
         getComponent={(nextState, cb) => {
           require.ensure([], require => {
             cb(null, require('./modules/Post/pages/PostPage/PostPage').default);
