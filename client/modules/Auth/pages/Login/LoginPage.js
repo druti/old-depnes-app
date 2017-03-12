@@ -1,7 +1,7 @@
 import React, { PropTypes as T, Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { loginUser } from '../../AppActions';
+import { loginUser } from '../../AuthActions';
 import MasterLayout from '../../../../layouts/MasterLayout';
 
 const form = reduxForm({
@@ -9,6 +9,11 @@ const form = reduxForm({
 });
 
 class LoginPage extends Component {
+  constructor(props) {
+    super(props);
+    this.handleFormSubmit = this.handleFormSubmit.bind(this);
+  }
+
   handleFormSubmit(formProps) {
     this.props.loginUser(formProps);
   }
@@ -56,8 +61,8 @@ LoginPage.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    errorMessage: state.app.error,
-    message: state.app.message,
+    errorMessage: state.auth.error,
+    message: state.auth.message,
   };
 }
 

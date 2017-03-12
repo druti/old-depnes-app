@@ -3,6 +3,7 @@ import { Layout, Panel } from 'react-toolbox';
 import { NavDrawer } from 'react-toolbox/lib/layout';
 import { Button, IconButton } from 'react-toolbox/lib/button';
 
+import { LinkButton } from '../mdl/Button';
 import ButtonBar from '../components/ButtonBar';
 import DrawerMenu from './DrawerMenu';
 
@@ -17,7 +18,6 @@ class MasterLayout extends React.Component {
     this.state = {
       drawerActive: false,
       drawerPinned: false,
-      userProfile: null,
     };
   }
 
@@ -46,12 +46,6 @@ class MasterLayout extends React.Component {
     }
   };
 
-  logIn = () => {
-  };
-
-  signUp = () => {
-  };
-
   logOut = () => {
   };
 
@@ -73,16 +67,24 @@ class MasterLayout extends React.Component {
             {user &&
               <Button
                 theme={buttonTheme}
-                label={user.username || user.email}
+                label={`${user.firstName} ${user.lastName}`}
                 className={theme.username}
                 onClick={this.logOut()}
               />
             }
             {!user &&
-              <Button label='Log In' onClick={this.logIn} theme={buttonTheme} />
+              <LinkButton
+                href='/login'
+                label='Log In'
+                theme={buttonTheme}
+              />
             }
             {!user &&
-              <Button label='Sign Up' onClick={this.signUp} theme={buttonTheme} />
+              <LinkButton
+                href='/signup'
+                label='Sign Up'
+                theme={buttonTheme}
+              />
             }
           </ButtonBar>
           <div style={{flex: 1, overflowY: 'auto', background: '#fff'}}>
@@ -95,7 +97,7 @@ class MasterLayout extends React.Component {
 }
 
 MasterLayout.propTypes = {
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object,
   switchLanguage: PropTypes.func,
   intl: PropTypes.object,
   children: PropTypes.any.isRequired,

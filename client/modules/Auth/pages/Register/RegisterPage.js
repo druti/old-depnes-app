@@ -1,7 +1,7 @@
 import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { registerUser } from '../../AppActions';
+import { registerUser } from '../../AuthActions';
 import MasterLayout from '../../../../layouts/MasterLayout';
 //import { fetchPosts } from '../../../Post/PostActions';
 
@@ -12,7 +12,7 @@ const form = reduxForm({
 
 const renderField = field => (
   <div>
-    <input className='form-control' {...field.input} />
+    <input className='form-control' {...field.input} placeholder={field.placeholder} />
     {field.touched && field.error &&
       <div className='error'>{field.error}</div>}
   </div>
@@ -68,10 +68,10 @@ class RegisterPage extends Component {
       >
         <form onSubmit={handleSubmit(this.handleFormSubmit)}>
           {this.renderAlert()}
-          <Field placeholder='firstName' name='firstName' componenent={renderField} type='text' />
-          <Field placeholder='lastName' name='lastName' componenent={renderField} type='text' />
-          <Field placeholder='email' name='email' componenent={renderField} type='text' />
-          <Field placeholder='password' name='password' componenent={renderField} type='password' />
+          <Field placeholder='First name' name='firstName' component={renderField} type='text' />
+          <Field placeholder='Last name' name='lastName' component={renderField} type='text' />
+          <Field placeholder='Email' name='email' component={renderField} type='text' />
+          <Field placeholder='Password' name='password' component={renderField} type='password' />
           <button type='submit'>Register</button>
         </form>
       </MasterLayout>
@@ -93,8 +93,8 @@ RegisterPage.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    errorMessage: state.app.error,
-    message: state.app.message,
+    errorMessage: state.auth.error,
+    message: state.auth.message,
   };
 }
 

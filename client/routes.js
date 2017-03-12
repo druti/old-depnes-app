@@ -65,23 +65,23 @@ export default function getRoutes(store) {
         path='/login'
         getComponent={(nextState, cb) => {
           require.ensure([], require => {
-            cb(null, require('./modules/App/pages/Login/LoginPage').default);
+            cb(null, require('./modules/Auth/pages/Login/LoginPage').default);
           });
         }}
       />
       <Route
-        path='/register'
+        path='/signup'
         getComponent={(nextState, cb) => {
           require.ensure([], require => {
-            cb(null, require('./modules/App/pages/Register/RegisterPage').default);
+            cb(null, require('./modules/Auth/pages/Register/RegisterPage').default);
           });
         }}
       />
       <Route
-        path='/user'
+        path='/user/:sid'
         getComponent={(nextState, cb) => {
           require.ensure([], require => {
-            cb(null, require('./modules/App/pages/User/UserPage').default);
+            cb(null, require('./modules/User/pages/ProfilePage/ProfilePage').default);
           });
         }}
       />

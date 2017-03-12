@@ -3,7 +3,6 @@ import http from 'http';
 import httpProxy from 'http-proxy';
 import cors from 'cors';
 import compression from 'compression';
-import bodyParser from 'body-parser';
 import path from 'path';
 import IntlWrapper from '../client/modules/Intl/IntlWrapper';
 import serverConfig from './config';
@@ -49,8 +48,6 @@ import { fetchComponentData } from './util/fetchData';
 // Apply body Parser and server public assets
 app.use(cors());
 app.use(compression());
-app.use(bodyParser.json({ limit: '20mb' }));
-app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../dist')));
 
 // Proxy to API server
@@ -150,7 +147,7 @@ app.use('*', (req, res, next) => {
 
   match({
     routes: getRoutes(store),
-    location: req.url,
+    location: req.originalUrl,
   }, (err, redirectLocation, renderProps) => {
     if (err) {
       return res.status(500).end(renderError(err));

@@ -4,7 +4,7 @@ import {
   UNAUTH_USER,
   AUTH_ERROR,
   PROTECTED_TEST,
-} from './AppActions';
+} from './AuthActions';
 
 // Initial State
 const initState = {
@@ -14,7 +14,7 @@ const initState = {
   user: null,
 };
 
-const AppReducer = (state = initState, action) => {
+const AuthReducer = (state = initState, action) => {
   switch (action.type) {
     case AUTH_USER:
       return {
@@ -27,7 +27,7 @@ const AppReducer = (state = initState, action) => {
     case UNAUTH_USER:
       return { ...state, authenticated: false, user: null };
     case AUTH_ERROR:
-      return { ...state, error: action.payload };
+      return { ...state, error: action.message };
     case PROTECTED_TEST:
       return { ...state, content: action.payload };
   }
@@ -37,7 +37,7 @@ const AppReducer = (state = initState, action) => {
 /* Selectors */
 
 // Get letMakePath
-export const getLetMakePath = state => state.app.letMakePath;
+export const getUser = state => state.auth.user;
 
 // Export Reducer
-export default AppReducer;
+export default AuthReducer;

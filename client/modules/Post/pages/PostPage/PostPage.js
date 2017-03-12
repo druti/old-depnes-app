@@ -6,8 +6,6 @@ import AuthorList from '../../components/AuthorList/AuthorList';
 import Navigator from '../../components/Navigator/Navigator';
 
 import { getPost } from '../../PostReducer';
-
-// Import Actions
 import { fetchPosts } from '../../PostActions';
 
 class PathPage extends Component { // eslint-disable-line
@@ -15,7 +13,6 @@ class PathPage extends Component { // eslint-disable-line
     const { params, switchLanguage, intl, path } = this.props;
     return (
       <MasterLayout
-        user={{}}
         switchLanguage={switchLanguage}
         intl={intl}
       >
