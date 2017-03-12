@@ -17,7 +17,6 @@ class PathListPage extends Component { // eslint-disable-line
     return (
       <MasterLayout
         params={params}
-        user={{}}
         switchLanguage={switchLanguage}
         intl={intl}
       >

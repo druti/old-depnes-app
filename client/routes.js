@@ -24,20 +24,22 @@ if (process.env.NODE_ENV !== 'production') {
   require('./modules/Post/pages/PostPage/PostPage');
 }
 
-
 // react-router setup with code-splitting
 // More info: http://blog.mxstbr.com/2016/01/react-apps-with-pages/
 export default function getRoutes(store) {
   const checkForBlank = (nextState, replace) => {
-    const isServer = typeof window === 'undefined'
+    const isServer = typeof window === 'undefined';
     if (isServer) {
-      return
+      return;
     }
 
     const reduxState = store.getState();
     const sid = nextState.params.sid;
     const path = getPost(reduxState, sid);
     if (!path || sid === 'blank') {
+      if (!reduxState.auth.user) {
+        replace({ pathname: '/login' });
+      }
       store.dispatch(toggleMakeMode());
       if (sid !== 'blank') {
         replace('/paths/blank');

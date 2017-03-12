@@ -1,12 +1,16 @@
-import React, { PropTypes } from 'react';
+import React, { PropTypes as T } from 'react';
+import { connect } from 'react-redux';
 import Avatar from 'react-toolbox/lib/avatar';
 import Chip from 'react-toolbox/lib/chip';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { getNavigator } from '../../PostReducer';
+import { getUser } from '../../../Auth/AuthReducer';
 
 import styles from './styles.scss'; // eslint-disable-line
 
-const PathAuthors = ({ user, path }) => {
-  const currentAuthor = { contentAuthorId: user.user_id };
+const PathAuthors = () => {
+  /*
+  const currentAuthor = user && { contentAuthorId: user.sid };
   const authorMap = path.content.authors || [currentAuthor];
   const contentAuthorIds = [];
   const formatAuthorIds = [];
@@ -49,8 +53,19 @@ const PathAuthors = ({ user, path }) => {
 };
 
 PathAuthors.propTypes = {
-  user: PropTypes.object.isRequired,
-  path: PropTypes.object.isRequired,
+  user: T.object,
+  params: T.object.isRequired,
+  path: T.object.isRequired,
+  customSelect: T.bool.isRequired,
+  makeMode: T.bool.isRequired,
+  dispatch: T.func.isRequired,
 };
 
-export default PathAuthors;
+function mapStateToProps(state) {
+  return {
+    ...getNavigator(state),
+    user: getUser(state),
+  };
+}
+
+export default connect(mapStateToProps, dispatch => ({ dispatch }))(PathAuthors);

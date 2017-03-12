@@ -1,4 +1,4 @@
-import React, { Component, PropTypes as Type } from 'react';
+import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 
@@ -21,6 +21,7 @@ import { getDefaultSelectionOffsets } from './customSelect';
 
 import { toggleCustomSelect } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
+import { getUser } from '../../../Auth/AuthReducer';
 
 import styles from './styles.scss'; // eslint-disable-line
 
@@ -319,12 +320,13 @@ class Navigator extends Component {
     return (
       <div className={styles.container}>
         <Helmet title={deltaToString(this.props.path.content, 30)} />
-        {makeMode ?
+        {makeMode &&
           <Editor
             user={user}
             params={params}
             path={path}
-          /> :
+          />}
+        {!makeMode &&
           <div className='ql-container'>
             <div
               ref='content'
@@ -332,8 +334,7 @@ class Navigator extends Component {
               onClick={this.handleContentClick}
               dangerouslySetInnerHTML={{ __html: path.htmlContent }}
             />
-          </div>
-        }
+          </div>}
         <Toolbar user={user} params={params} />
       </div>
     );
@@ -341,17 +342,18 @@ class Navigator extends Component {
 }
 
 Navigator.propTypes = {
-  user: Type.object.isRequired,
-  params: Type.object.isRequired,
-  path: Type.object.isRequired,
-  customSelect: Type.bool.isRequired,
-  makeMode: Type.bool.isRequired,
-  dispatch: Type.func.isRequired,
+  user: T.object,
+  params: T.object.isRequired,
+  path: T.object.isRequired,
+  customSelect: T.bool.isRequired,
+  makeMode: T.bool.isRequired,
+  dispatch: T.func.isRequired,
 };
 
 function mapStateToProps(state) {
   return {
     ...getNavigator(state),
+    user: getUser(state),
   };
 }
 

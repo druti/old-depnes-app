@@ -18,8 +18,8 @@ class PathPage extends Component { // eslint-disable-line
       >
         {path &&
           <div>
-            <AuthorList user={{}} path={path} />
-            <Navigator user={{}} params={params} path={path} />
+            <AuthorList params={params} path={path} />
+            <Navigator params={params} path={path} />
           </div>
         }
         {!path &&

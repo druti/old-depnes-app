@@ -1,4 +1,4 @@
-import React, { Component, PropTypes as Type } from 'react';
+import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import EventEmitter from 'events';
 
@@ -15,7 +15,7 @@ if (isClient) {
   var Quill = require('quill');
 }
 
-class Navigator extends Component {
+class Editor extends Component {
   constructor() {
     super();
     this.state = {};
@@ -80,12 +80,12 @@ class Navigator extends Component {
   }
 }
 
-Navigator.propTypes = {
-  user: Type.object.isRequired,
-  params: Type.object.isRequired,
-  path: Type.object.isRequired,
-  makeMode: Type.bool.isRequired,
-  dispatch: Type.func.isRequired,
+Editor.propTypes = {
+  user: T.object,
+  params: T.object.isRequired,
+  path: T.object.isRequired,
+  makeMode: T.bool.isRequired,
+  dispatch: T.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -94,5 +94,5 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Navigator);
-//export default connect(mapStateToProps, dispatch => ({ dispatch }))(Navigator);
+export default connect(mapStateToProps)(Editor);
+//export default connect(mapStateToProps, dispatch => ({ dispatch }))(Editor);

@@ -79,7 +79,7 @@ class Toolbar extends Component {
 
   toggleMakeMode(save = true) {
     const {
-      auth,
+      user,
       path,
       makeMode,
       dispatch,
@@ -95,7 +95,7 @@ class Toolbar extends Component {
         let newContent = associateChangesWithAuthor(
           path,
           PostPage.pathChanges,
-          auth.getProfile().usersid
+          user.sid
         );
         newContent = deltaToContent(newContent);
         this.savePath(newContent);
@@ -126,7 +126,7 @@ class Toolbar extends Component {
   }
 
   render() {
-    const { path, customSelect, makeMode, auth } = this.props;
+    const { path, customSelect, makeMode, user } = this.props;
     return (
       <div className={styles.container}>
         <ButtonBar theme={styles}>
@@ -153,7 +153,7 @@ class Toolbar extends Component {
               />
             }
 
-            {!auth.loggedIn() && !customSelect &&
+            {!user && !customSelect &&
               <LinkButton
                 theme={buttonTheme}
                 primary
@@ -170,7 +170,7 @@ class Toolbar extends Component {
                 raised
               ><i className='fa fa-times'/></Button>
             }
-            {auth.loggedIn() && !customSelect &&
+            {user && !customSelect &&
               <Button
                 theme={buttonTheme}
                 primary
@@ -258,7 +258,7 @@ class Toolbar extends Component {
 }
 
 Toolbar.propTypes = {
-  auth: T.object.isRequired,
+  user: T.object,
   params: T.object.isRequired,
   dispatch: T.func.isRequired,
   customSelect: T.bool.isRequired,
