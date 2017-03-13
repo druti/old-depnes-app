@@ -1,16 +1,15 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { browserHistory } from 'react-router';
 import { Layout, Panel } from 'react-toolbox';
 import { NavDrawer } from 'react-toolbox/lib/layout';
-import { IconButton } from 'react-toolbox/lib/button';
 
+import { logOutUser } from '../modules/Auth/AuthActions';
 import { getCurrentUser } from '../modules/Auth/AuthReducer';
 
-import { LinkButton } from '../mdl/Button';
-import ButtonBar from '../components/ButtonBar';
+import AppBar from './AppBar';
 import DrawerMenu from './DrawerMenu';
 
-import theme from './masterLayout.scss'; // eslint-disable-line
 import drawerTheme from './drawerMenu.scss'; // eslint-disable-line
 import buttonTheme from './button.scss'; // eslint-disable-line
 
@@ -24,6 +23,8 @@ class MasterLayout extends React.Component {
     };
 
     this.toggleDrawer = this.toggleDrawer.bind(this);
+    this.handleProfile = this.handleProfile.bind(this);
+    this.handleLogOut = this.handleLogOut.bind(this);
   }
 
   componentDidMount() {
@@ -51,6 +52,14 @@ class MasterLayout extends React.Component {
     }
   }
 
+  handleProfile() {
+    browserHistory.push(`/user/${this.props.user.sid}`);
+  }
+
+  handleLogOut() {
+    this.props.dispatch(logOutUser());
+  }
+
   render() {
     const { user } = this.props;
     return (
@@ -64,31 +73,12 @@ class MasterLayout extends React.Component {
           <DrawerMenu/>
         </NavDrawer>
         <Panel>
-          <ButtonBar theme={theme}>
-            <IconButton icon='menu' onClick={this.toggleDrawer} theme={buttonTheme} />
-            {user &&
-              <LinkButton
-                href={`/user/${user.sid}`}
-                label={`${user.firstName} ${user.lastName}`}
-                theme={buttonTheme}
-                className={theme.username}
-              />
-            }
-            {!user &&
-              <LinkButton
-                href='/login'
-                label='Log In'
-                theme={buttonTheme}
-              />
-            }
-            {!user &&
-              <LinkButton
-                href='/signup'
-                label='Sign Up'
-                theme={buttonTheme}
-              />
-            }
-          </ButtonBar>
+          <AppBar
+            user={user}
+            toggleDrawer={this.toggleDrawer}
+            handleProfile={this.handleProfile}
+            handleLogOut={this.handleLogOut}
+          />
           <div style={{flex: 1, overflowY: 'auto', background: '#fff'}}>
             {this.props.children}
           </div>

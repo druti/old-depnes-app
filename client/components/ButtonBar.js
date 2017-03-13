@@ -12,7 +12,7 @@ const ButtonBar = ({ children, theme }) => (
           {children}
         </div>
       </Scrollbars>
-    </ToolboxAppBar >
+    </ToolboxAppBar>
 );
 
 ButtonBar.propTypes = {
