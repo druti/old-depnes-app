@@ -21,7 +21,7 @@ import { getDefaultSelectionOffsets } from './customSelect';
 
 import { toggleCustomSelect } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
-import { getUser } from '../../../Auth/AuthReducer';
+import { getCurrentUser } from '../../../Auth/AuthReducer';
 
 import styles from './styles.scss'; // eslint-disable-line
 
@@ -353,7 +353,7 @@ Navigator.propTypes = {
 function mapStateToProps(state) {
   return {
     ...getNavigator(state),
-    user: getUser(state),
+    user: getCurrentUser(state),
   };
 }
 

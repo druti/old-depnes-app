@@ -1,17 +1,26 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import cookie from 'react-cookie';
 
 // Import Components
 import Helmet from 'react-helmet';
 import DevTools from './components/DevTools';
 
 // Import Actions
+import { AUTH_USER } from '../Auth/AuthActions';
 import { switchLanguage } from '../../modules/Intl/IntlActions';
 
 export class App extends Component {
   constructor(props) {
     super(props);
     this.state = { isMounted: false };
+  }
+
+  componentWillMount() {
+    const user = cookie.load('user');
+    if (user) {
+      this.props.dispatch({ type: AUTH_USER, user });
+    }
   }
 
   componentDidMount() {

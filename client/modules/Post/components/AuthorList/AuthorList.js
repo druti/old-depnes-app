@@ -4,7 +4,7 @@ import Avatar from 'react-toolbox/lib/avatar';
 import Chip from 'react-toolbox/lib/chip';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { getNavigator } from '../../PostReducer';
-import { getUser } from '../../../Auth/AuthReducer';
+import { getCurrentUser } from '../../../Auth/AuthReducer';
 
 import styles from './styles.scss'; // eslint-disable-line
 
@@ -64,7 +64,7 @@ PathAuthors.propTypes = {
 function mapStateToProps(state) {
   return {
     ...getNavigator(state),
-    user: getUser(state),
+    user: getCurrentUser(state),
   };
 }
 

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes as T } from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { getUser } from '../AuthReducer';
+import { getCurrentUser } from '../AuthReducer';
 
 export default function (ComposedComponent) {
   class Authentication extends Component {
@@ -26,5 +26,5 @@ export default function (ComposedComponent) {
     user: T.object,
   };
 
-  return connect(state => ({ user: getUser(state)}))(Authentication);
+  return connect(state => ({ user: getCurrentUser(state)}))(Authentication);
 }

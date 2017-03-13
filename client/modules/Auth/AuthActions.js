@@ -1,7 +1,6 @@
 import { browserHistory } from 'react-router';
 import cookie from 'react-cookie';
 import callApi from '../../util/apiCaller';
-import { addUser } from '../User/UserActions';
 
 // Export Constants
 export const
@@ -19,6 +18,7 @@ export function loginUser({ email, password }) {
       .then(
         data => {
           cookie.save('token', data.token, { path: '/' });
+          cookie.save('user', data.user, { path: '/' });
           dispatch({ type: AUTH_USER, user: data.user});
           browserHistory.push(`/user/${data.user.sid}`);
         },
@@ -35,8 +35,8 @@ export function registerUser({ email, firstName, lastName, password }) {
       .then(
         data => {
           cookie.save('token', data.token, { path: '/' });
+          cookie.save('user', data.user, { path: '/' });
           dispatch({ type: AUTH_USER, user: data.user});
-          dispatch(addUser(data.user));
           browserHistory.push(`/user/${data.user.sid}`);
         },
         err => {
@@ -50,8 +50,9 @@ export function logoutUser() {
   return function (dispatch) {
     dispatch({ type: UNAUTH_USER });
     cookie.remove('token', { path: '/' });
+    cookie.remove('user', { path: '/' });
 
-    browserHistory.push('/login');
+    browserHistory.push('/');
   }
 }
 

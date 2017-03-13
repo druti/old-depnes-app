@@ -1,7 +1,10 @@
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
 import { Layout, Panel } from 'react-toolbox';
 import { NavDrawer } from 'react-toolbox/lib/layout';
-import { Button, IconButton } from 'react-toolbox/lib/button';
+import { IconButton } from 'react-toolbox/lib/button';
+
+import { getCurrentUser } from '../modules/Auth/AuthReducer';
 
 import { LinkButton } from '../mdl/Button';
 import ButtonBar from '../components/ButtonBar';
@@ -19,6 +22,8 @@ class MasterLayout extends React.Component {
       drawerActive: false,
       drawerPinned: false,
     };
+
+    this.toggleDrawer = this.toggleDrawer.bind(this);
   }
 
   componentDidMount() {
@@ -32,7 +37,7 @@ class MasterLayout extends React.Component {
     };
   }
 
-  toggleDrawer = () => {
+  toggleDrawer() {
     if (this.viewportW > this.lg) {
       this.setState({
         drawerPinned: !this.state.drawerPinned,
@@ -44,10 +49,7 @@ class MasterLayout extends React.Component {
         drawerPinned: false,
       });
     }
-  };
-
-  logOut = () => {
-  };
+  }
 
   render() {
     const { user } = this.props;
@@ -65,11 +67,11 @@ class MasterLayout extends React.Component {
           <ButtonBar theme={theme}>
             <IconButton icon='menu' onClick={this.toggleDrawer} theme={buttonTheme} />
             {user &&
-              <Button
-                theme={buttonTheme}
+              <LinkButton
+                href={`/user/${user.sid}`}
                 label={`${user.firstName} ${user.lastName}`}
+                theme={buttonTheme}
                 className={theme.username}
-                onClick={this.logOut()}
               />
             }
             {!user &&
@@ -98,9 +100,16 @@ class MasterLayout extends React.Component {
 
 MasterLayout.propTypes = {
   user: PropTypes.object,
+  dispatch: PropTypes.func.isRequired,
   switchLanguage: PropTypes.func,
   intl: PropTypes.object,
   children: PropTypes.any.isRequired,
 };
 
-export default MasterLayout;
+function mapStateToProps(state) {
+  return {
+    user: getCurrentUser(state),
+  };
+}
+
+export default connect(mapStateToProps, dispatch => ({dispatch}))(MasterLayout);

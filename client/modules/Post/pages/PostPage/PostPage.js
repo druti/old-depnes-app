@@ -8,17 +8,21 @@ import Navigator from '../../components/Navigator/Navigator';
 
 import { getNavigator, getPost } from '../../PostReducer';
 import { toggleMakeMode, fetchPosts } from '../../PostActions';
-import { getUser } from '../../../Auth/AuthReducer';
+import { getCurrentUser } from '../../../Auth/AuthReducer';
 
 class PostPage extends Component { // eslint-disable-line
   componentWillMount() {
     const { params, user, makeMode, dispatch } = this.props;
 
-    if (params.sid === 'blank') {
-      if (!user) {
-        browserHistory.replace('/login');
-      } else if (!makeMode) {
-        dispatch(toggleMakeMode());
+    const server = typeof window === 'undefined';
+
+    if (!server) {
+      if (params.sid === 'blank') {
+        if (!user) {
+          browserHistory.replace('/login');
+        } else if (!makeMode) {
+          dispatch(toggleMakeMode());
+        }
       }
     }
   }
@@ -35,6 +39,7 @@ class PostPage extends Component { // eslint-disable-line
     const { params, switchLanguage, intl, post } = this.props;
     return (
       <MasterLayout
+        params={params}
         switchLanguage={switchLanguage}
         intl={intl}
       >
@@ -73,7 +78,7 @@ function mapStateToProps(state, props) {
   return {
     ...getNavigator(state),
     post: getPost(state, props.params.sid),
-    user: getUser(state),
+    user: getCurrentUser(state),
   };
 }
 

@@ -10,7 +10,6 @@ import {
 const initState = {
   error: '',
   message: '',
-  authenticated: false,
   user: null,
 };
 
@@ -21,11 +20,10 @@ const AuthReducer = (state = initState, action) => {
         ...state,
         error: '',
         message: '',
-        authenticated: true,
         user: action.user,
       };
     case UNAUTH_USER:
-      return { ...state, authenticated: false, user: null };
+      return { ...state, user: null };
     case AUTH_ERROR:
       return { ...state, error: action.message };
     case PROTECTED_TEST:
@@ -37,7 +35,7 @@ const AuthReducer = (state = initState, action) => {
 /* Selectors */
 
 // Get letMakePath
-export const getUser = state => state.auth.user;
+export const getCurrentUser = state => state.auth.user;
 
 // Export Reducer
 export default AuthReducer;
