@@ -8,6 +8,7 @@ import Navigator from '../../components/Navigator/Navigator';
 
 import { getNavigator, getPost } from '../../PostReducer';
 import { toggleMakeMode, fetchPosts } from '../../PostActions';
+import { setRedirectUrl } from '../../../App/AppActions';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
 
 class PostPage extends Component { // eslint-disable-line
@@ -19,6 +20,7 @@ class PostPage extends Component { // eslint-disable-line
     if (!server) {
       if (params.sid === 'blank') {
         if (!user) {
+          dispatch(setRedirectUrl(location.pathname))
           browserHistory.replace('/login');
         } else if (!makeMode) {
           dispatch(toggleMakeMode());
@@ -36,22 +38,21 @@ class PostPage extends Component { // eslint-disable-line
   }
 
   render() {
-    const { params, switchLanguage, intl, post } = this.props;
+    const { user, params, switchLanguage, intl, post } = this.props;
     return (
       <MasterLayout
         params={params}
         switchLanguage={switchLanguage}
         intl={intl}
       >
-        {post &&
+        {!user && params.sid === 'blank' ?
+          null :
           <div>
             <AuthorList params={params} path={post} />
             <Navigator params={params} path={post} />
-          </div>
-        }
+          </div>}
         {!post &&
-          <h1>404 Not Found</h1>
-        }
+          <h1>404 Not Found</h1>}
       </MasterLayout>
     );
   }

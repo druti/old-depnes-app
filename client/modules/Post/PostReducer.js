@@ -22,14 +22,20 @@ const PostReducer = (state = initState, action) => {
     case TOGGLE_CUSTOM_SELECT :
       return {
         data: state.data,
-        navigator: Object.assign({}, state.navigator, { customSelect: !state.navigator.customSelect}),
+        navigator: Object.assign({},
+          state.navigator,
+          { customSelect: !state.navigator.customSelect }
+        ),
         blank: state.blank,
       };
 
     case TOGGLE_MAKE_MODE :
       return {
         data: state.data,
-        navigator: Object.assign({}, state.navigator, { makeMode: !state.navigator.makeMode}),
+        navigator: Object.assign({},
+          state.navigator,
+          { makeMode: !state.navigator.makeMode }
+        ),
         blank: state.blank,
       };
 

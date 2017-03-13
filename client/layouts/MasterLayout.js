@@ -93,7 +93,7 @@ MasterLayout.propTypes = {
   dispatch: PropTypes.func.isRequired,
   switchLanguage: PropTypes.func,
   intl: PropTypes.object,
-  children: PropTypes.any.isRequired,
+  children: PropTypes.any,
 };
 
 function mapStateToProps(state) {

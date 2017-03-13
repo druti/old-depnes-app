@@ -12,7 +12,7 @@ export const
   PROTECTED_TEST = 'PROTECTED_TEST';
 
 
-export function loginUser({ email, password }) {
+export function logInUser({ email, password }, redirectUrl) {
   return function (dispatch) {
     return callApi('auth/login', 'POST', { email, password })
       .then(
@@ -20,7 +20,7 @@ export function loginUser({ email, password }) {
           cookie.save('token', data.token, { path: '/' });
           cookie.save('user', data.user, { path: '/' });
           dispatch({ type: AUTH_USER, user: data.user});
-          browserHistory.push(`/user/${data.user.sid}`);
+          browserHistory.push(redirectUrl || `/user/${data.user.sid}`);
         },
         err => {
           dispatch({ type: AUTH_ERROR, message: err.message });

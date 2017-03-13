@@ -1,8 +1,9 @@
 import React, { PropTypes as T, Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { loginUser } from '../../AuthActions';
+import { logInUser } from '../../AuthActions';
 import MasterLayout from '../../../../layouts/MasterLayout';
+import { getRedirectUrl } from '../../../App/AppReducer';
 
 const form = reduxForm({
   form: 'login',
@@ -15,7 +16,7 @@ class LoginPage extends Component {
   }
 
   handleFormSubmit(formProps) {
-    this.props.loginUser(formProps);
+    this.props.dispatch(logInUser(formProps, this.props.redirectUrl));
   }
 
   renderAlert() {
@@ -50,20 +51,22 @@ class LoginPage extends Component {
 // LoginPage.need = [() => { return fetchPosts(); }];
 
 LoginPage.propTypes = {
+  redirectUrl: T.string,
   router: T.object,
   params: T.object.isRequired,
+  dispatch: T.func.isRequired,
   switchLanguage: T.func.isRequired,
   intl: T.object.isRequired,
-  loginUser: T.func.isRequired,
   handleSubmit: T.func.isRequired,
   errorMessage: T.node,
 };
 
 function mapStateToProps(state) {
   return {
+    redirectUrl: getRedirectUrl(state),
     errorMessage: state.auth.error,
     message: state.auth.message,
   };
 }
 
-export default connect(mapStateToProps, { loginUser })(form(LoginPage));
+export default connect(mapStateToProps, dispatch => ({dispatch}))(form(LoginPage));
