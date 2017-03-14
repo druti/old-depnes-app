@@ -7,13 +7,15 @@ import AuthorList from '../../components/AuthorList/AuthorList';
 import Navigator from '../../components/Navigator/Navigator';
 
 import { getNavigator, getPost } from '../../PostReducer';
-import { toggleMakeMode, fetchPosts } from '../../PostActions';
+import { toggleMakeMode, fetchPost } from '../../PostActions';
 import { setRedirectUrl } from '../../../App/AppActions';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
 
 class PostPage extends Component { // eslint-disable-line
   componentWillMount() {
     const { params, user, makeMode, dispatch } = this.props;
+
+    dispatch(fetchPost(params.sid));
 
     const server = typeof window === 'undefined';
 
@@ -59,8 +61,8 @@ class PostPage extends Component { // eslint-disable-line
 }
 
 // Actions required to provide data for this component to render in sever side.
-PostPage.need = [() => {
-  return fetchPosts();
+PostPage.need = [params => {
+  return fetchPost(params.sid);
 }];
 
 

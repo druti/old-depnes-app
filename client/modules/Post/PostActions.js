@@ -34,7 +34,7 @@ export function addPostRequest({ content, htmlContent }) {
         content,
         htmlContent,
       },
-    }).then(res => dispatch(addPost(res.posts)));
+    }).then(res => dispatch(addPost(res.post)));
   };
 }
 

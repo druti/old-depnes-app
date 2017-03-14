@@ -1,6 +1,7 @@
 import { browserHistory } from 'react-router';
 import cookie from 'react-cookie';
 import callApi from '../../util/apiCaller';
+import { setRedirectUrl } from '../App/AppActions';
 
 // Export Constants
 export const
@@ -21,6 +22,7 @@ export function logInUser({ email, password }, redirectUrl) {
           cookie.save('user', data.user, { path: '/' });
           dispatch({ type: AUTH_USER, user: data.user});
           browserHistory.push(redirectUrl || `/user/${data.user.sid}`);
+          dispatch(setRedirectUrl(''))
         },
         err => {
           dispatch({ type: AUTH_ERROR, message: err.message });

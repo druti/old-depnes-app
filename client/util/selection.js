@@ -15,9 +15,9 @@ export function clearSelection() {
   var sel = window.getSelection ? window.getSelection() : document.selection;
   if (sel) {
     if (sel.removeAllRanges) {
-        sel.removeAllRanges();
+      sel.removeAllRanges();
     } else if (sel.empty) {
-        sel.empty();
+      sel.empty();
     }
   }
 }
