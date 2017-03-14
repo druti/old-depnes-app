@@ -1,12 +1,17 @@
-import { TOGGLE_CUSTOM_SELECT, TOGGLE_MAKE_MODE, ADD_POST, ADD_POSTS, DELETE_POST } from './PostActions';
+import {
+  TOGGLE_CUSTOM_SELECT,
+  TOGGLE_MAKE_MODE,
+  REQUEST_POST,
+  RECEIVE_POST,
+  REQUEST_POSTS,
+  RECEIVE_POSTS,
+  DELETE_POST,
+} from './PostActions';
 
 const initState = {
   data: [],
-  navigator: {
-    changes: [], // full of quill-deltas
-    customSelect: false,
-    makeMode: false,
-  },
+  isFetching: false,
+  hasFetched: false,
   blank: {
     content: {
       ops: [{insert: '\n'}],
@@ -15,45 +20,61 @@ const initState = {
     htmlContent: '',
     sid: 'blank',
   },
+  navigator: {
+    changes: [], // full of quill-deltas
+    customSelect: false,
+    makeMode: false,
+  },
 };
 
 const PostReducer = (state = initState, action) => {
   switch (action.type) {
     case TOGGLE_CUSTOM_SELECT :
       return {
-        data: state.data,
-        navigator: Object.assign({},
-          state.navigator,
-          { customSelect: !state.navigator.customSelect }
-        ),
-        blank: state.blank,
+        ...state,
+        navigator: {
+          ...state.navigator,
+          customSelect: !state.navigator.customSelect,
+        },
       };
 
     case TOGGLE_MAKE_MODE :
       return {
-        data: state.data,
-        navigator: Object.assign({},
-          state.navigator,
-          { makeMode: !state.navigator.makeMode }
-        ),
-        blank: state.blank,
+        ...state,
+        navigator: {
+          ...state.navigator,
+          makeMode: !state.navigator.makeMode,
+        },
       };
 
-    case ADD_POST :
-      return addPost(state, action);
-
-    case ADD_POSTS :
+    case REQUEST_POST :
+    case REQUEST_POSTS :
       return {
+        ...state,
+        isFetching: true,
+        hasFetched: false,
+      };
+
+    case RECEIVE_POST :
+      return {
+        ...state,
+        hasFetched: true,
+        isFetching: false,
+        data: action.post ? [...state.data, action.post] : state.data,
+      };
+
+    case RECEIVE_POSTS :
+      return {
+        ...state,
+        hasFetched: true,
+        isFetching: false,
         data: action.posts,
-        navigator: state.navigator,
-        blank: state.blank,
       };
 
     case DELETE_POST :
       return {
+        ...state,
         data: state.data.filter(post => post.sid !== action.sid),
-        navigator: state.navigator,
-        blank: state.blank,
       };
 
     default:
@@ -61,25 +82,14 @@ const PostReducer = (state = initState, action) => {
   }
 };
 
-function addPost(state, action) {
-  if (!action.post) {
-    return state;
-  }
-  return {
-    data: [action.post, ...state.data],
-    navigator: state.navigator,
-    blank: state.blank,
-  };
-}
-
-/* Selectors */
 
 export const getNavigator = state => state.posts.navigator;
 
-// Get all posts
+export const isFetching = state => state.posts.isFetching;
+export const hasFetched = state => state.posts.hasFetched;
+
 export const getPosts = state => state.posts.data;
 
-// Get post by sid
 export const getPost = (state, sid) => {
   if (sid === 'blank') {
     return state.posts.blank;

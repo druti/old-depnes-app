@@ -6,7 +6,7 @@ import MasterLayout from '../../../../layouts/MasterLayout';
 import AuthorList from '../../components/AuthorList/AuthorList';
 import Navigator from '../../components/Navigator/Navigator';
 
-import { getNavigator, getPost } from '../../PostReducer';
+import { isFetching, hasFetched, getNavigator, getPost } from '../../PostReducer';
 import { toggleMakeMode, fetchPost } from '../../PostActions';
 import { setRedirectUrl } from '../../../App/AppActions';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
@@ -40,21 +40,37 @@ class PostPage extends Component { // eslint-disable-line
   }
 
   render() {
-    const { user, params, switchLanguage, intl, post } = this.props;
+    const {
+      loading,
+      loaded,
+      user,
+      params,
+      switchLanguage,
+      intl,
+      post,
+    } = this.props;
+
+    let child;
+    if (loading || !loaded) {
+      child = <h1>Loading...</h1>;
+    } else if (!user && params.sid === 'blank') {
+      child = null;
+    } else if (post) {
+      child = (
+        <div>
+          <AuthorList params={params} path={post} />
+          <Navigator params={params} path={post} />
+        </div>
+      );
+    } else {
+      child = <h1>404 Not Found</h1>;
+    }
     return (
       <MasterLayout
         params={params}
         switchLanguage={switchLanguage}
         intl={intl}
-      >
-        {!user && params.sid === 'blank' ?
-          null :
-          <div>
-            <AuthorList params={params} path={post} />
-            <Navigator params={params} path={post} />
-          </div>}
-        {!post &&
-          <h1>404 Not Found</h1>}
+      >{child}
       </MasterLayout>
     );
   }
@@ -67,6 +83,8 @@ PostPage.need = [params => {
 
 
 PostPage.propTypes = {
+  loading: T.bool.isRequired,
+  loaded: T.bool.isRequired,
   user: T.object,
   dispatch: T.func.isRequired,
   params: T.object.isRequired,
@@ -82,6 +100,8 @@ function mapStateToProps(state, props) {
     ...getNavigator(state),
     post: getPost(state, props.params.sid),
     user: getCurrentUser(state),
+    loading: isFetching(state),
+    loaded: hasFetched(state),
   };
 }
 

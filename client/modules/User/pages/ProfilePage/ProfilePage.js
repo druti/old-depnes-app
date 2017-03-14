@@ -1,25 +1,32 @@
 import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
-import { getUser } from '../../UserReducer';
 import { fetchUser } from '../../UserActions';
-import { getCurrentUser } from '../../../Auth/AuthReducer';
+import { isFetching, hasFetched, getUser } from '../../UserReducer';
 import MasterLayout from '../../../../layouts/MasterLayout';
 
 class ProfilePage extends Component { // eslint-disable-line
   componentWillMount() {
-    const { params, dispatch } = this.props;
-    dispatch(fetchUser(params.sid));
+    this.props.dispatch(fetchUser(this.props.params.sid));
   }
 
   render() {
-    const { switchLanguage, intl, user, params } = this.props;
+    const {
+      intl,
+      user,
+      params,
+      switchLanguage,
+      loading,
+      loaded,
+    } = this.props;
+
     return (
       <MasterLayout
         params={params}
         switchLanguage={switchLanguage}
         intl={intl}
       >
-        User: {user && user.firstName}
+        {loading || !loaded ?
+          <h1>Loading...</h1> : <h1>{user.firstName} {user.lastName}</h1>}
       </MasterLayout>
     );
   }
@@ -30,6 +37,8 @@ ProfilePage.need = [params => {
 }];
 
 ProfilePage.propTypes = {
+  loading: T.bool.isRequired,
+  loaded: T.bool.isRequired,
   params: T.object.isRequired,
   dispatch: T.func.isRequired,
   switchLanguage: T.func.isRequired,
@@ -38,12 +47,11 @@ ProfilePage.propTypes = {
 };
 
 function mapStateToProps(state, props) {
-  let user = getUser(state, props.params.sid);
-  const currentUser = getCurrentUser(state);
-  if (currentUser && currentUser.sid === props.params.sid) {
-    user = currentUser;
-  }
-  return { user };
+  return {
+    loading: isFetching(state),
+    loaded: hasFetched(state),
+    user: getUser(state, props.params.sid),
+  };
 }
 
 export default connect(mapStateToProps, dispatch => ({dispatch}))(ProfilePage);

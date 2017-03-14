@@ -1,34 +1,48 @@
+import { getCurrentUser } from '../Auth/AuthReducer';
+
 import {
-  ADD_USER,
+  REQUEST_USER,
+  RECEIVE_USER,
+  REQUEST_USERS,
+  RECEIVE_USERS,
 } from './UserActions';
 
 const initState = {
   data: [],
+  isFetching: false,
+  hasFetched: false,
 };
 
 const UserReducer = (state = initState, action) => {
   switch (action.type) {
-    case ADD_USER:
-      return addUser(state, action);
+    case REQUEST_USER :
+      return {
+        ...state,
+        isFetching: true,
+        hasFetched: false,
+      };
+
+    case RECEIVE_USER :
+      return {
+        ...state,
+        hasFetched: true,
+        isFetching: false,
+        data: action.user ? [...state.data, action.user] : state.data,
+      };
 
     default:
       return state;
   }
 };
 
-function addUser(state, action) {
-  if (!action.user) {
-    return state;
-  }
-  return {
-    data: [action.user, ...state.data],
-    navigator: state.navigator,
-    blank: state.blank,
-  };
-}
+export const isFetching = state => state.users.isFetching;
+export const hasFetched = state => state.users.hasFetched;
 
-// Get post by sid
 export const getUser = (state, sid) => {
+  const currentUser = getCurrentUser(state);
+  if (currentUser && currentUser.sid === sid) {
+    return currentUser;
+  }
   return state.users.data.filter(user => user.sid === sid)[0];
 };
 
