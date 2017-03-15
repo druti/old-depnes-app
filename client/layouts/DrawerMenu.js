@@ -11,6 +11,7 @@ const DrawerMenu = () => (
   <div className={styles.menuContainer}>
     <Logo />
     <Navigation type='vertical'>
+      <Link href='/paths/blank' label='Write'/>
       <Link href='/paths' label='Paths'/>
       <Link href='/user/Sy2HGXzig' label='Andres Profile'/>
     </Navigation>

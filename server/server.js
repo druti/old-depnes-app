@@ -4,16 +4,24 @@ import httpProxy from 'http-proxy';
 import cors from 'cors';
 import compression from 'compression';
 import path from 'path';
-import IntlWrapper from '../client/modules/Intl/IntlWrapper';
 import serverConfig from './config';
 
-// Webpack Requirements
 import webpack from 'webpack';
 import config from '../webpack.config.dev';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
-// Initialize the Express App
+import { configureStore } from '../client/store';
+import { Provider } from 'react-redux';
+import IntlWrapper from '../client/modules/Intl/IntlWrapper';
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+import { match, RouterContext } from 'react-router';
+import Helmet from 'react-helmet';
+import getRoutes from '../client/routes';
+import { fetchComponentData } from './util/fetchData';
+
+
 const app = new Express();
 const targetUrl = `http://${serverConfig.apiHost}:${serverConfig.apiPort}`;
 const server = new http.Server(app);
@@ -22,6 +30,7 @@ const proxy = httpProxy.createProxyServer({
   ws: true,
 });
 
+
 // Run Webpack dev server in development mode
 if (process.env.NODE_ENV === 'development') {
   const compiler = webpack(config);
@@ -29,26 +38,18 @@ if (process.env.NODE_ENV === 'development') {
   app.use(webpackHotMiddleware(compiler));
 }
 
+
 app.use((req, res, next) => {
   res.setHeader('X-Forwarded-For', req.ip);
   return next();
 });
 
-import { configureStore } from '../client/store';
-import { Provider } from 'react-redux';
-import React from 'react';
-import { renderToString } from 'react-dom/server';
-import { match, RouterContext } from 'react-router';
-import Helmet from 'react-helmet';
-
-// Import required modules
-import getRoutes from '../client/routes';
-import { fetchComponentData } from './util/fetchData';
 
 // Apply body Parser and server public assets
 app.use(cors());
 app.use(compression());
 app.use(Express.static(path.resolve(__dirname, '../dist')));
+
 
 // Proxy to API server
 app.use('/api', (req, res) => {
@@ -75,20 +76,6 @@ proxy.on('error', (error, req, res) => {
 
   const json = { error: 'proxy_error', reason: error.message };
   res.end(JSON.stringify(json));
-});
-
-import mongoose from 'mongoose';
-
-// Plug in native promises
-mongoose.Promise = global.Promise;
-
-// MongoDB Connection
-mongoose.connect(serverConfig.mongoURL, error => {
-  if (error) {
-    // eslint-disable-next-line no-console
-    console.error(`Mongoose connection error: ${error}`);
-    throw error;
-  }
 });
 
 
@@ -136,7 +123,6 @@ const renderError = err => {
   return renderFullPage(`Server Error${errTrace}`, {});
 };
 
-
 // Server Side Rendering based on routes matched by react-router.
 app.use('*', (req, res, next) => {
   if(req.baseUrl.startsWith('/auth') || req.baseUrl.startsWith('/api')) {
@@ -181,11 +167,12 @@ app.use('*', (req, res, next) => {
   });
 });
 
-// start app
+
 server.listen(serverConfig.port, (error) => {
   if (!error) {
     console.log(`MERN is running on port: ${serverConfig.port}! Build something amazing!`); // eslint-disable-line
   }
 });
+
 
 export default app;

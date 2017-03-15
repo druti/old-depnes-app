@@ -13,10 +13,30 @@ import { getCurrentUser } from '../../../Auth/AuthReducer';
 
 class PostPage extends Component { // eslint-disable-line
   componentWillMount() {
-    const { params, user, makeMode, dispatch } = this.props;
+    this.fetchPost(this.props);
+    this.requireAuth(this.props);
+  }
 
+  componentWillUpdate(nextProps) {
+    if (nextProps.params.sid !== this.props.params.sid) {
+      this.fetchPost(nextProps);
+      this.requireAuth(nextProps);
+    }
+  }
+
+  componentWillUnmount() {
+    const { makeMode, dispatch } = this.props;
+
+    if (makeMode) {
+      dispatch(toggleMakeMode());
+    }
+  }
+
+  fetchPost = ({ params, dispatch }) => {
     dispatch(fetchPost(params.sid));
+  }
 
+  requireAuth = ({ params, user, makeMode, dispatch }) => {
     const server = typeof window === 'undefined';
 
     if (!server) {
@@ -28,14 +48,6 @@ class PostPage extends Component { // eslint-disable-line
           dispatch(toggleMakeMode());
         }
       }
-    }
-  }
-
-  componentWillUnmount() {
-    const { makeMode, dispatch } = this.props;
-
-    if (makeMode) {
-      dispatch(toggleMakeMode());
     }
   }
 

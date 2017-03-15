@@ -45,7 +45,7 @@ class Toolbar extends Component {
       paths,
     } = this.props;
 
-    const selection = PostPage.quill.getSelection();
+    const selection = PostPage.quill && PostPage.quill.getSelection();
 
     if (selection && selection.length) {
       this.goToNextMatchedPath(path, paths, navigator, selection);
