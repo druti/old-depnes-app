@@ -1,33 +1,36 @@
 import { getCurrentUser } from '../Auth/AuthReducer';
 
 import {
-  REQUEST_USER,
-  RECEIVE_USER,
-  REQUEST_USERS,
-  RECEIVE_USERS,
+  USER_REQUEST,
+  USER_RECEIVE,
+  USER_FAILURE,
 } from './UserActions';
 
 const initState = {
   data: [],
-  isFetching: false,
-  hasFetched: false,
+  awaiting: {},
+  failed: {},
 };
 
 const UserReducer = (state = initState, action) => {
   switch (action.type) {
-    case REQUEST_USER :
+    case USER_REQUEST :
       return {
         ...state,
-        isFetching: true,
-        hasFetched: false,
+        awaiting: updateAwaiting(state, action, true),
       };
 
-    case RECEIVE_USER :
+    case USER_RECEIVE :
       return {
         ...state,
-        hasFetched: true,
-        isFetching: false,
+        awaiting: updateAwaiting(state, action, false),
         data: action.user ? [...state.data, action.user] : state.data,
+      };
+
+    case USER_FAILURE :
+      return {
+        ...state,
+        failed: updateFailed(state, action),
       };
 
     default:
@@ -35,8 +38,25 @@ const UserReducer = (state = initState, action) => {
   }
 };
 
-export const isFetching = state => state.users.isFetching;
-export const hasFetched = state => state.users.hasFetched;
+function updateAwaiting(state, action, awaiting) {
+  return {
+    ...state.awaiting,
+    [action.requestName]: awaiting,
+  };
+}
+
+function updateFailed(state, action) {
+  return {
+    ...state.failed,
+    [action.requestName]: {
+      message: action.message,
+    },
+  };
+}
+
+export const getAwaiting = state => state.posts.awaiting;
+
+export const getFailed = state => state.posts.failed;
 
 export const getUser = (state, sid) => {
   const currentUser = getCurrentUser(state);
@@ -46,5 +66,4 @@ export const getUser = (state, sid) => {
   return state.users.data.filter(user => user.sid === sid)[0];
 };
 
-// Export Reducer
 export default UserReducer;

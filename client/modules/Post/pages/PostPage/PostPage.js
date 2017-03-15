@@ -6,18 +6,34 @@ import MasterLayout from '../../../../layouts/MasterLayout';
 import AuthorList from '../../components/AuthorList/AuthorList';
 import Navigator from '../../components/Navigator/Navigator';
 
-import { isFetching, hasFetched, getNavigator, getPost } from '../../PostReducer';
+import { getAwaiting, getFailed, getPost, getNavigator } from '../../PostReducer';
 import { toggleMakeMode, fetchPost } from '../../PostActions';
 import { setRedirectUrl } from '../../../App/AppActions';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
 
 class PostPage extends Component { // eslint-disable-line
+  static propTypes = {
+    awaiting: T.object.isRequired,
+    failed: T.object.isRequired,
+    user: T.object,
+    dispatch: T.func.isRequired,
+    params: T.object.isRequired,
+    switchLanguage: T.func.isRequired,
+    makeMode: T.bool.isRequired,
+    intl: T.object.isRequired,
+    post: T.object,
+  }
+
+  static need = [
+    params => fetchPost(params.sid),
+  ]
+
   componentWillMount() {
     this.fetchPost(this.props);
     this.requireAuth(this.props);
   }
 
-  componentWillUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.params.sid !== this.props.params.sid) {
       this.fetchPost(nextProps);
       this.requireAuth(nextProps);
@@ -53,18 +69,21 @@ class PostPage extends Component { // eslint-disable-line
 
   render() {
     const {
-      loading,
-      loaded,
+      post,
       user,
       params,
+      awaiting,
+      failed,
       switchLanguage,
       intl,
-      post,
     } = this.props;
 
     let child;
-    if (loading || !loaded) {
-      child = <h1>Loading...</h1>;
+    let isLoading = awaiting.fetchPost || !post;
+
+    if (failed.fetchPost) {
+      child = <h1>{failed.fetchPost.message || 'Something bad happend'}</h1>;
+      isLoading = false;
     } else if (!user && params.sid === 'blank') {
       child = null;
     } else if (post) {
@@ -74,47 +93,27 @@ class PostPage extends Component { // eslint-disable-line
           <Navigator params={params} path={post} />
         </div>
       );
-    } else {
-      child = <h1>404 Not Found</h1>;
     }
+
     return (
       <MasterLayout
         params={params}
         switchLanguage={switchLanguage}
         intl={intl}
-      >{child}
+      > {child}
+        {isLoading && <h1>Loading...</h1>}
       </MasterLayout>
     );
   }
 }
 
-// Actions required to provide data for this component to render in sever side.
-PostPage.need = [params => {
-  return fetchPost(params.sid);
-}];
-
-
-PostPage.propTypes = {
-  loading: T.bool.isRequired,
-  loaded: T.bool.isRequired,
-  user: T.object,
-  dispatch: T.func.isRequired,
-  params: T.object.isRequired,
-  switchLanguage: T.func.isRequired,
-  makeMode: T.bool.isRequired,
-  intl: T.object.isRequired,
-  post: T.object,
-};
-
-// Retrieve data from store as props
-function mapStateToProps(state, props) {
-  return {
-    ...getNavigator(state),
+export default connect(
+  (state, props) => ({
+    awaiting: getAwaiting(state),
+    failed: getFailed(state),
     post: getPost(state, props.params.sid),
     user: getCurrentUser(state),
-    loading: isFetching(state),
-    loaded: hasFetched(state),
-  };
-}
-
-export default connect(mapStateToProps, dispatch => ({dispatch}))(PostPage);
+    ...getNavigator(state),
+  }),
+  dispatch => ({dispatch})
+)(PostPage);

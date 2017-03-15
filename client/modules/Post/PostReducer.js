@@ -1,17 +1,19 @@
 import {
   TOGGLE_CUSTOM_SELECT,
   TOGGLE_MAKE_MODE,
-  REQUEST_POST,
-  RECEIVE_POST,
-  REQUEST_POSTS,
-  RECEIVE_POSTS,
+  POST_REQUEST,
+  POST_RECEIVE,
+  POST_FAILURE,
+  POSTS_REQUEST,
+  POSTS_RECEIVE,
+  POSTS_FAILURE,
   DELETE_POST,
 } from './PostActions';
 
 const initState = {
   data: [],
-  isFetching: false,
-  hasFetched: false,
+  awaiting: {},
+  failed: {},
   blank: {
     content: {
       ops: [{insert: '\n'}],
@@ -47,27 +49,24 @@ const PostReducer = (state = initState, action) => {
         },
       };
 
-    case REQUEST_POST :
-    case REQUEST_POSTS :
+    case POST_REQUEST :
+    case POSTS_REQUEST :
       return {
         ...state,
-        isFetching: true,
-        hasFetched: false,
+        awaiting: updateAwaiting(state, action, true),
       };
 
-    case RECEIVE_POST :
+    case POST_RECEIVE :
       return {
         ...state,
-        hasFetched: true,
-        isFetching: false,
+        awaiting: updateAwaiting(state, action, false),
         data: action.post ? [...state.data, action.post] : state.data,
       };
 
-    case RECEIVE_POSTS :
+    case POSTS_RECEIVE :
       return {
         ...state,
-        hasFetched: true,
-        isFetching: false,
+        awaiting: updateAwaiting(state, action, false),
         data: action.posts,
       };
 
@@ -77,16 +76,39 @@ const PostReducer = (state = initState, action) => {
         data: state.data.filter(post => post.sid !== action.sid),
       };
 
+    case POST_FAILURE :
+    case POSTS_FAILURE :
+      return {
+        ...state,
+        failed: updateFailed(state, action),
+      };
+
     default:
       return state;
   }
 };
 
+function updateAwaiting(state, action, awaiting) {
+  return {
+    ...state.awaiting,
+    [action.requestName]: awaiting,
+  };
+}
+
+function updateFailed(state, action) {
+  return {
+    ...state.failed,
+    [action.requestName]: {
+      message: action.message,
+    },
+  };
+}
 
 export const getNavigator = state => state.posts.navigator;
 
-export const isFetching = state => state.posts.isFetching;
-export const hasFetched = state => state.posts.hasFetched;
+export const getAwaiting = state => state.posts.awaiting;
+
+export const getFailed = state => state.posts.failed;
 
 export const getPosts = state => state.posts.data;
 
@@ -97,5 +119,4 @@ export const getPost = (state, sid) => {
   return state.posts.data.filter(post => post.sid === sid)[0];
 };
 
-// Export Reducer
 export default PostReducer;

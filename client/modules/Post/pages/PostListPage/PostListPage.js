@@ -1,13 +1,51 @@
-import React, { PropTypes, Component } from 'react';
+import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
+import { getAwaiting, getFailed, getPosts } from '../../PostReducer';
+import { fetchPosts } from '../../PostActions';
 import MasterLayout from '../../../../layouts/MasterLayout';
-import PathList from '../../components/PathList/PathListContainer';
+import PathList from '../../components/PathList/PathList';
 import { LinkButton } from '../../../../mdl/Button';
 import styles from './postListPage.scss'; // eslint-disable-line
 
 class PathListPage extends Component { // eslint-disable-line
+  static propTypes = {
+    awaiting: T.object.isRequired,
+    failed: T.object.isRequired,
+    paths: T.array.isRequired,
+    dispatch: T.func.isRequired,
+    params: T.object.isRequired,
+    switchLanguage: T.func.isRequired,
+    intl: T.object.isRequired,
+  }
+
+  static need = [
+    () => { return fetchPosts() },
+  ]
+
+  componentWillMount() {
+    this.props.dispatch(fetchPosts());
+  }
+
   render() {
-    const { params, switchLanguage, intl } = this.props;
+    const {
+      paths,
+      awaiting,
+      failed,
+      params,
+      switchLanguage,
+      intl,
+    } = this.props;
+
+    let child;
+    let isLoading = awaiting.fetchPosts || !paths.length;
+
+    if (failed.fetchPosts) {
+      child = <h1>{failed.fetchPosts.message || 'Something bad happend'}</h1>;
+      isLoading = false;
+    } else {
+      child = <PathList paths={paths} />;
+    }
+
     return (
       <MasterLayout
         params={params}
@@ -23,16 +61,18 @@ class PathListPage extends Component { // eslint-disable-line
             href='/paths/blank'
           />
         </div>
-        <PathList />
+        {child}
+        {isLoading && <h1>Loading...</h1>}
       </MasterLayout>
     );
   }
 }
 
-PathListPage.propTypes = {
-  params: PropTypes.object.isRequired,
-  switchLanguage: PropTypes.func.isRequired,
-  intl: PropTypes.object.isRequired,
-};
-
-export default connect()(PathListPage);
+export default connect(
+  state => ({
+    awaiting: getAwaiting(state),
+    failed: getFailed(state),
+    paths: getPosts(state),
+  }),
+  dispatch => ({dispatch})
+)(PathListPage);

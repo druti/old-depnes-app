@@ -1,57 +1,74 @@
 import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import { fetchUser } from '../../UserActions';
-import { isFetching, hasFetched, getUser } from '../../UserReducer';
+import { getAwaiting, getFailed, getUser } from '../../UserReducer';
 import MasterLayout from '../../../../layouts/MasterLayout';
 
 class ProfilePage extends Component { // eslint-disable-line
+  static propTypes = {
+    awaiting: T.object.isRequired,
+    failed: T.object.isRequired,
+    params: T.object.isRequired,
+    dispatch: T.func.isRequired,
+    switchLanguage: T.func.isRequired,
+    intl: T.object.isRequired,
+    user: T.object,
+  }
+
+  static need = [
+    params => fetchUser(params.sid),
+  ]
+
   componentWillMount() {
-    this.props.dispatch(fetchUser(this.props.params.sid));
+    this.fetchUser(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.params.sid !== this.props.params.sid) {
+      this.fetchUser(nextProps);
+    }
+  }
+
+  fetchUser = ({ params, dispatch }) => {
+    dispatch(fetchUser(params.sid));
   }
 
   render() {
     const {
-      intl,
+      awaiting,
+      failed,
       user,
       params,
+      intl,
       switchLanguage,
-      loading,
-      loaded,
     } = this.props;
+
+    let child;
+
+    if (failed.fetchUser) {
+      child = <h1>{failed.fetchUser.message || 'Something bad happend'}</h1>;
+    } else if (awaiting.fetchUser || !user) {
+      child = <h1>Loading...</h1>;
+    } else {
+      child = <h1>{user.firstName} {user.lastName}</h1>;
+    }
 
     return (
       <MasterLayout
         params={params}
         switchLanguage={switchLanguage}
         intl={intl}
-      >
-        {loading || !loaded ?
-          <h1>Loading...</h1> : <h1>{user.firstName} {user.lastName}</h1>}
+      >{child}
       </MasterLayout>
     );
   }
 }
 
-ProfilePage.need = [params => {
-  return fetchUser(params.sid);
-}];
-
-ProfilePage.propTypes = {
-  loading: T.bool.isRequired,
-  loaded: T.bool.isRequired,
-  params: T.object.isRequired,
-  dispatch: T.func.isRequired,
-  switchLanguage: T.func.isRequired,
-  intl: T.object.isRequired,
-  user: T.object,
-};
-
-function mapStateToProps(state, props) {
-  return {
-    loading: isFetching(state),
-    loaded: hasFetched(state),
+export default connect(
+  (state, props) => ({
+    awaiting: getAwaiting(state),
+    failed: getFailed(state),
     user: getUser(state, props.params.sid),
-  };
-}
-
-export default connect(mapStateToProps, dispatch => ({dispatch}))(ProfilePage);
+  }),
+  dispatch => ({dispatch})
+)(ProfilePage);
