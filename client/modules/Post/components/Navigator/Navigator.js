@@ -8,11 +8,13 @@ import Toolbar from './Toolbar';
 import { elementContainsSelection, clearSelection } from '../../../../util/selection';
 
 import {
+  getNextNode,
   findNearestTextNode,
   insertElementInTextNode,
   nodeTypeText,
   replaceNodeWith,
   getTextNode,
+  getLastTextNode,
 } from '../../../../util/domNode';
 
 import { deltaToString } from '../../../../util/delta';
@@ -32,7 +34,6 @@ import styles from './styles.scss'; // eslint-disable-line
 class Navigator extends Component {
   constructor() {
     super();
-    this.state = {};
     this.handleContentClick = this.handleContentClick.bind(this);
     this.initCS = this.initCS.bind(this);
     this.updateCS = this.updateCS.bind(this);
@@ -104,6 +105,8 @@ class Navigator extends Component {
 
     this.insertStartBlock(beforeNode);
 
+    this.expandToDefaultSelection();
+
     this.props.dispatch(toggleCustomSelect());
   }
 
@@ -132,10 +135,10 @@ class Navigator extends Component {
   }
 
   insertMiddleBlocks() {
-    const anchorMarker = document.getElementById('c-s-a-m');
-    const anchorBlock = document.getElementById('c-s-a-b');
-    const startBlock = document.getElementById('c-s-s-b');
-    const focusMarker = document.getElementById('c-s-f-m');
+    let anchorMarker = document.getElementById('c-s-a-m');
+    let anchorBlock = document.getElementById('c-s-a-b');
+    let startBlock = document.getElementById('c-s-s-b');
+    let focusMarker = document.getElementById('c-s-f-m');
 
     if (anchorMarker.parentNode === focusMarker.parentNode) {
       return;
@@ -146,18 +149,17 @@ class Navigator extends Component {
 
     while (node) {
       if (node === anchorBlock || node === startBlock) {
-        if (node.nextSibling) {
-          node = node.nextSibling;
-        }
-        else if (node.parentNode === this.refs.content) {
-          break;
-        } else {
-          node = node.parentNode.nextSibling;
-        }
+        node = getNextNode(node);
+      }
+
+      if (node === this.refs.content) {
+        break;
+      } else if (!this.refs.content.contains(node)) {
+        break;
       }
 
       const parentNode = node.parentNode;
-      const nextSibling = node.nextSibling;
+      let nextSibling = node.nextSibling;
       const focusMarkerParent = node.contains(focusMarker);
 
       const filterFun = childNode => {
@@ -189,20 +191,28 @@ class Navigator extends Component {
 
         this.insertMiddleBlock(textNode);
 
-        if (nodeTypeText(node)) break;
+        if (nodeTypeText(node)) {
+          // node and textNode are the same, which means node.nextSibling was
+          // disconnected when node was replaced by a middle block.
+          const middleBlocks = document.getElementsByClassName('c-s-m-b');
+          nextSibling = middleBlocks[middleBlocks.length-1].nextSibling;
+          break;
+        }
 
         textNode = getTextNode(node, filterFun);
       }
 
       if (focusMarkerReached) break;
 
+      anchorMarker = document.getElementById('c-s-a-m');
+      anchorBlock = document.getElementById('c-s-a-b');
+      startBlock = document.getElementById('c-s-s-b');
+      focusMarker = document.getElementById('c-s-f-m');
+
       if (nextSibling) {
         node = nextSibling;
-      }
-      else if (parentNode === this.refs.content) {
-        break;
       } else {
-        node = parentNode.nextSibling;
+        node = getNextNode(parentNode);
       }
     }
   }
@@ -215,58 +225,6 @@ class Navigator extends Component {
     } else {
       this.modifyCS(anchorNode, anchorOffset);
     }
-  }
-
-  destroyCS() {
-    this.removeAnchorMarker();
-    this.removeAnchorBlock();
-    this.removeStartBlock();
-    this.removeFocusBlock();
-    this.removeFocusMarker();
-    this.removeMiddleBlocks();
-  }
-
-  removeAnchorMarker() {
-    const anchorMarkerEl = document.getElementById('c-s-a-m');
-    if (!anchorMarkerEl) return;
-    anchorMarkerEl.parentNode.removeChild(anchorMarkerEl);
-  }
-
-  removeFocusMarker() {
-    const focusMarkerEl = document.getElementById('c-s-f-m');
-    if (!focusMarkerEl) return;
-    focusMarkerEl.parentNode.removeChild(focusMarkerEl);
-  }
-
-  removeAnchorBlock() {
-    const anchorBlockEl = document.getElementById('c-s-a-b');
-    if (!anchorBlockEl) return;
-    replaceNodeWith(anchorBlockEl, anchorBlockEl.innerHTML);
-  }
-
-  removeStartBlock() {
-    const startBlockEl = document.getElementById('c-s-s-b');
-    if (!startBlockEl) return;
-    replaceNodeWith(startBlockEl, startBlockEl.innerHTML);
-  }
-
-  removeMiddleBlocks() {
-    const middleBlockEls = document.getElementsByClassName('c-s-m-b');
-    if (!middleBlockEls) return;
-    while (middleBlockEls.length > 0) {
-      replaceNodeWith(middleBlockEls[0], middleBlockEls[0].innerHTML);
-    }
-  }
-
-  removeFocusBlock() {
-    const focusBlockEl = document.getElementById('c-s-f-b');
-    if (!focusBlockEl) return;
-    replaceNodeWith(focusBlockEl, focusBlockEl.innerHTML);
-  }
-  removeTempMarker() {
-    const tempMarkerEl = document.getElementById('c-s-t-m');
-    if (!tempMarkerEl) return;
-    tempMarkerEl.parentNode.removeChild(tempMarkerEl);
   }
 
   modifyCS(anchorNode, anchorOffset) {
@@ -319,6 +277,63 @@ class Navigator extends Component {
 
     this.removeMiddleBlocks();
     this.insertMiddleBlocks();
+  }
+
+  expandToDefaultSelection() {
+    const lastTextNode = getLastTextNode(this.refs.content);
+    this.modifyCS(lastTextNode, lastTextNode.length);
+  }
+
+  destroyCS() {
+    this.removeAnchorMarker();
+    this.removeAnchorBlock();
+    this.removeStartBlock();
+    this.removeFocusBlock();
+    this.removeFocusMarker();
+    this.removeMiddleBlocks();
+  }
+
+  removeAnchorMarker() {
+    const anchorMarkerEl = document.getElementById('c-s-a-m');
+    if (!anchorMarkerEl) return;
+    anchorMarkerEl.parentNode.removeChild(anchorMarkerEl);
+  }
+
+  removeFocusMarker() {
+    const focusMarkerEl = document.getElementById('c-s-f-m');
+    if (!focusMarkerEl) return;
+    focusMarkerEl.parentNode.removeChild(focusMarkerEl);
+  }
+
+  removeAnchorBlock() {
+    const anchorBlockEl = document.getElementById('c-s-a-b');
+    if (!anchorBlockEl) return;
+    replaceNodeWith(anchorBlockEl, anchorBlockEl.innerHTML);
+  }
+
+  removeStartBlock() {
+    const startBlockEl = document.getElementById('c-s-s-b');
+    if (!startBlockEl) return;
+    replaceNodeWith(startBlockEl, startBlockEl.innerHTML);
+  }
+
+  removeMiddleBlocks() {
+    const middleBlockEls = document.getElementsByClassName('c-s-m-b');
+    if (!middleBlockEls) return;
+    while (middleBlockEls.length > 0) {
+      replaceNodeWith(middleBlockEls[0], middleBlockEls[0].innerHTML);
+    }
+  }
+
+  removeFocusBlock() {
+    const focusBlockEl = document.getElementById('c-s-f-b');
+    if (!focusBlockEl) return;
+    replaceNodeWith(focusBlockEl, focusBlockEl.innerHTML);
+  }
+  removeTempMarker() {
+    const tempMarkerEl = document.getElementById('c-s-t-m');
+    if (!tempMarkerEl) return;
+    tempMarkerEl.parentNode.removeChild(tempMarkerEl);
   }
 
   render() {

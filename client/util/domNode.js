@@ -1,3 +1,15 @@
+export function getNextNode(node) {
+  if (node.nextSibling) {
+    return node.nextSibling;
+  } else {
+    return getNextNode(node.parentNode);
+  }
+}
+
+export function nodeTypeText(node) {
+  return node.nodeType === 3;
+}
+
 export function insertElementInTextNode(elStr, textNode, index) {
   const nodeValue = textNode.nodeValue;
 
@@ -8,11 +20,6 @@ export function insertElementInTextNode(elStr, textNode, index) {
 
     replaceNodeWith(textNode, replacementStr);
   }
-}
-
-
-export function nodeTypeText(node) {
-  return node.nodeType === 3;
 }
 
 export function replaceNodeWith(node, htmlStr) {
@@ -77,8 +84,23 @@ export function getTextNode(node, filter) {
 
     for (let i = 0; i < childNodes.length; i++) {
       const childNode = childNodes[i];
-      if (filter(childNode)) continue;
+      if (filter && filter(childNode)) continue;
       const textNode = getTextNode(childNode, filter);
+      if (textNode) return textNode;
+    }
+  }
+}
+
+export function getLastTextNode(node, filter) {
+  if (node.nodeType === 3) {
+    return node;
+  } else {
+    const childNodes = node.childNodes;
+
+    for (let i = childNodes.length; i-- >= 0;) {
+      const childNode = childNodes[i];
+      if (filter && filter(childNode)) continue;
+      const textNode = getLastTextNode(childNode, filter);
       if (textNode) return textNode;
     }
   }
