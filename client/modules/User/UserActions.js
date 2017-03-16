@@ -20,7 +20,7 @@ export function fetchUser(sid) {
           dispatch(receiveUser(fetchUser.name, res.user))
         },
         err => {
-          dispatch(failedRequestUser(fetchUser.name, err.message));
+          dispatch(failedRequestUser(fetchUser.name, err.reason));
         }
       );
   };
@@ -41,10 +41,10 @@ export function receiveUser(requestName, user) {
   };
 }
 
-export function failedRequestUser(requestName, message) {
+export function failedRequestUser(requestName, reason) {
   return {
     type: USER_FAILURE,
     requestName,
-    message,
+    reason,
   };
 }

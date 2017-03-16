@@ -82,7 +82,7 @@ class PostPage extends Component { // eslint-disable-line
     let isLoading = awaiting.fetchPost || !post;
 
     if (failed.fetchPost) {
-      child = <h1>{failed.fetchPost.message || 'Something bad happend'}</h1>;
+      child = <h1>{failed.fetchPost.reason || 'Something bad happend'}</h1>;
       isLoading = false;
     } else if (!user && params.sid === 'blank') {
       child = null;

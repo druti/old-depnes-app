@@ -49,7 +49,7 @@ function updateFailed(state, action) {
   return {
     ...state.failed,
     [action.requestName]: {
-      message: action.message,
+      reason: action.reason,
     },
   };
 }

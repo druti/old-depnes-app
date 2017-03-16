@@ -65,7 +65,6 @@ function mapStateToProps(state) {
   return {
     redirectUrl: getRedirectUrl(state),
     errorMessage: state.auth.error,
-    message: state.auth.message,
   };
 }
 

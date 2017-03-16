@@ -47,7 +47,7 @@ export function fetchPost(sid) {
           dispatch(receivePost(fetchPost.name, res.post));
         },
         err => {
-          dispatch(failedRequestPost(fetchPost.name, err.message));
+          dispatch(failedRequestPost(fetchPost.name, err.reason));
         }
       );
   };
@@ -68,11 +68,11 @@ export function receivePost(requestName, post) {
   };
 }
 
-export function failedRequestPost(requestName, message) {
+export function failedRequestPost(requestName, reason) {
   return {
     type: POST_FAILURE,
     requestName,
-    message,
+    reason,
   };
 }
 
@@ -89,7 +89,7 @@ export function fetchPosts() {
           dispatch(receivePosts(fetchPosts.name, res.posts));
         },
         err => {
-          dispatch(failedRequestPosts(fetchPosts.name, err.message));
+          dispatch(failedRequestPosts(fetchPosts.name, err.reason));
         }
       );
   };
@@ -110,11 +110,11 @@ export function receivePosts(requestName, posts) {
   };
 }
 
-export function failedRequestPosts(requestName, message) {
+export function failedRequestPosts(requestName, reason) {
   return {
     type: POSTS_FAILURE,
     requestName,
-    message,
+    reason,
   };
 }
 
@@ -132,7 +132,7 @@ export function addPost({ content, htmlContent }) {
         dispatch(receivePost(addPost.name, res.posts));
       },
       err => {
-        dispatch(failedAddPost(addPost.name, err.message));
+        dispatch(failedAddPost(addPost.name, err.reason));
       }
     );
   };
@@ -144,11 +144,11 @@ export function addPostRequest() {
   };
 }
 
-export function failedAddPost(requestName, message) {
+export function failedAddPost(requestName, reason) {
   return {
     type: ADD_POST_FAILURE,
     requestName,
-    message,
+    reason,
   };
 }
 

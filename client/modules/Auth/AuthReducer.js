@@ -9,7 +9,6 @@ import {
 // Initial State
 const initState = {
   error: '',
-  message: '',
   user: null,
 };
 
@@ -19,13 +18,12 @@ const AuthReducer = (state = initState, action) => {
       return {
         ...state,
         error: '',
-        message: '',
         user: action.user,
       };
     case UNAUTH_USER:
       return { ...state, user: null };
     case AUTH_ERROR:
-      return { ...state, error: action.message };
+      return { ...state, error: action.reason };
     case PROTECTED_TEST:
       return { ...state, content: action.payload };
   }

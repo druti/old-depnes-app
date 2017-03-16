@@ -40,7 +40,7 @@ class PathListPage extends Component { // eslint-disable-line
     let isLoading = awaiting.fetchPosts || !paths.length;
 
     if (failed.fetchPosts) {
-      child = <h1>{failed.fetchPosts.message || 'Something bad happend'}</h1>;
+      child = <h1>{failed.fetchPosts.reason || 'Something bad happend'}</h1>;
       isLoading = false;
     } else {
       child = <PathList paths={paths} />;

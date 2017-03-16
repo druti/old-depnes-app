@@ -25,7 +25,7 @@ export function logInUser({ email, password }, redirectUrl) {
           dispatch(setRedirectUrl(''))
         },
         err => {
-          dispatch({ type: AUTH_ERROR, message: err.message });
+          dispatch({ type: AUTH_ERROR, reason: err.reason});
         }
       );
   }
@@ -42,7 +42,7 @@ export function registerUser({ email, firstName, lastName, password }) {
           browserHistory.push(`/user/${data.user.sid}`);
         },
         err => {
-          dispatch({ type: AUTH_ERROR, message: err.message });
+          dispatch({ type: AUTH_ERROR, reason: err.reason});
         }
       );
   }
@@ -69,7 +69,7 @@ export function protectedTest() {
           });
         },
         err => {
-          dispatch({ type: AUTH_ERROR, message: err.message });
+          dispatch({ type: AUTH_ERROR, reason: err.reason});
         }
       )
   }

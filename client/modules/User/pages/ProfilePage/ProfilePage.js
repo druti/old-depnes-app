@@ -46,7 +46,7 @@ class ProfilePage extends Component { // eslint-disable-line
     let child;
 
     if (failed.fetchUser) {
-      child = <h1>{failed.fetchUser.message || 'Something bad happend'}</h1>;
+      child = <h1>{failed.fetchUser.reason || 'Something bad happend'}</h1>;
     } else if (awaiting.fetchUser || !user) {
       child = <h1>Loading...</h1>;
     } else {
