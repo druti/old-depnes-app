@@ -17,7 +17,11 @@ import {
 
 import { deltaToString } from '../../../../util/delta';
 
-import { getDefaultSelectionOffsets } from './customSelect';
+import {
+  ANCHOR_MARKER,
+  FOCUS_MARKER,
+  getDefaultSelectionOffsets,
+} from './customSelect';
 
 import { toggleCustomSelect } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
@@ -35,7 +39,11 @@ class Navigator extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.customSelect && !this.props.customSelect) {
+    const { path, customSelect } = this.props;
+    if (prevProps.path.sid !== path.sid && customSelect) {
+      //this.initCS();
+    }
+    if (prevProps.customSelect && !customSelect) {
       this.destroyCS();
     }
   }
@@ -100,13 +108,11 @@ class Navigator extends Component {
   }
 
   insertAnchorMarker(node, index) {
-    const anchorMarker = '<span id="c-s-a-m"></span>';
-    insertElementInTextNode(anchorMarker, node, index);
+    insertElementInTextNode(ANCHOR_MARKER, node, index);
   }
 
   insertFocusMarker(node, index) {
-    const focusMarker = '<span id="c-s-f-m"></span>';
-    insertElementInTextNode(focusMarker, node, index);
+    insertElementInTextNode(FOCUS_MARKER, node, index);
   }
 
   insertStartBlock(textNode) {
@@ -329,13 +335,17 @@ class Navigator extends Component {
         {!makeMode &&
           <div className='ql-container'>
             <div
+              id='navigator-content'
               ref='content'
               className='ql-editor'
               onClick={this.handleContentClick}
               dangerouslySetInnerHTML={{ __html: path.htmlContent }}
             />
           </div>}
-        <Toolbar user={user} params={params} />
+        <Toolbar
+          user={user}
+          params={params}
+        />
       </div>
     );
   }

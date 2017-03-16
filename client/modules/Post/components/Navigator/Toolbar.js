@@ -4,19 +4,14 @@ import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import Delta from 'quill-delta';
 import stringify from 'json-stable-stringify';
-
 import ButtonBar from '../../../../components/ButtonBar';
-
-import { LinkButton, LinkIconButton } from '../../../../mdl/Button';
-
+import { LinkIconButton } from '../../../../mdl/Button';
 import PostPage from '../../pages/PostPage/PostPage';
-
-import { deltaToContent, deltaToString } from '../../../../util/delta';
-
-import { toggleCustomSelect, toggleMakeMode, addPostRequest } from '../../PostActions';
-
-// Import Selectors
+import { toggleCustomSelect, toggleMakeMode, addPost } from '../../PostActions';
+import { setRedirectUrl } from '../../../App/AppActions';
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
+import { getSelection } from './customSelect';
+import { deltaToContent, deltaToString } from '../../../../util/delta';
 
 import styles from './toolbar.scss'; // eslint-disable-line
 import buttonTheme from '../../../../layouts/button.scss'; // eslint-disable-line
@@ -29,6 +24,17 @@ if (isClient) {
 }
 
 class Toolbar extends Component {
+  static propTypes = {
+    user: T.object,
+    params: T.object.isRequired,
+    dispatch: T.func.isRequired,
+    customSelect: T.bool.isRequired,
+    makeMode: T.bool.isRequired,
+    path: T.object,
+    paths: T.array,
+    className: T.string,
+  };
+
   constructor() {
     super();
     this.state = {};
@@ -45,7 +51,10 @@ class Toolbar extends Component {
       paths,
     } = this.props;
 
-    const selection = PostPage.quill && PostPage.quill.getSelection();
+    const selection = getSelection(
+      document.getElementById('navigator-content').innerHTML
+    );
+    debugger;
 
     if (selection && selection.length) {
       this.goToNextMatchedPath(path, paths, navigator, selection);
@@ -85,31 +94,30 @@ class Toolbar extends Component {
       dispatch,
     } = this.props;
 
-    if (this.context.router.isActive({ pathname: '/paths'})) {
-      debugger; //eslint-disable-line no-debugger
-      browserHistory.push('/paths/blank');
-    }
-
-    if (makeMode && save) {
-      if (PostPage.pathChanges.length) {
-        let newContent = associateChangesWithAuthor(
-          path,
-          PostPage.pathChanges,
-          user.sid
-        );
-        newContent = deltaToContent(newContent);
-        this.savePath(newContent);
-      } else {
-        return window.alert('No changes to save.');
+    if (user) {
+      if (makeMode && save) {
+        if (PostPage.pathChanges.length) {
+          let newContent = associateChangesWithAuthor(
+            path,
+            PostPage.pathChanges,
+            user.sid
+          );
+          newContent = deltaToContent(newContent);
+          this.savePath(newContent);
+        } else {
+          return window.alert('No changes to save.');
+        }
       }
+      dispatch(toggleMakeMode());
+    } else {
+      dispatch(setRedirectUrl(location.pathname))
+      browserHistory.replace('/login');
     }
-
-    dispatch(toggleMakeMode());
   }
 
   savePath(content) {
     const result = this.props.dispatch(
-      addPostRequest({
+      addPost({
         content,
         htmlContent: PostPage.quill.root.innerHTML,
       })
@@ -126,7 +134,7 @@ class Toolbar extends Component {
   }
 
   render() {
-    const { path, customSelect, makeMode, user } = this.props;
+    const { path, customSelect, makeMode } = this.props;
     return (
       <div className={styles.container}>
         <ButtonBar theme={styles}>
@@ -153,15 +161,6 @@ class Toolbar extends Component {
               />
             }
 
-            {!user && !customSelect &&
-              <LinkButton
-                theme={buttonTheme}
-                primary
-                raised
-                label='Edit'
-                href='/login'
-              />
-            }
             {customSelect &&
               <Button
                 theme={buttonTheme}
@@ -170,7 +169,7 @@ class Toolbar extends Component {
                 raised
               ><i className='fa fa-times'/></Button>
             }
-            {user && !customSelect &&
+            {!customSelect &&
               <Button
                 theme={buttonTheme}
                 primary
@@ -256,22 +255,6 @@ class Toolbar extends Component {
     );
   }
 }
-
-Toolbar.propTypes = {
-  user: T.object,
-  params: T.object.isRequired,
-  dispatch: T.func.isRequired,
-  customSelect: T.bool.isRequired,
-  makeMode: T.bool.isRequired,
-  path: T.object,
-  paths: T.array,
-  className: T.string,
-};
-
-Toolbar.contextTypes = {
-  router: T.object.isRequired,
-};
-
 
 function getNextPath(currentPath, paths, selection) {
   // Reorder paths, excluding current path and starting at next path

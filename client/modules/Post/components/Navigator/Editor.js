@@ -31,8 +31,6 @@ class Editor extends Component {
       path,
     } = this.props;
 
-    const previousSelection = PostPage.quill ? PostPage.quill.getSelection() : null;
-
     const editorElement = document.getElementById('depnes-editor');
     const quill = new Quill(editorElement, {
       placeholder: 'Compose an epic...',
@@ -48,13 +46,6 @@ class Editor extends Component {
       if (source === 'api') return;
       PostPage.pathChanges.push(change);
     });
-
-    if ((previousSelection && previousSelection.length) ||
-        PostPage.nextSelection && PostPage.nextSelection.length
-    ) {
-      quill.setSelection(PostPage.nextSelection || previousSelection);
-      delete PostPage.nextSelection;
-    }
 
     PostPage.quill = quill;
     PostPage.pathChanges = [];

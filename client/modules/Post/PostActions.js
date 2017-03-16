@@ -139,10 +139,10 @@ export function addPost({ content, htmlContent }) {
       },
     }).then(
       res => {
-        dispatch(receivePost(addPost.name, res.posts));
+        return dispatch(receivePost(addPost.name, res.post));
       },
       err => {
-        dispatch(failedAddPost(addPost.name, err.reason));
+        return dispatch(failedAddPost(addPost.name, err.reason));
       }
     );
   };
