@@ -1,6 +1,7 @@
 import callApi from '../../util/apiCaller';
 import { getUser } from './UserReducer';
 
+export const USER_CACHED = 'USER_CACHED';
 export const USER_REQUEST = 'USER_REQUEST';
 export const USER_RECEIVE = 'USER_RECEIVE';
 export const USER_FAILURE = 'USER_FAILURE';
@@ -11,9 +12,11 @@ export const USERS_FAILURE = 'USERS_FAILURE';
 
 export function fetchUser(sid) {
   return (dispatch, getState) => {
-    const cachedUser = getUser(getState(), sid);
-    if (cachedUser) return;
-    dispatch(requestUser(fetchUser.name));
+    if (getUser(getState(), sid))  {
+      return dispatch(cachedUser(fetchUser.name));
+    } else {
+      dispatch(requestUser(fetchUser.name));
+    }
     return callApi(`user/${sid}`)
       .then(
         res => {
@@ -23,6 +26,13 @@ export function fetchUser(sid) {
           dispatch(failedRequestUser(fetchUser.name, err.reason));
         }
       );
+  };
+}
+
+export function cachedUser(requestName) {
+  return {
+    type: USER_CACHED,
+    requestName,
   };
 }
 

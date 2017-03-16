@@ -4,6 +4,7 @@ import { getPost } from './PostReducer';
 export const TOGGLE_CUSTOM_SELECT = 'TOGGLE_CUSTOM_SELECT';
 export const TOGGLE_MAKE_MODE = 'TOGGLE_MAKE_MODE';
 
+export const POST_CACHED = 'POST_CACHED';
 export const POST_REQUEST = 'POST_REQUEST';
 export const POST_RECEIVE = 'POST_RECEIVE';
 export const POST_FAILURE = 'POST_FAILURE';
@@ -38,9 +39,11 @@ export function toggleMakeMode() {
  */
 export function fetchPost(sid) {
   return (dispatch, getState) => {
-    const cachedPost = getPost(getState(), sid);
-    if (cachedPost) return Promise.resolve();
-    dispatch(requestPost(fetchPost.name));
+    if (getPost(getState(), sid))  {
+      return dispatch(cachedPost(fetchPost.name));
+    } else {
+      dispatch(requestPost(fetchPost.name));
+    }
     return callApi(`posts/${sid}`)
       .then(
         res => {
@@ -50,6 +53,13 @@ export function fetchPost(sid) {
           dispatch(failedRequestPost(fetchPost.name, err.reason));
         }
       );
+  };
+}
+
+export function cachedPost(requestName) {
+  return {
+    type: POST_CACHED,
+    requestName,
   };
 }
 

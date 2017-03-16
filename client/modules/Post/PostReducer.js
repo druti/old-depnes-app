@@ -1,6 +1,7 @@
 import {
   TOGGLE_CUSTOM_SELECT,
   TOGGLE_MAKE_MODE,
+  POST_CACHED,
   POST_REQUEST,
   POST_RECEIVE,
   POST_FAILURE,
@@ -49,11 +50,18 @@ const PostReducer = (state = initState, action) => {
         },
       };
 
+    case POST_CACHED :
+      return {
+        ...state,
+        failed: updateFailed(state, action, false),
+      };
+
     case POST_REQUEST :
     case POSTS_REQUEST :
       return {
         ...state,
         awaiting: updateAwaiting(state, action, true),
+        failed: updateFailed(state, action, false),
       };
 
     case POST_RECEIVE :
@@ -70,17 +78,18 @@ const PostReducer = (state = initState, action) => {
         data: action.posts,
       };
 
-    case DELETE_POST :
-      return {
-        ...state,
-        data: state.data.filter(post => post.sid !== action.sid),
-      };
-
     case POST_FAILURE :
     case POSTS_FAILURE :
       return {
         ...state,
-        failed: updateFailed(state, action),
+        awaiting: updateAwaiting(state, action, false),
+        failed: updateFailed(state, action, true),
+      };
+
+    case DELETE_POST :
+      return {
+        ...state,
+        data: state.data.filter(post => post.sid !== action.sid),
       };
 
     default:
@@ -95,12 +104,12 @@ function updateAwaiting(state, action, awaiting) {
   };
 }
 
-function updateFailed(state, action) {
+function updateFailed(state, action, failed) {
   return {
     ...state.failed,
-    [action.requestName]: {
+    [action.requestName]: failed ? {
       reason: action.reason,
-    },
+    } : false,
   };
 }
 

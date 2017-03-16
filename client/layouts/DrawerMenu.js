@@ -13,7 +13,9 @@ const DrawerMenu = () => (
     <Navigation type='vertical'>
       <Link href='/paths/blank' label='Write'/>
       <Link href='/paths' label='Paths'/>
+      <Link href='/paths/dafdfafsdf' label='Daf Path'/>
       <Link href='/user/Sy2HGXzig' label='Andres Profile'/>
+      <Link href='/user/dafdfafsdf' label='Daf Profile'/>
     </Navigation>
   </div>
 );

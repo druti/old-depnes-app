@@ -1,6 +1,7 @@
 import { getCurrentUser } from '../Auth/AuthReducer';
 
 import {
+  USER_CACHED,
   USER_REQUEST,
   USER_RECEIVE,
   USER_FAILURE,
@@ -14,10 +15,17 @@ const initState = {
 
 const UserReducer = (state = initState, action) => {
   switch (action.type) {
+    case USER_CACHED :
+      return {
+        ...state,
+        failed: updateFailed(state, action, false),
+      };
+
     case USER_REQUEST :
       return {
         ...state,
         awaiting: updateAwaiting(state, action, true),
+        failed: updateFailed(state, action, false),
       };
 
     case USER_RECEIVE :
@@ -30,7 +38,8 @@ const UserReducer = (state = initState, action) => {
     case USER_FAILURE :
       return {
         ...state,
-        failed: updateFailed(state, action),
+        awaiting: updateAwaiting(state, action, false),
+        failed: updateFailed(state, action, true),
       };
 
     default:
@@ -45,18 +54,18 @@ function updateAwaiting(state, action, awaiting) {
   };
 }
 
-function updateFailed(state, action) {
+function updateFailed(state, action, failed) {
   return {
     ...state.failed,
-    [action.requestName]: {
+    [action.requestName]: failed ? {
       reason: action.reason,
-    },
+    } : false,
   };
 }
 
-export const getAwaiting = state => state.posts.awaiting;
+export const getAwaiting = state => state.users.awaiting;
 
-export const getFailed = state => state.posts.failed;
+export const getFailed = state => state.users.failed;
 
 export const getUser = (state, sid) => {
   const currentUser = getCurrentUser(state);
