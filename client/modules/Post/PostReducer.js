@@ -1,5 +1,6 @@
 import {
-  TOGGLE_CUSTOM_SELECT,
+  SELECTION_SAVE,
+  SELECTION_DELETE,
   TOGGLE_MAKE_MODE,
   POST_CACHED,
   POST_REQUEST,
@@ -25,19 +26,28 @@ const initState = {
   },
   navigator: {
     changes: [], // full of quill-deltas
-    customSelect: false,
+    selection: false,
     makeMode: false,
   },
 };
 
 const PostReducer = (state = initState, action) => {
   switch (action.type) {
-    case TOGGLE_CUSTOM_SELECT :
+    case SELECTION_SAVE :
       return {
         ...state,
         navigator: {
           ...state.navigator,
-          customSelect: !state.navigator.customSelect,
+          selection: action.selection,
+        },
+      };
+
+    case SELECTION_DELETE :
+      return {
+        ...state,
+        navigator: {
+          ...state.navigator,
+          selection: false,
         },
       };
 

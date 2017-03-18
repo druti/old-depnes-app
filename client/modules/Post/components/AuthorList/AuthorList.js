@@ -56,7 +56,7 @@ PathAuthors.propTypes = {
   user: T.object,
   params: T.object.isRequired,
   path: T.object.isRequired,
-  customSelect: T.bool.isRequired,
+  selection: T.oneOfType([T.bool, T.object]),
   makeMode: T.bool.isRequired,
   dispatch: T.func.isRequired,
 };

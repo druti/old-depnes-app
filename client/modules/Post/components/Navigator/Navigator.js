@@ -5,7 +5,10 @@ import Helmet from 'react-helmet';
 import Editor from './Editor';
 import Toolbar from './Toolbar';
 
-import { elementContainsSelection, clearSelection } from '../../../../util/selection';
+import {
+  nodeContainsNativeSelection,
+  clearNativeSelection,
+} from '../../../../util/nativeSelection';
 
 import {
   getNextNode,
@@ -22,10 +25,13 @@ import { deltaToString } from '../../../../util/delta';
 import {
   ANCHOR_MARKER,
   FOCUS_MARKER,
-  getDefaultSelectionOffsets,
-} from './customSelect';
+  convertSelection,
+  mapSelectionObjToContent,
+  createSelectionObjFromContent,
+  getStartSelectionOffsets,
+} from './selection';
 
-import { toggleCustomSelect } from '../../PostActions';
+import { saveSelection, deleteSelection } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
 
@@ -35,70 +41,67 @@ class Navigator extends Component {
   constructor() {
     super();
     this.handleContentClick = this.handleContentClick.bind(this);
-    this.initCS = this.initCS.bind(this);
-    this.updateCS = this.updateCS.bind(this);
   }
 
   componentDidUpdate(prevProps) {
-    const { path, customSelect } = this.props;
-    if (prevProps.path.sid !== path.sid && customSelect) {
-      //this.initCS();
+    const { path, selection } = this.props;
+    if (prevProps.path.sid !== path.sid && selection) {
+      this.setSelection(convertSelection(
+        prevProps.path.content,
+        selection,
+        path.content
+      ));
     }
-    if (prevProps.customSelect && !customSelect) {
-      this.destroyCS();
+    if (prevProps.selection && !selection) {
+      this.removeVisibleSelection();
     }
   }
 
-  handleContentClick() {
-    let abort = false;
-    const sel = window.getSelection();
-    const containedSel = elementContainsSelection(this.refs.content, sel);
-
-    if (!sel.isCollapsed) {
-      // eslint-disable-next-line
-      console.log('Selection is not collapsed');
-      abort = true;
+  componentWillUnmount() {
+    if (this.props.selection) {
+      this.deleteSelection();
     }
-
-    if (!containedSel) {
-      // eslint-disable-next-line
-      console.warn('Selection is not in navigator');
-      abort = true;
-    }
-
-    if (!nodeTypeText(sel.anchorNode)) {
-      // eslint-disable-next-line
-      console.warn('AnchorNode is not a text node');
-      abort = true;
-    }
-
-    if (abort) {
-      if (this.props.customSelect) {
-        clearSelection();
-      }
-      // eslint-disable-next-line
-      return console.log('Abort new custom selection');
-    }
-
-    if (this.props.customSelect) {
-      this.updateCS(sel);
-    } else {
-      this.initCS(sel);
-    }
-
-    clearSelection();
   }
 
-  initCS(sel) {
-    const { anchorNode, anchorOffset } = sel;
-    const defaultOffsets = getDefaultSelectionOffsets(anchorNode, anchorOffset);
+  setSelection(sel) {
+    const contentEl = this.refs.content;
+    const { start } = mapSelectionObjToContent(contentEl, sel, 'start');
+    const startOffsets = getStartSelectionOffsets(start.node, start.offset);
 
-    this.insertAnchorMarker(anchorNode, defaultOffsets[0]);
+    this.insertAnchorMarker(start.node, startOffsets[0]);
 
     const anchorMarkerEl = document.getElementById('c-s-a-m');
     const afterNode = anchorMarkerEl.nextSibling;
 
-    this.insertFocusMarker(afterNode, defaultOffsets[1]);
+    this.insertFocusMarker(afterNode, startOffsets[1]);
+
+    const focusMarkerEl = document.getElementById('c-s-f-m');
+    const beforeNode = focusMarkerEl.previousSibling;
+
+    this.insertStartBlock(beforeNode);
+
+    const { anchor } = mapSelectionObjToContent(contentEl, sel, 'anchor');
+    this.modifySelection(anchor.node, anchor.offset);
+
+    const { focus } = mapSelectionObjToContent(contentEl, sel, 'focus');
+    this.modifySelection(focus.node, focus.offset);
+  }
+
+  getSelection() {
+    const contentEl = this.refs.content;
+    return createSelectionObjFromContent(contentEl);
+  }
+
+  newSelection(sel) {
+    const { anchorNode, anchorOffset } = sel;
+    const startOffsets = getStartSelectionOffsets(anchorNode, anchorOffset);
+
+    this.insertAnchorMarker(anchorNode, startOffsets[0]);
+
+    const anchorMarkerEl = document.getElementById('c-s-a-m');
+    const afterNode = anchorMarkerEl.nextSibling;
+
+    this.insertFocusMarker(afterNode, startOffsets[1]);
 
     const focusMarkerEl = document.getElementById('c-s-f-m');
     const beforeNode = focusMarkerEl.previousSibling;
@@ -106,8 +109,93 @@ class Navigator extends Component {
     this.insertStartBlock(beforeNode);
 
     this.expandToDefaultSelection();
+  }
 
-    this.props.dispatch(toggleCustomSelect());
+  updateSelection(sel) {
+    const { anchorNode, anchorOffset } = sel;
+
+    if (anchorNode.parentNode.id === 'c-s-s-b') {
+      this.deleteSelection();
+    } else {
+      this.modifySelection(anchorNode, anchorOffset);
+    }
+  }
+
+  modifySelection(anchorNode, anchorOffset) {
+    let startBlockEl = document.getElementById('c-s-s-b');
+    if (startBlockEl.contains(anchorNode)) {
+      return;
+    }
+
+    const tempMarker = '<span id="c-s-t-m"></span>';
+    insertElementInTextNode(tempMarker, anchorNode, anchorOffset);
+
+    let tempMarkerEl = document.getElementById('c-s-t-m');
+
+    const content = this.refs.content.innerHTML;
+    const startBlock = '<span id="c-s-s-b">';
+
+    if (content.indexOf(tempMarker) < content.indexOf(startBlock)) {
+      // move anchorMarker
+      this.removeAnchorMarker();
+      let textNode = tempMarkerEl.nextSibling;
+      if (!textNode || !nodeTypeText(textNode)) {
+        textNode = findNearestTextNode(tempMarkerEl, 'forwards');
+        startBlockEl = document.getElementById('c-s-s-b');
+        if (startBlockEl.contains(textNode)) {
+          this.removeTempMarker();
+          return this.deleteSelection();
+        }
+      }
+      this.insertAnchorMarker(textNode, 0);
+      this.removeAnchorBlock();
+      const anchorMarkerEl = document.getElementById('c-s-a-m');
+      if (!anchorMarkerEl) {
+        this.removeTempMarker();
+        return this.deleteSelection();
+      }
+      this.insertAnchorBlock(anchorMarkerEl.nextSibling);
+    } else {
+      // move focusMarker
+      this.removeFocusMarker();
+      this.insertFocusMarker(
+        tempMarkerEl.previousSibling,
+        tempMarkerEl.previousSibling.nodeValue.length
+      );
+      this.removeFocusBlock();
+      const focusMarkerEl = document.getElementById('c-s-f-m');
+      if (!focusMarkerEl) {
+        this.removeTempMarker();
+        return this.deleteSelection();
+      }
+      this.insertFocusBlock(focusMarkerEl.previousSibling);
+    }
+
+    tempMarkerEl = document.getElementById('c-s-t-m');
+    tempMarkerEl.parentNode.removeChild(tempMarkerEl);
+
+    this.removeMiddleBlocks();
+    this.insertMiddleBlocks();
+    this.props.dispatch(saveSelection(this.getSelection()));
+  }
+
+  expandToDefaultSelection() {
+    const lastTextNode = getLastTextNode(this.refs.content);
+    this.modifySelection(lastTextNode, lastTextNode.length);
+  }
+
+  deleteSelection() {
+    this.removeVisibleSelection();
+    this.props.dispatch(deleteSelection());
+  }
+
+  removeVisibleSelection() {
+    this.removeAnchorMarker();
+    this.removeAnchorBlock();
+    this.removeStartBlock();
+    this.removeFocusBlock();
+    this.removeFocusMarker();
+    this.removeMiddleBlocks();
   }
 
   insertAnchorMarker(node, index) {
@@ -217,82 +305,6 @@ class Navigator extends Component {
     }
   }
 
-  updateCS(sel) {
-    const { anchorNode, anchorOffset } = sel;
-
-    if (anchorNode.parentNode.id === 'c-s-s-b') {
-      this.props.dispatch(toggleCustomSelect());
-    } else {
-      this.modifyCS(anchorNode, anchorOffset);
-    }
-  }
-
-  modifyCS(anchorNode, anchorOffset) {
-    const tempMarker = '<span id="c-s-t-m"></span>';
-    insertElementInTextNode(tempMarker, anchorNode, anchorOffset);
-
-    let tempMarkerEl = document.getElementById('c-s-t-m');
-
-    const content = this.refs.content.innerHTML;
-    const startBlock = '<span id="c-s-s-b">';
-
-    if (content.indexOf(tempMarker) < content.indexOf(startBlock)) {
-      // move anchorMarker
-      this.removeAnchorMarker();
-      let textNode = tempMarkerEl.nextSibling;
-      if (!textNode || !nodeTypeText(textNode)) {
-        textNode = findNearestTextNode(tempMarkerEl, 'forwards');
-        const startBlockEl = document.getElementById('c-s-s-b');
-        if (startBlockEl.contains(textNode)) {
-          this.removeTempMarker();
-          return this.props.dispatch(toggleCustomSelect());
-        }
-      }
-      this.insertAnchorMarker(textNode, 0);
-      this.removeAnchorBlock();
-      const anchorMarkerEl = document.getElementById('c-s-a-m');
-      if (!anchorMarkerEl) {
-        this.removeTempMarker();
-        return this.props.dispatch(toggleCustomSelect());
-      }
-      this.insertAnchorBlock(anchorMarkerEl.nextSibling);
-    } else {
-      // move focusMarker
-      this.removeFocusMarker();
-      this.insertFocusMarker(
-        tempMarkerEl.previousSibling,
-        tempMarkerEl.previousSibling.nodeValue.length
-      );
-      this.removeFocusBlock();
-      const focusMarkerEl = document.getElementById('c-s-f-m');
-      if (!focusMarkerEl) {
-        this.removeTempMarker();
-        return this.props.dispatch(toggleCustomSelect());
-      }
-      this.insertFocusBlock(focusMarkerEl.previousSibling);
-    }
-
-    tempMarkerEl = document.getElementById('c-s-t-m');
-    tempMarkerEl.parentNode.removeChild(tempMarkerEl);
-
-    this.removeMiddleBlocks();
-    this.insertMiddleBlocks();
-  }
-
-  expandToDefaultSelection() {
-    const lastTextNode = getLastTextNode(this.refs.content);
-    this.modifyCS(lastTextNode, lastTextNode.length);
-  }
-
-  destroyCS() {
-    this.removeAnchorMarker();
-    this.removeAnchorBlock();
-    this.removeStartBlock();
-    this.removeFocusBlock();
-    this.removeFocusMarker();
-    this.removeMiddleBlocks();
-  }
-
   removeAnchorMarker() {
     const anchorMarkerEl = document.getElementById('c-s-a-m');
     if (!anchorMarkerEl) return;
@@ -330,10 +342,51 @@ class Navigator extends Component {
     if (!focusBlockEl) return;
     replaceNodeWith(focusBlockEl, focusBlockEl.innerHTML);
   }
+
   removeTempMarker() {
     const tempMarkerEl = document.getElementById('c-s-t-m');
     if (!tempMarkerEl) return;
     tempMarkerEl.parentNode.removeChild(tempMarkerEl);
+  }
+
+  handleContentClick() {
+    let abort = false;
+    const sel = window.getSelection();
+    const containedSel = nodeContainsNativeSelection(this.refs.content, sel);
+
+    if (!sel.isCollapsed) {
+      // eslint-disable-next-line
+      console.log('Selection is not collapsed');
+      abort = true;
+    }
+
+    if (!containedSel) {
+      // eslint-disable-next-line
+      console.warn('Selection is not in navigator');
+      abort = true;
+    }
+
+    if (!nodeTypeText(sel.anchorNode)) {
+      // eslint-disable-next-line
+      console.warn('AnchorNode is not a text node');
+      abort = true;
+    }
+
+    if (abort) {
+      if (this.props.selection) {
+        clearNativeSelection();
+      }
+      // eslint-disable-next-line
+      return console.log('Abort new selection');
+    }
+
+    if (this.props.selection) {
+      this.updateSelection(sel);
+    } else {
+      this.newSelection(sel);
+    }
+
+    clearNativeSelection();
   }
 
   render() {
@@ -370,7 +423,7 @@ Navigator.propTypes = {
   user: T.object,
   params: T.object.isRequired,
   path: T.object.isRequired,
-  customSelect: T.bool.isRequired,
+  selection: T.oneOfType([T.bool, T.object]),
   makeMode: T.bool.isRequired,
   dispatch: T.func.isRequired,
 };

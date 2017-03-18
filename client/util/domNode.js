@@ -54,17 +54,23 @@ export function findNearestTextNode(node, direction) {
   }
 }
 
-export function getTextNodesInNode(n) {
+export function getTextNodesInNode(n, stop) {
   const textNodes = [];
 
   function getTextNodes(node) {
     if (node.nodeType === 3) {
       textNodes.push(node);
-    } else {
+    }
+    if (stop && stop(node)) {
+      return true; // stop looking for text nodes
+    }
+    if (node.nodeType !== 3) {
       const childNodes = node.childNodes;
 
       for (let i = 0; i < childNodes.length; i++) {
-        getTextNodes(childNodes[i]);
+        if (getTextNodes(childNodes[i])) {
+          return true;
+        }
       }
     }
   }

@@ -1,9 +1,9 @@
-export function elementContainsSelection(element, selection = window.getSelection()) {
+export function nodeContainsNativeSelection(node, selection) {
   const { anchorNode, focusNode } = selection;
-  if (element.contains(anchorNode) &&
-      element.contains(focusNode) &&
-      element !== anchorNode &&
-      element !== focusNode
+  if (node.contains(anchorNode) &&
+      node.contains(focusNode) &&
+      node !== anchorNode &&
+      node !== focusNode
     ) {
     return true;
   } else {
@@ -11,7 +11,7 @@ export function elementContainsSelection(element, selection = window.getSelectio
   }
 }
 
-export function clearSelection() {
+export function clearNativeSelection() {
   var sel = window.getSelection ? window.getSelection() : document.selection;
   if (sel) {
     if (sel.removeAllRanges) {

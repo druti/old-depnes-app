@@ -7,10 +7,14 @@ import stringify from 'json-stable-stringify';
 import ButtonBar from '../../../../components/ButtonBar';
 import { LinkIconButton } from '../../../../mdl/Button';
 import PostPage from '../../pages/PostPage/PostPage';
-import { toggleCustomSelect, toggleMakeMode, addPost } from '../../PostActions';
+import {
+  deleteSelection,
+  toggleMakeMode,
+  addPost,
+} from '../../PostActions';
 import { setRedirectUrl } from '../../../App/AppActions';
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
-import { getSelection } from './customSelect';
+import { getRange } from './selection';
 import { deltaToContent, deltaToString } from '../../../../util/delta';
 
 import styles from './toolbar.scss'; // eslint-disable-line
@@ -28,7 +32,7 @@ class Toolbar extends Component {
     user: T.object,
     params: T.object.isRequired,
     dispatch: T.func.isRequired,
-    customSelect: T.bool.isRequired,
+    selection: T.oneOfType([T.bool, T.object]),
     makeMode: T.bool.isRequired,
     path: T.object,
     paths: T.array,
@@ -40,7 +44,6 @@ class Toolbar extends Component {
     this.state = {};
     this.next = this.next.bind(this);
     this.goToNextMatchedPath = this.goToNextMatchedPath.bind(this);
-    this.toggleCustomSelect = this.toggleCustomSelect.bind(this);
     this.toggleMakeMode = this.toggleMakeMode.bind(this);
     this.savePath = this.savePath.bind(this);
   }
@@ -49,15 +52,12 @@ class Toolbar extends Component {
     const {
       path,
       paths,
+      selection,
     } = this.props;
 
-    const selection = getSelection(
-      document.getElementById('navigator-content').innerHTML
-    );
-    debugger;
-
-    if (selection && selection.length) {
-      this.goToNextMatchedPath(path, paths, navigator, selection);
+    if (selection) {
+      const range = getRange(selection);
+      this.goToNextMatchedPath(path, paths, navigator, range);
     } else {
       goToNextConsecutivePath(path, paths);
     }
@@ -76,14 +76,6 @@ class Toolbar extends Component {
     };
 
     browserHistory.push(`/paths/${nextPath.sid}`);
-  }
-
-  toggleCustomSelect() {
-    const {
-      dispatch,
-    } = this.props;
-
-    dispatch(toggleCustomSelect());
   }
 
   toggleMakeMode(save = true) {
@@ -134,7 +126,7 @@ class Toolbar extends Component {
   }
 
   render() {
-    const { path, customSelect, makeMode } = this.props;
+    const { path, selection, makeMode, dispatch } = this.props;
     return (
       <div className={styles.container}>
         <ButtonBar theme={styles}>
@@ -161,15 +153,15 @@ class Toolbar extends Component {
               />
             }
 
-            {customSelect &&
+            {selection &&
               <Button
                 theme={buttonTheme}
-                onClick={() => this.toggleCustomSelect()}
+                onClick={() => dispatch(deleteSelection())}
                 primary
                 raised
               ><i className='fa fa-times'/></Button>
             }
-            {!customSelect &&
+            {!selection &&
               <Button
                 theme={buttonTheme}
                 primary

@@ -1,7 +1,9 @@
 import callApi from '../../util/apiCaller';
 import { getPost } from './PostReducer';
 
-export const TOGGLE_CUSTOM_SELECT = 'TOGGLE_CUSTOM_SELECT';
+export const SELECTION_SAVE = 'SELECTION_SAVE';
+export const SELECTION_DELETE = 'SELECTION_DELETE';
+
 export const TOGGLE_MAKE_MODE = 'TOGGLE_MAKE_MODE';
 
 export const POST_CACHED = 'POST_CACHED';
@@ -21,9 +23,16 @@ export const DELETE_POST = 'DELETE_POST';
 export const DELETE_POST_FAILURE  = 'DELETE_POST_FAILURE';
 
 
-export function toggleCustomSelect() {
+export function saveSelection(selection) {
   return {
-    type: TOGGLE_CUSTOM_SELECT,
+    type: SELECTION_SAVE,
+    selection,
+  };
+}
+
+export function deleteSelection() {
+  return {
+    type: SELECTION_DELETE,
   };
 }
 
