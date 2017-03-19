@@ -71,12 +71,12 @@ class Navigator extends Component {
     this.insertAnchorMarker(start.node, startOffsets[0]);
 
     const anchorMarkerEl = document.getElementById('c-s-a-m');
-    const afterNode = anchorMarkerEl.nextSibling;
+    const afterNode = findNearestTextNode(anchorMarkerEl, 'forwards');
 
     this.insertFocusMarker(afterNode, startOffsets[1]);
 
     const focusMarkerEl = document.getElementById('c-s-f-m');
-    const beforeNode = focusMarkerEl.previousSibling;
+    const beforeNode = findNearestTextNode(focusMarkerEl, 'backwards');
 
     this.insertStartBlock(beforeNode);
 
@@ -93,38 +93,34 @@ class Navigator extends Component {
   }
 
   newSelection(sel) {
-    const { anchorNode, anchorOffset } = sel;
+    let { anchorNode, anchorOffset } = sel;
+
+    if (anchorNode.length === anchorOffset) {
+      anchorNode = findNearestTextNode(anchorNode.parentNode, 'forwards');
+      anchorOffset = 0;
+    }
+
     const startOffsets = getStartSelectionOffsets(anchorNode, anchorOffset);
 
     this.insertAnchorMarker(anchorNode, startOffsets[0]);
 
     const anchorMarkerEl = document.getElementById('c-s-a-m');
-    const afterNode = anchorMarkerEl.nextSibling;
+    const afterNode = findNearestTextNode(anchorMarkerEl, 'forwards');
 
     this.insertFocusMarker(afterNode, startOffsets[1]);
 
     const focusMarkerEl = document.getElementById('c-s-f-m');
-    const beforeNode = focusMarkerEl.previousSibling;
+    const beforeNode = findNearestTextNode(focusMarkerEl, 'backwards');
 
     this.insertStartBlock(beforeNode);
 
     this.expandToDefaultSelection();
   }
 
-  updateSelection(sel) {
-    const { anchorNode, anchorOffset } = sel;
-
-    if (anchorNode.parentNode.id === 'c-s-s-b') {
-      this.deleteSelection();
-    } else {
-      this.modifySelection(anchorNode, anchorOffset);
-    }
-  }
-
   modifySelection(anchorNode, anchorOffset) {
     let startBlockEl = document.getElementById('c-s-s-b');
     if (startBlockEl.contains(anchorNode)) {
-      return;
+      return this.props.dispatch(saveSelection(this.getSelection()));
     }
 
     const tempMarker = '<span id="c-s-t-m"></span>';
@@ -143,15 +139,19 @@ class Navigator extends Component {
         textNode = findNearestTextNode(tempMarkerEl, 'forwards');
         startBlockEl = document.getElementById('c-s-s-b');
         if (startBlockEl.contains(textNode)) {
+          replaceNodeWith(startBlockEl, ANCHOR_MARKER + startBlockEl.outerHTML);
           this.removeTempMarker();
-          return this.deleteSelection();
+          this.removeAnchorBlock();
+          this.removeMiddleBlocks();
+          this.insertMiddleBlocks();
+          return this.props.dispatch(saveSelection(this.getSelection()));
         }
+      } else {
+        this.insertAnchorMarker(textNode, 0);
       }
-      this.insertAnchorMarker(textNode, 0);
       this.removeAnchorBlock();
       const anchorMarkerEl = document.getElementById('c-s-a-m');
       if (!anchorMarkerEl) {
-        this.removeTempMarker();
         return this.deleteSelection();
       }
       this.insertAnchorBlock(anchorMarkerEl.nextSibling);
@@ -165,14 +165,12 @@ class Navigator extends Component {
       this.removeFocusBlock();
       const focusMarkerEl = document.getElementById('c-s-f-m');
       if (!focusMarkerEl) {
-        this.removeTempMarker();
         return this.deleteSelection();
       }
       this.insertFocusBlock(focusMarkerEl.previousSibling);
     }
 
-    tempMarkerEl = document.getElementById('c-s-t-m');
-    tempMarkerEl.parentNode.removeChild(tempMarkerEl);
+    this.removeTempMarker();
 
     this.removeMiddleBlocks();
     this.insertMiddleBlocks();
@@ -190,6 +188,7 @@ class Navigator extends Component {
   }
 
   removeVisibleSelection() {
+    this.removeTempMarker();
     this.removeAnchorMarker();
     this.removeAnchorBlock();
     this.removeStartBlock();
@@ -381,7 +380,7 @@ class Navigator extends Component {
     }
 
     if (this.props.selection) {
-      this.updateSelection(sel);
+      this.modifySelection(sel.anchorNode, sel.anchorOffset);
     } else {
       this.newSelection(sel);
     }

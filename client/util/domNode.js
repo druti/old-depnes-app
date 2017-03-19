@@ -105,6 +105,7 @@ export function getLastTextNode(node, filter) {
 
     for (let i = childNodes.length; i-- >= 0;) {
       const childNode = childNodes[i];
+      if (!childNode) continue;
       if (filter && filter(childNode)) continue;
       const textNode = getLastTextNode(childNode, filter);
       if (textNode) return textNode;
