@@ -14,7 +14,6 @@ import {
 } from '../../PostActions';
 import { setRedirectUrl } from '../../../App/AppActions';
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
-import { getRange } from './selection';
 import { deltaToContent, deltaToString } from '../../../../util/delta';
 
 import styles from './toolbar.scss'; // eslint-disable-line
@@ -56,8 +55,7 @@ class Toolbar extends Component {
     } = this.props;
 
     if (selection) {
-      const range = getRange(selection);
-      this.goToNextMatchedPath(path, paths, navigator, range);
+      this.goToNextMatchedPath(path, paths, navigator, selection);
     } else {
       goToNextConsecutivePath(path, paths);
     }

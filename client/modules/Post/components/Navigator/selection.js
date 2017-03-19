@@ -3,33 +3,28 @@ import { getTextNodesInNode, nodeTypeText } from '../../../../util/domNode';
 
 export const ANCHOR_MARKER = '<span id="c-s-a-m"></span>';
 export const FOCUS_MARKER = '<span id="c-s-f-m"></span>';
+export const TEMP_MARKER = '<span id="c-s-t-m"></span>';
 
 export function convertSelection(content, sel, newContent) {
   const contentString = deltaToString(content);
   const newContentString = deltaToString(newContent);
-  const startString = contentString.slice(0, sel.anchor.index);
-  const endString = contentString.slice(sel.focus.index);
-  const startsWith = newContentString.startsWith(startString)
-  const endsWith = newContentString.endsWith(endString)
-  // eslint-disable-next-line
-  if (startsWith && endsWith) {
-    sel.focus.index = newContentString.lastIndexOf(endString);
-    const startIndex = (sel.focus.index - sel.anchor.index) / 2 + sel.anchor.index;
-    sel.start.index = Math.round(startIndex);
-  }
-  return sel;
+  const endString = contentString.slice(sel.index + sel.length);
+  return {
+    index: sel.index,
+    length: newContentString.lastIndexOf(endString) - sel.index,
+  };
 }
 
-export function mapSelectionObjToContent(navigatorContentEl, sel, key) {
-  const map = { [key]: {} };
-
+export function mapSelectionAnchorToContent(navigatorContentEl, sel) {
+  let anchorNode;
+  let anchorOffset;
   let counter = 0;
   getTextNodesInNode(navigatorContentEl, node => {
     if (nodeTypeText(node)) {
       counter += node.length;
-      if (counter >= sel[key].index) {
-        map[key].node = node;
-        map[key].offset = sel[key].index - (counter - node.length);
+      if (counter >= sel.index) {
+        anchorNode = node;
+        anchorOffset = sel.index - (counter - node.length);
         return true; // stop looking for text nodes
       }
     } else if (node.tagName === 'BR') {
@@ -37,30 +32,39 @@ export function mapSelectionObjToContent(navigatorContentEl, sel, key) {
     }
   });
 
-  return map;
+  return { node: anchorNode, offset: anchorOffset };
 }
 
-export function createSelectionObjFromContent(navigatorContentEl) {
-  const selection = {
-    anchor: {
-      index: 0,
-    },
-    start: {
-      index: 0,
-    },
-    focus: {
-      index: 0,
-    },
-  };
+export function mapSelectionFocusToContent(navigatorContentEl, sel) {
+  const focusIndex = sel.index + sel.length;
+  let focusNode;
+  let focusOffset;
+  let counter = 0;
+  getTextNodesInNode(navigatorContentEl, node => {
+    if (nodeTypeText(node)) {
+      counter += node.length;
+      if (counter >= focusIndex) {
+        focusNode = node;
+        focusOffset = focusIndex - (counter - node.length);
+        return true; // stop looking for text nodes
+      }
+    } else if (node.tagName === 'BR') {
+      counter += 2;
+    }
+  });
 
+  return { node: focusNode, offset: focusOffset };
+}
+
+export function createSelectionRange(navigatorContentEl) {
+  let index;
+  let length;
   let counter = 0;
   getTextNodesInNode(navigatorContentEl, node => {
     if (node.id === 'c-s-a-m') {
-      selection.anchor.index = counter;
-    } else if (node.id === 'c-s-s-b') {
-      selection.start.index = counter;
+      index = counter;
     } else if (node.id === 'c-s-f-m') {
-      selection.focus.index = counter;
+      length = counter - index;
       return true; // stop looking for text nodes
     } else if (nodeTypeText(node)) {
       counter += node.length;
@@ -69,7 +73,7 @@ export function createSelectionObjFromContent(navigatorContentEl) {
     }
   });
 
-  return selection;
+  return { index, length };
 }
 
 export function getStartSelectionOffsets(anchorNode, anchorOffset) {
@@ -89,11 +93,4 @@ export function getStartSelectionOffsets(anchorNode, anchorOffset) {
   if (startFocusOffset === -1) startFocusOffset = afterStr.length;
 
   return [startAnchorOffset, startFocusOffset];
-}
-
-export function getRange(selection) {
-  return {
-    index: selection.anchor.index,
-    length: selection.focus.index - selection.anchor.index,
-  };
 }

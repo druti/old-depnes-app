@@ -1,3 +1,13 @@
+export function isDescendantOf(node, classSelector) {
+  // eslint-disable-next-line no-cond-assign
+  while (node = node.parentNode) {
+    if (node.className === classSelector) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function getNextNode(node) {
   if (node.nextSibling) {
     return node.nextSibling;

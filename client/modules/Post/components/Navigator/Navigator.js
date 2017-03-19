@@ -25,9 +25,11 @@ import { deltaToString } from '../../../../util/delta';
 import {
   ANCHOR_MARKER,
   FOCUS_MARKER,
+  TEMP_MARKER,
   convertSelection,
-  mapSelectionObjToContent,
-  createSelectionObjFromContent,
+  mapSelectionAnchorToContent,
+  mapSelectionFocusToContent,
+  createSelectionRange,
   getStartSelectionOffsets,
 } from './selection';
 
@@ -65,10 +67,10 @@ class Navigator extends Component {
 
   setSelection(sel) {
     const contentEl = this.refs.content;
-    const { start } = mapSelectionObjToContent(contentEl, sel, 'start');
-    const startOffsets = getStartSelectionOffsets(start.node, start.offset);
+    const anchor = mapSelectionAnchorToContent(contentEl, sel);
+    const startOffsets = getStartSelectionOffsets(anchor.node, anchor.offset);
 
-    this.insertAnchorMarker(start.node, startOffsets[0]);
+    this.insertAnchorMarker(anchor.node, startOffsets[0]);
 
     const anchorMarkerEl = document.getElementById('c-s-a-m');
     const afterNode = findNearestTextNode(anchorMarkerEl, 'forwards');
@@ -78,27 +80,19 @@ class Navigator extends Component {
     const focusMarkerEl = document.getElementById('c-s-f-m');
     const beforeNode = findNearestTextNode(focusMarkerEl, 'backwards');
 
-    this.insertStartBlock(beforeNode);
+    this.insertMiddleBlock(beforeNode);
 
-    const { anchor } = mapSelectionObjToContent(contentEl, sel, 'anchor');
-    this.modifySelection(anchor.node, anchor.offset);
-
-    const { focus } = mapSelectionObjToContent(contentEl, sel, 'focus');
+    const focus = mapSelectionFocusToContent(contentEl, sel);
     this.modifySelection(focus.node, focus.offset);
   }
 
   getSelection() {
     const contentEl = this.refs.content;
-    return createSelectionObjFromContent(contentEl);
+    return createSelectionRange(contentEl);
   }
 
   newSelection(sel) {
     let { anchorNode, anchorOffset } = sel;
-
-    if (anchorNode.length === anchorOffset) {
-      anchorNode = findNearestTextNode(anchorNode.parentNode, 'forwards');
-      anchorOffset = 0;
-    }
 
     const startOffsets = getStartSelectionOffsets(anchorNode, anchorOffset);
 
@@ -112,64 +106,32 @@ class Navigator extends Component {
     const focusMarkerEl = document.getElementById('c-s-f-m');
     const beforeNode = findNearestTextNode(focusMarkerEl, 'backwards');
 
-    this.insertStartBlock(beforeNode);
+    this.insertMiddleBlock(beforeNode);
 
     this.expandToDefaultSelection();
   }
 
   modifySelection(anchorNode, anchorOffset) {
-    let startBlockEl = document.getElementById('c-s-s-b');
-    if (startBlockEl.contains(anchorNode)) {
-      return this.props.dispatch(saveSelection(this.getSelection()));
-    }
+    this.insertTempMarker(anchorNode, anchorOffset);
 
-    const tempMarker = '<span id="c-s-t-m"></span>';
-    insertElementInTextNode(tempMarker, anchorNode, anchorOffset);
+    const tempMarkerEl = document.getElementById('c-s-t-m');
+    const contentEl = this.refs.content;
+    const content = contentEl.innerHTML;
 
-    let tempMarkerEl = document.getElementById('c-s-t-m');
-
-    const content = this.refs.content.innerHTML;
-    const startBlock = '<span id="c-s-s-b">';
-
-    if (content.indexOf(tempMarker) < content.indexOf(startBlock)) {
-      // move anchorMarker
-      this.removeAnchorMarker();
-      let textNode = tempMarkerEl.nextSibling;
-      if (!textNode || !nodeTypeText(textNode)) {
-        textNode = findNearestTextNode(tempMarkerEl, 'forwards');
-        startBlockEl = document.getElementById('c-s-s-b');
-        if (startBlockEl.contains(textNode)) {
-          replaceNodeWith(startBlockEl, ANCHOR_MARKER + startBlockEl.outerHTML);
-          this.removeTempMarker();
-          this.removeAnchorBlock();
-          this.removeMiddleBlocks();
-          this.insertMiddleBlocks();
-          return this.props.dispatch(saveSelection(this.getSelection()));
-        }
-      } else {
-        this.insertAnchorMarker(textNode, 0);
-      }
-      this.removeAnchorBlock();
-      const anchorMarkerEl = document.getElementById('c-s-a-m');
-      if (!anchorMarkerEl) {
-        return this.deleteSelection();
-      }
-      this.insertAnchorBlock(anchorMarkerEl.nextSibling);
-    } else {
+    if (content.indexOf(TEMP_MARKER) > content.indexOf(ANCHOR_MARKER)) {
       // move focusMarker
       this.removeFocusMarker();
-      this.insertFocusMarker(
-        tempMarkerEl.previousSibling,
-        tempMarkerEl.previousSibling.nodeValue.length
-      );
-      this.removeFocusBlock();
-      const focusMarkerEl = document.getElementById('c-s-f-m');
-      if (!focusMarkerEl) {
+      const closestTextNode = findNearestTextNode(tempMarkerEl, 'backwards');
+      if (!contentEl.contains(closestTextNode)) {
         return this.deleteSelection();
       }
-      this.insertFocusBlock(focusMarkerEl.previousSibling);
+      this.insertFocusMarker(closestTextNode, closestTextNode.length);
+    } else {
+      // move anchorMarker
+      this.removeAnchorMarker();
+      const closestTextNode = findNearestTextNode(tempMarkerEl, 'forwards');
+      this.insertAnchorMarker(closestTextNode, 0);
     }
-
     this.removeTempMarker();
 
     this.removeMiddleBlocks();
@@ -178,7 +140,12 @@ class Navigator extends Component {
   }
 
   expandToDefaultSelection() {
-    const lastTextNode = getLastTextNode(this.refs.content);
+    const lastTextNode = getLastTextNode(this.refs.content, node => {
+      if (node.className === 'ql-cursor' ||
+          node.parentNode.className === 'ql-cursor') {
+        return true;
+      }
+    });
     this.modifySelection(lastTextNode, lastTextNode.length);
   }
 
@@ -190,11 +157,12 @@ class Navigator extends Component {
   removeVisibleSelection() {
     this.removeTempMarker();
     this.removeAnchorMarker();
-    this.removeAnchorBlock();
-    this.removeStartBlock();
-    this.removeFocusBlock();
     this.removeFocusMarker();
     this.removeMiddleBlocks();
+  }
+
+  insertTempMarker(node, index) {
+    insertElementInTextNode(TEMP_MARKER, node, index);
   }
 
   insertAnchorMarker(node, index) {
@@ -205,38 +173,23 @@ class Navigator extends Component {
     insertElementInTextNode(FOCUS_MARKER, node, index);
   }
 
-  insertStartBlock(textNode) {
-    replaceNodeWith(textNode, `<span id='c-s-s-b'>${textNode.nodeValue}</span>`);
-  }
-
-  insertAnchorBlock(textNode) {
-    replaceNodeWith(textNode, `<span id='c-s-a-b'>${textNode.nodeValue}</span>`);
-  }
-
-  insertFocusBlock(textNode) {
-    replaceNodeWith(textNode, `<span id='c-s-f-b'>${textNode.nodeValue}</span>`);
-  }
-
   insertMiddleBlock(textNode) {
     replaceNodeWith(textNode, `<span class='c-s-m-b'>${textNode.nodeValue}</span>`);
   }
 
   insertMiddleBlocks() {
     let anchorMarker = document.getElementById('c-s-a-m');
-    let anchorBlock = document.getElementById('c-s-a-b');
-    let startBlock = document.getElementById('c-s-s-b');
-    let focusMarker = document.getElementById('c-s-f-m');
 
-    if (anchorMarker.parentNode === focusMarker.parentNode) {
-      return;
-    }
-
-    let node = anchorMarker.nextSibling;
+    let node = getNextNode(anchorMarker);
     let focusMarkerReached = false;
 
     while (node) {
-      if (node === anchorBlock || node === startBlock) {
+      if (node.className === 'c-s-m-b') {
         node = getNextNode(node);
+      }
+
+      if (node.id === 'c-s-f-m') {
+        focusMarkerReached = true;
       }
 
       if (node === this.refs.content) {
@@ -247,16 +200,13 @@ class Navigator extends Component {
 
       const parentNode = node.parentNode;
       let nextSibling = node.nextSibling;
-      const focusMarkerParent = node.contains(focusMarker);
 
       const filterFun = childNode => {
         if (childNode.className === 'c-s-m-b') {
           return true;
         }
-        if (childNode.id === 'c-s-s-b') {
-          return true;
-        }
-        if (childNode.id === 'c-s-f-b') {
+        if (childNode.id === 'c-s-f-m') {
+          focusMarkerReached = true;
           return true;
         }
       }
@@ -264,17 +214,7 @@ class Navigator extends Component {
       let textNode = getTextNode(node, filterFun);
 
       while (textNode) {
-        if (focusMarkerParent) {
-          const bitmask = focusMarker.compareDocumentPosition(textNode);
-          const textNodeIsAfterFocusMarker =
-            bitmask === 4 || bitmask === 35 || bitmask === 37;
-          // eslint-disable-next-line
-          console.log(`Focus marker, text node comparison bitmask: ${bitmask}`);
-          if (textNodeIsAfterFocusMarker) {
-            focusMarkerReached = true;
-            break;
-          }
-        }
+        if (focusMarkerReached) break;
 
         this.insertMiddleBlock(textNode);
 
@@ -292,9 +232,6 @@ class Navigator extends Component {
       if (focusMarkerReached) break;
 
       anchorMarker = document.getElementById('c-s-a-m');
-      anchorBlock = document.getElementById('c-s-a-b');
-      startBlock = document.getElementById('c-s-s-b');
-      focusMarker = document.getElementById('c-s-f-m');
 
       if (nextSibling) {
         node = nextSibling;
@@ -316,30 +253,12 @@ class Navigator extends Component {
     focusMarkerEl.parentNode.removeChild(focusMarkerEl);
   }
 
-  removeAnchorBlock() {
-    const anchorBlockEl = document.getElementById('c-s-a-b');
-    if (!anchorBlockEl) return;
-    replaceNodeWith(anchorBlockEl, anchorBlockEl.innerHTML);
-  }
-
-  removeStartBlock() {
-    const startBlockEl = document.getElementById('c-s-s-b');
-    if (!startBlockEl) return;
-    replaceNodeWith(startBlockEl, startBlockEl.innerHTML);
-  }
-
   removeMiddleBlocks() {
     const middleBlockEls = document.getElementsByClassName('c-s-m-b');
     if (!middleBlockEls) return;
     while (middleBlockEls.length > 0) {
       replaceNodeWith(middleBlockEls[0], middleBlockEls[0].innerHTML);
     }
-  }
-
-  removeFocusBlock() {
-    const focusBlockEl = document.getElementById('c-s-f-b');
-    if (!focusBlockEl) return;
-    replaceNodeWith(focusBlockEl, focusBlockEl.innerHTML);
   }
 
   removeTempMarker() {
@@ -354,20 +273,27 @@ class Navigator extends Component {
     const containedSel = nodeContainsNativeSelection(this.refs.content, sel);
 
     if (!sel.isCollapsed) {
-      // eslint-disable-next-line
+      // eslint-disable-next-line no-console
       console.log('Selection is not collapsed');
       abort = true;
     }
 
     if (!containedSel) {
-      // eslint-disable-next-line
+      // eslint-disable-next-line no-console
       console.warn('Selection is not in navigator');
       abort = true;
     }
 
     if (!nodeTypeText(sel.anchorNode)) {
-      // eslint-disable-next-line
+      // eslint-disable-next-line no-console
       console.warn('AnchorNode is not a text node');
+      abort = true;
+    }
+
+    const qlCursorEl = document.getElementsByClassName('ql-cursor')[0];
+    if (qlCursorEl && qlCursorEl.contains(sel.anchorNode)) {
+      // eslint-disable-next-line no-console
+      console.warn('AnchorNode is inside quill cursor');
       abort = true;
     }
 
