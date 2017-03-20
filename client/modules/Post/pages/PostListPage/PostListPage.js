@@ -57,7 +57,7 @@ class PathListPage extends Component { // eslint-disable-line
             className={styles.cta}
             primary
             raised
-            label='Write'
+            label='Start Writing'
             href='/paths/blank'
           />
         </div>

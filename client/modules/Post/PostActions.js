@@ -48,8 +48,10 @@ export function toggleMakeMode() {
  */
 export function fetchPost(sid) {
   return (dispatch, getState) => {
-    if (getPost(getState(), sid))  {
-      return dispatch(cachedPost(fetchPost.name));
+    const cachedPost = getPost(getState(), sid);
+    if (cachedPost)  {
+      dispatch(postCached(fetchPost.name));
+      return Promise.resolve({ cachedPost });
     } else {
       dispatch(requestPost(fetchPost.name));
     }
@@ -65,7 +67,7 @@ export function fetchPost(sid) {
   };
 }
 
-export function cachedPost(requestName) {
+export function postCached(requestName) {
   return {
     type: POST_CACHED,
     requestName,
