@@ -5,6 +5,7 @@ import { LinkButton } from '../mdl/Button';
 import { AppBar as ToolboxAppBar } from 'react-toolbox/lib/app_bar';
 
 import theme from './appBar.scss'; // eslint-disable-line
+import iconMenuTheme from './iconMenu.scss'; // eslint-disable-line
 import drawerTheme from './drawerMenu.scss'; // eslint-disable-line
 import buttonTheme from './button.scss'; // eslint-disable-line
 
@@ -29,7 +30,12 @@ const AppBar = ({ user, toggleDrawer, handleProfile, handleLogOut }) => {
             theme={buttonTheme}
           />}
         {user &&
-          <IconMenu icon='more_vert' position='topRight' menuRipple>
+          <IconMenu
+            theme={iconMenuTheme}
+            icon='more_vert'
+            position='topRight'
+            menuRipple
+          >
             <MenuItem
               icon='account_circle'
               caption={`${user.firstName} ${user.lastName}`}

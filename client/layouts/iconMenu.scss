@@ -1,0 +1,7 @@
+.iconMenu {
+  .icon {
+    &:not([disabled]) {
+      color: #fff;
+    }
+  }
+}

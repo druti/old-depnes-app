@@ -1,11 +1,10 @@
 .layout {
   .navDrawer {
-    background: #fafafa;
+    background: #24292e;
     user-select: none;
 
     .drawerContent {
-      background: #fafafa;
-      box-shadow: none;
+      background: #24292e;
       border-color: rgba(0,0,0,.1);
       width: 24rem;
 
@@ -13,7 +12,7 @@
         text-align: center;
 
         a {
-          color: #000;
+          color: #fff;
         }
       }
     }
