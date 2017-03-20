@@ -18,8 +18,16 @@ if (isClient) {
 class Editor extends Component {
   constructor() {
     super();
-    this.state = {};
     this.initQuill = this.initQuill.bind(this);
+  }
+
+  static propTypes = {
+    user: T.object,
+    params: T.object.isRequired,
+    path: T.object.isRequired,
+    selection: T.oneOfType([T.bool, T.object]),
+    makeMode: T.bool.isRequired,
+    dispatch: T.func.isRequired,
   }
 
   componentDidMount() {
@@ -29,6 +37,7 @@ class Editor extends Component {
   initQuill() {
     let {
       path,
+      selection,
     } = this.props;
 
     const editorElement = document.getElementById('depnes-editor');
@@ -41,6 +50,10 @@ class Editor extends Component {
     window.quill = quill;
 
     quill.setContents(this.restructureDelta(path.content));
+
+    if (selection) {
+      quill.setSelection(selection);
+    }
 
     quill.on('text-change', (change, oldContent, source) => {
       if (source === 'api') return;
@@ -70,14 +83,6 @@ class Editor extends Component {
     );
   }
 }
-
-Editor.propTypes = {
-  user: T.object,
-  params: T.object.isRequired,
-  path: T.object.isRequired,
-  makeMode: T.bool.isRequired,
-  dispatch: T.func.isRequired,
-};
 
 function mapStateToProps(state) {
   return {

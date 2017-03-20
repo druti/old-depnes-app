@@ -151,23 +151,21 @@ class Toolbar extends Component {
               />
             }
 
-            {selection &&
+            {selection && !makeMode &&
               <Button
                 theme={buttonTheme}
                 onClick={() => dispatch(deleteSelection())}
                 primary
                 raised
-              ><i className='fa fa-times'/></Button>
-            }
-            {!selection &&
-              <Button
-                theme={buttonTheme}
-                primary
-                raised
-                label={makeMode ? 'Save' : 'Edit'}
-                onClick={this.toggleMakeMode}
-              />
-            }
+              ><i className='fa fa-times'/></Button>}
+
+            <Button
+              theme={buttonTheme}
+              primary
+              raised
+              label={makeMode ? 'Save' : 'Edit'}
+              onClick={this.toggleMakeMode}
+            />
 
             {!makeMode &&
               <Button
@@ -175,8 +173,7 @@ class Toolbar extends Component {
                 label='Next'
                 theme={buttonTheme}
                 onClick={this.next}
-              />
-            }
+              />}
 
             <div
               id='navigator-editor-toolbar'
