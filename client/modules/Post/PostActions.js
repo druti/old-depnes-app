@@ -51,7 +51,7 @@ export function fetchPost(sid) {
     const cachedPost = getPost(getState(), sid);
     if (cachedPost)  {
       dispatch(postCached(fetchPost.name));
-      return Promise.resolve({ cachedPost });
+      return Promise.resolve({ post: cachedPost });
     } else {
       dispatch(requestPost(fetchPost.name));
     }

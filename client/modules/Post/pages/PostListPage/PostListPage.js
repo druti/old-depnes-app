@@ -52,17 +52,19 @@ class PathListPage extends Component { // eslint-disable-line
         switchLanguage={switchLanguage}
         intl={intl}
       >
-        <div className={styles['cta-container']}>
-          <LinkButton
-            className={styles.cta}
-            primary
-            raised
-            label='Start Writing'
-            href='/paths/blank'
-          />
+        <div className={styles.container}>
+          <div className={styles['cta-container']}>
+            <LinkButton
+              className={styles.cta}
+              primary
+              raised
+              label='Start Writing'
+              href='/paths/blank'
+            />
+          </div>
+          {child}
+          {isLoading && <h1>Loading...</h1>}
         </div>
-        {child}
-        {isLoading && <h1>Loading...</h1>}
       </MasterLayout>
     );
   }

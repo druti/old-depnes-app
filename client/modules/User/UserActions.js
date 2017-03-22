@@ -12,8 +12,10 @@ export const USERS_FAILURE = 'USERS_FAILURE';
 
 export function fetchUser(sid) {
   return (dispatch, getState) => {
-    if (getUser(getState(), sid))  {
-      return dispatch(cachedUser(fetchUser.name));
+    const cachedUser = getUser(getState(), sid);
+    if (cachedUser)  {
+      dispatch(userCached(fetchUser.name));
+      return Promise.resolve({ user: cachedUser });
     } else {
       dispatch(requestUser(fetchUser.name));
     }
@@ -21,15 +23,17 @@ export function fetchUser(sid) {
       .then(
         res => {
           dispatch(receiveUser(fetchUser.name, res.user))
+          return Promise.resolve(res);
         },
         err => {
           dispatch(failedRequestUser(fetchUser.name, err.reason));
+          return Promise.reject(err);
         }
       );
   };
 }
 
-export function cachedUser(requestName) {
+export function userCached(requestName) {
   return {
     type: USER_CACHED,
     requestName,

@@ -1,12 +1,17 @@
-.cta-container {
-  padding: 2rem 0;
+.container {
+  background: #fbfbfb;
+  height: 100%;
 
-  .cta {
-    display: block;
-    margin: 0 auto;
-    width: 50%;
-    @media (min-width: 655px) {
-      width: 25%;
+  .cta-container {
+    padding: 2rem 0;
+
+    .cta {
+      display: block;
+      margin: 0 auto;
+      width: 50%;
+      @media (min-width: 655px) {
+        width: 25%;
+      }
     }
   }
 }
