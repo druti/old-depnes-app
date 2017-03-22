@@ -9,6 +9,9 @@
   }
 
   .leftIcon {
+    &:hover {
+      background: rgba(0, 0, 0, .3);
+    }
     span {
       color: #fff;
     }

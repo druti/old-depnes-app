@@ -2,7 +2,10 @@ import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import EventEmitter from 'events';
 
-import { getNavigator } from '../../PostReducer';
+import { getPost, getNavigator } from '../../PostReducer';
+import { getCurrentUser } from '../../../Auth/AuthReducer';
+
+import Authorship from './authorship';
 
 import PostPage from '../../pages/PostPage/PostPage';
 
@@ -13,14 +16,11 @@ export const navigatorEmitter = new EventEmitter();
 const isClient = typeof window !== 'undefined'
 if (isClient) {
   var Quill = require('quill');
+
+  Quill.register('modules/authorship', Authorship);
 }
 
 class Editor extends Component {
-  constructor() {
-    super();
-    this.initQuill = this.initQuill.bind(this);
-  }
-
   static propTypes = {
     user: T.object,
     params: T.object.isRequired,
@@ -30,6 +30,11 @@ class Editor extends Component {
     dispatch: T.func.isRequired,
   }
 
+  constructor() {
+    super();
+    this.initQuill = this.initQuill.bind(this);
+  }
+
   componentDidMount() {
     this.initQuill();
   }
@@ -37,6 +42,7 @@ class Editor extends Component {
   initQuill() {
     let {
       path,
+      user,
       selection,
     } = this.props;
 
@@ -44,12 +50,17 @@ class Editor extends Component {
     const quill = new Quill(editorElement, {
       placeholder: 'Compose an epic...',
       modules: {
+        authorship: {
+          enabled: true,
+          authorId: user.sid,
+          color: 'blue',
+        },
         toolbar: {container: '#navigator-editor-toolbar'},
       },
     });
     window.quill = quill;
 
-    quill.setContents(this.restructureDelta(path.content));
+    quill.setContents(path.content);
 
     if (selection) {
       quill.setSelection(selection);
@@ -64,19 +75,6 @@ class Editor extends Component {
     PostPage.pathChanges = [];
   }
 
-  restructureDelta(delta) {
-    if (!delta.authors) return delta;
-    delta = JSON.parse(JSON.stringify(delta));
-    delta.ops.forEach((op, i) => {
-      const authors = delta.authors[i];
-      if (authors) {
-        op.attributes = Object.assign(op.attributes || {}, authors);
-      }
-    });
-    delete delta.authors;
-    return delta;
-  }
-
   render() {
     return (
       <div id='depnes-editor' className={styles.navigator}></div>
@@ -84,9 +82,11 @@ class Editor extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
     ...getNavigator(state),
+    path: getPost(state, props.params.sid),
+    user: getCurrentUser(state),
   };
 }
 

@@ -35,7 +35,6 @@ import {
 
 import { saveSelection, deleteSelection } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
-import { getCurrentUser } from '../../../Auth/AuthReducer';
 
 import styles from './styles.scss'; // eslint-disable-line
 
@@ -315,16 +314,12 @@ class Navigator extends Component {
   }
 
   render() {
-    const { user, params, makeMode, path } = this.props;
+    const { params, makeMode, path } = this.props;
     return (
       <div className={styles.container}>
         <Helmet title={deltaToString(this.props.path.content, 30)} />
         {makeMode &&
-          <Editor
-            user={user}
-            params={params}
-            path={path}
-          />}
+          <Editor params={params} />}
         {!makeMode &&
           <div className='ql-container'>
             <div
@@ -335,17 +330,13 @@ class Navigator extends Component {
               dangerouslySetInnerHTML={{ __html: path.htmlContent }}
             />
           </div>}
-        <Toolbar
-          user={user}
-          params={params}
-        />
+        <Toolbar params={params} />
       </div>
     );
   }
 }
 
 Navigator.propTypes = {
-  user: T.object,
   params: T.object.isRequired,
   path: T.object.isRequired,
   selection: T.oneOfType([T.bool, T.object]),
@@ -356,7 +347,6 @@ Navigator.propTypes = {
 function mapStateToProps(state) {
   return {
     ...getNavigator(state),
-    user: getCurrentUser(state),
   };
 }
 

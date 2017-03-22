@@ -14,17 +14,11 @@ import {
 } from '../../PostActions';
 import { setRedirectUrl } from '../../../App/AppActions';
 import { getNavigator, getPost, getPosts } from '../../PostReducer';
-import { deltaToContent, deltaToString } from '../../../../util/delta';
+import { getCurrentUser } from '../../../Auth/AuthReducer';
+import { deltaToString } from '../../../../util/delta';
 
 import styles from './toolbar.scss'; // eslint-disable-line
 import buttonTheme from '../../../../layouts/button.scss'; // eslint-disable-line
-
-const isClient = typeof window !== 'undefined'
-if (isClient) {
-  window.deltaToContent = deltaToContent;
-  window.deltaToString = deltaToString;
-  window.Delta = Delta;
-}
 
 class Toolbar extends Component {
   static propTypes = {
@@ -86,13 +80,8 @@ class Toolbar extends Component {
 
     if (user) {
       if (makeMode && save) {
-        if (PostPage.pathChanges.length) {
-          let newContent = associateChangesWithAuthor(
-            path,
-            PostPage.pathChanges,
-            user.sid
-          );
-          newContent = deltaToContent(newContent);
+        const newContent = PostPage.quill.getContents();
+        if (JSON.stringify(newContent) !== JSON.stringify(path.content)) {
           this.savePath(newContent);
         } else {
           return window.alert('No changes to save.');
@@ -144,7 +133,6 @@ class Toolbar extends Component {
 
             {!makeMode &&
               <Button
-                raised
                 theme={buttonTheme}
                 label='Prev'
                 onClick={browserHistory && browserHistory.goBack} // no bH during SSR
@@ -169,7 +157,6 @@ class Toolbar extends Component {
 
             {!makeMode &&
               <Button
-                raised
                 label='Next'
                 theme={buttonTheme}
                 onClick={this.next}
@@ -251,13 +238,13 @@ function getNextPath(currentPath, paths, selection) {
   const currentPathIndex = paths.indexOf(currentPath)
   paths = paths.slice(currentPathIndex + 1).concat(paths.slice(0, currentPathIndex));
 
-  const currentPathContent = new Delta(cleanDelta(currentPath.content));
+  const currentPathContent = new Delta(copyDelta(currentPath.content));
   const currentPathStartContent = currentPathContent.slice(0, selection.index);
   const currentPathEndContent = currentPathContent.slice(selection.index + selection.length);
 
   for (let i = 0; i < paths.length; i++) {
     let path = paths[i];
-    let pathContent = new Delta(cleanDelta(path.content));
+    let pathContent = new Delta(copyDelta(path.content));
 
     const pathSelectionLength = pathContent.length() - currentPathStartContent.length() - currentPathEndContent.length();
     const pathStartContent = pathContent.slice(0, selection.index);
@@ -287,10 +274,8 @@ function getNextPath(currentPath, paths, selection) {
   };
 }
 
-function cleanDelta(delta) {
-  delta = JSON.parse(JSON.stringify(delta));
-  delete delta.authors;
-  return delta;
+function copyDelta(delta) {
+  return JSON.parse(JSON.stringify(delta));
 }
 
 function goToNextConsecutivePath(currentPath, paths) {
@@ -307,34 +292,11 @@ function goToNextConsecutivePath(currentPath, paths) {
   }
 }
 
-function associateChangesWithAuthor(path, changes, userId) {
-  let newContent = JSON.parse(JSON.stringify(path.content));
-  changes.forEach(change => {
-    change.ops.forEach(op => {
-      if (op.insert) {
-        const newAttributes = Object.assign({}, op.attributes, {
-          contentAuthorId: userId,
-          formatAuthorId: userId,
-        });
-        // delete format ownership if no formats in insert
-        !op.attributes ? delete newAttributes.formatAuthorId : null;
-        op.attributes = newAttributes;
-      } else if (op.retain){
-        const attrs = op.attributes;
-        if (attrs) {
-          op.attributes = Object.assign(attrs, { formatAuthorId: userId });
-        }
-      }
-    });
-    newContent = new Delta(newContent).compose(change);
-  });
-  return newContent;
-}
-
 function mapStateToProps(state, props) {
   return {
     path: getPost(state, props.params.sid),
     paths: getPosts(state),
+    user: getCurrentUser(state),
     ...getNavigator(state),
   };
 }

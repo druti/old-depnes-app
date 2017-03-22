@@ -8,14 +8,13 @@
 
 .neutral:not([disabled]) {
   &.neutral {
+    color: #fff;
     i {
       color: #fff;
     }
     &:hover,
     &:global(.ql-active) {
-      i {
-        color: #3f51b5;
-      }
+      background: rgba(0, 0, 0, .3);
     }
   }
 }
