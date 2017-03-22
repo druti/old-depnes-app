@@ -140,15 +140,10 @@ export function failedRequestPosts(requestName, reason) {
 }
 
 
-export function addPost({ content, htmlContent }) {
+export function addPost(post) {
   return (dispatch) => {
     dispatch(addPostRequest());
-    return callApi('posts', 'post', {
-      post: {
-        content,
-        htmlContent,
-      },
-    }).then(
+    return callApi('posts', 'post', { post }).then(
       res => {
         return dispatch(receivePost(addPost.name, res.post));
       },

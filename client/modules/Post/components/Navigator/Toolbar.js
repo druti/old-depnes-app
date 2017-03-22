@@ -82,7 +82,7 @@ class Toolbar extends Component {
       if (makeMode && save) {
         const newContent = PostPage.quill.getContents();
         if (JSON.stringify(newContent) !== JSON.stringify(path.content)) {
-          this.savePath(newContent);
+          this.savePath(newContent, path.groupId);
         } else {
           return window.alert('No changes to save.');
         }
@@ -94,9 +94,10 @@ class Toolbar extends Component {
     }
   }
 
-  savePath(content) {
+  savePath(content, groupId) {
     const result = this.props.dispatch(
       addPost({
+        groupId,
         content,
         htmlContent: PostPage.quill.root.innerHTML,
       })
@@ -280,9 +281,10 @@ function copyDelta(delta) {
 
 function goToNextConsecutivePath(currentPath, paths) {
   if (currentPath && currentPath.sid !== 'blank') {
-    for (let i = 0; i < paths.length; i++) {
-      if (paths[i].sid === currentPath.sid) {
-        const nextPath = paths[i + 1];
+    const groupPaths = paths.filter(p => p.groupId === currentPath.groupId);
+    for (let i = 0; i < groupPaths.length; i++) {
+      if (groupPaths[i].sid === currentPath.sid) {
+        const nextPath = groupPaths[i + 1];
         const url = nextPath ? `/paths/${nextPath.sid}` : '/paths';
         browserHistory.push(url);
       }

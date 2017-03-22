@@ -5,8 +5,6 @@ import EventEmitter from 'events';
 import { getPost, getNavigator } from '../../PostReducer';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
 
-import Authorship from './authorship';
-
 import PostPage from '../../pages/PostPage/PostPage';
 
 import styles from './styles.scss'; // eslint-disable-line
@@ -16,6 +14,7 @@ export const navigatorEmitter = new EventEmitter();
 const isClient = typeof window !== 'undefined'
 if (isClient) {
   var Quill = require('quill');
+  var Authorship = require('./authorship').default;
 
   Quill.register('modules/authorship', Authorship);
 }

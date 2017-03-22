@@ -42,7 +42,7 @@ class Authorship extends Module {
         this.quill.updateContents(authorDelta, Quill.sources.SILENT);
       }
     });
-    this.addAuthor(this.options.authorId, this.options.color);
+    // this.addAuthor(this.options.authorId, this.options.color);
   }
 
   enable(enabled = true) {

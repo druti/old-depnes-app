@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { fetchUser } from '../../UserActions';
 import { getAwaiting, getFailed, getUser } from '../../UserReducer';
 import MasterLayout from '../../../../layouts/MasterLayout';
+import Loader from '../../../App/components/Loader/Loader';
 
 class ProfilePage extends Component { // eslint-disable-line
   static propTypes = {
@@ -48,7 +49,7 @@ class ProfilePage extends Component { // eslint-disable-line
     if (failed.fetchUser) {
       child = <h1>{failed.fetchUser.reason || 'Something bad happend'}</h1>;
     } else if (awaiting.fetchUser || !user) {
-      child = <h1>Loading...</h1>;
+      child = <Loader />;
     } else {
       child = <h1>{user.firstName} {user.lastName}</h1>;
     }

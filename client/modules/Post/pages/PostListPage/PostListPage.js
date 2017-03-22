@@ -6,6 +6,7 @@ import MasterLayout from '../../../../layouts/MasterLayout';
 import PathList from '../../components/PathList/PathList';
 import { LinkButton } from '../../../../mdl/Button';
 import styles from './postListPage.scss'; // eslint-disable-line
+import Loader from '../../../App/components/Loader/Loader';
 
 class PathListPage extends Component { // eslint-disable-line
   static propTypes = {
@@ -63,7 +64,7 @@ class PathListPage extends Component { // eslint-disable-line
             />
           </div>
           {child}
-          {isLoading && <h1>Loading...</h1>}
+          {isLoading && <Loader />}
         </div>
       </MasterLayout>
     );

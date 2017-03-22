@@ -5,9 +5,10 @@ import { browserHistory } from 'react-router';
 import MasterLayout from '../../../../layouts/MasterLayout';
 import AuthorList from '../../components/AuthorList/AuthorList';
 import Navigator from '../../components/Navigator/Navigator';
+import Loader from '../../../App/components/Loader/Loader';
 
 import { getAwaiting, getFailed, getPost, getNavigator } from '../../PostReducer';
-import { toggleMakeMode, fetchPost } from '../../PostActions';
+import { toggleMakeMode, fetchPosts } from '../../PostActions';
 import { setRedirectUrl } from '../../../App/AppActions';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
 
@@ -25,17 +26,17 @@ class PostPage extends Component { // eslint-disable-line
   }
 
   static need = [
-    params => fetchPost(params.sid),
+    () => fetchPosts(),
   ]
 
   componentWillMount() {
-    this.fetchPost(this.props);
+    this.fetchPosts(this.props);
     this.requireAuth(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.params.sid !== this.props.params.sid) {
-      this.fetchPost(nextProps);
+      this.fetchPosts(nextProps);
       this.requireAuth(nextProps);
     }
   }
@@ -48,8 +49,8 @@ class PostPage extends Component { // eslint-disable-line
     }
   }
 
-  fetchPost = ({ params, dispatch }) => {
-    dispatch(fetchPost(params.sid));
+  fetchPosts = ({ dispatch }) => {
+    dispatch(fetchPosts());
   }
 
   requireAuth = ({ params, user, makeMode, dispatch }) => {
@@ -79,10 +80,10 @@ class PostPage extends Component { // eslint-disable-line
     } = this.props;
 
     let child;
-    let isLoading = awaiting.fetchPost || !post;
+    let isLoading = awaiting.fetchPosts || !post;
 
-    if (failed.fetchPost) {
-      child = <h1>{failed.fetchPost.reason || 'Something bad happend'}</h1>;
+    if (failed.fetchPosts) {
+      child = <h1>{failed.fetchPosts.reason || 'Something bad happend'}</h1>;
       isLoading = false;
     } else if (!user && params.sid === 'blank') {
       child = null;
@@ -101,7 +102,7 @@ class PostPage extends Component { // eslint-disable-line
         switchLanguage={switchLanguage}
         intl={intl}
       > {child}
-        {isLoading && <h1>Loading...</h1>}
+        {isLoading && <Loader />}
       </MasterLayout>
     );
   }
