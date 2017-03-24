@@ -18,7 +18,7 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
 import Helmet from 'react-helmet';
-import getRoutes from '../client/routes';
+import routes from '../client/routes';
 import { fetchComponentData } from './util/fetchData';
 
 
@@ -124,17 +124,8 @@ const renderError = err => {
 };
 
 // Server Side Rendering based on routes matched by react-router.
-app.use('*', (req, res, next) => {
-  if(req.baseUrl.startsWith('/auth') || req.baseUrl.startsWith('/api')) {
-    return next();
-  }
-
-  const store = configureStore();
-
-  match({
-    routes: getRoutes(store),
-    location: req.originalUrl,
-  }, (err, redirectLocation, renderProps) => {
+app.use((req, res, next) => {
+  match({ routes, location: req.originalUrl }, (err, redirectLocation, renderProps) => {
     if (err) {
       return res.status(500).end(renderError(err));
     }
@@ -146,6 +137,8 @@ app.use('*', (req, res, next) => {
     if (!renderProps) {
       return next();
     }
+
+    const store = configureStore();
 
     return fetchComponentData(store, renderProps.components, renderProps.params)
       .then(() => {
