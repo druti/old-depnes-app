@@ -14,7 +14,8 @@
     "build:server": "cross-env NODE_ENV=production webpack --config webpack.config.server.js",
     "clean": "rimraf dist",
     "slate": "rimraf node_modules && npm install",
-    "lint": "eslint client server"
+    "lint": "eslint client server",
+    "toolbox": "react-toolbox-themr --config client/toolbox/config.json"
   },
   "pre-commit": [
     "lint",
@@ -58,7 +59,8 @@
     "react-intl": "^2.1.2",
     "react-redux": "^4.4.5",
     "react-router": "^2.4.1",
-    "react-toolbox": "^1.2.5",
+    "react-toolbox": "^2.0.0-beta.7",
+    "react-toolbox-themr": "^1.0.2",
     "redux": "^3.5.2",
     "redux-form": "^6.5.0",
     "redux-thunk": "^2.2.0",

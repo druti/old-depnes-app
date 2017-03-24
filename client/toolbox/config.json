@@ -1,0 +1,6 @@
+{
+  "include": [
+    "BUTTON"
+  ],
+  "output": "client/toolbox"
+}

@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import cookie from 'react-cookie';
 
+import theme from '../../toolbox/theme.js';
+import ThemeProvider from 'react-toolbox/lib/ThemeProvider';
+
 // Import Components
 import Helmet from 'react-helmet';
 import DevTools from './components/DevTools';
@@ -70,7 +73,9 @@ export class App extends Component {
               },
             ]}
           />
-          {child}
+          <ThemeProvider theme={theme}>
+            {child}
+          </ThemeProvider>
         </div>
       </div>
     );
