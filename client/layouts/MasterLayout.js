@@ -70,7 +70,7 @@ class MasterLayout extends React.Component {
           onOverlayClick={this.toggleDrawer}
           scrollY
         >
-          <DrawerMenu/>
+          <DrawerMenu />
         </NavDrawer>
         <Panel>
           <AppBar

@@ -79,7 +79,7 @@ class RegisterPage extends Component {
   }
 }
 
-//RegisterPage.need = [() => { return fetchPosts(); }];
+RegisterPage.need = [];
 
 RegisterPage.propTypes = {
   router: T.object,

@@ -8,7 +8,7 @@ import { LinkButton } from '../../../../mdl/Button';
 import styles from './postListPage.scss'; // eslint-disable-line
 import Loader from '../../../App/components/Loader/Loader';
 
-class PathListPage extends Component { // eslint-disable-line
+class PostListPage extends Component { // eslint-disable-line
   static propTypes = {
     awaiting: T.object.isRequired,
     failed: T.object.isRequired,
@@ -19,11 +19,7 @@ class PathListPage extends Component { // eslint-disable-line
     intl: T.object.isRequired,
   }
 
-  static need = [
-    () => { return fetchPosts() },
-  ]
-
-  componentWillMount() {
+  componentDidMount() {
     this.props.dispatch(fetchPosts());
   }
 
@@ -71,6 +67,8 @@ class PathListPage extends Component { // eslint-disable-line
   }
 }
 
+PostListPage.need = [() => { return fetchPosts(); }];
+
 export default connect(
   state => ({
     awaiting: getAwaiting(state),
@@ -78,4 +76,4 @@ export default connect(
     paths: getPosts(state),
   }),
   dispatch => ({dispatch})
-)(PathListPage);
+)(PostListPage);

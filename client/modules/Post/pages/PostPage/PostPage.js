@@ -25,10 +25,6 @@ class PostPage extends Component { // eslint-disable-line
     post: T.object,
   }
 
-  static need = [
-    () => fetchPosts(),
-  ]
-
   componentWillMount() {
     this.fetchPosts(this.props);
     this.requireAuth(this.props);
@@ -107,6 +103,10 @@ class PostPage extends Component { // eslint-disable-line
     );
   }
 }
+
+PostPage.need = [
+  () => { return fetchPosts(); },
+];
 
 export default connect(
   (state, props) => ({

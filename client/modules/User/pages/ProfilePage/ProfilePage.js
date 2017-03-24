@@ -16,10 +16,6 @@ class ProfilePage extends Component { // eslint-disable-line
     user: T.object,
   }
 
-  static need = [
-    params => fetchUser(params.sid),
-  ]
-
   componentWillMount() {
     this.fetchUser(this.props);
   }
@@ -64,6 +60,10 @@ class ProfilePage extends Component { // eslint-disable-line
     );
   }
 }
+
+ProfilePage.need = [
+  params => { return fetchUser(params.sid) },
+];
 
 export default connect(
   (state, props) => ({

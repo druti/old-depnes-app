@@ -48,7 +48,7 @@ class LoginPage extends Component {
   }
 }
 
-// LoginPage.need = [() => { return fetchPosts(); }];
+LoginPage.need = [];
 
 LoginPage.propTypes = {
   redirectUrl: T.string,
