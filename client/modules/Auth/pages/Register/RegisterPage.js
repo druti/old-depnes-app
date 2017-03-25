@@ -1,46 +1,55 @@
 import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { registerUser } from '../../AuthActions';
+import { registerUser, errorReset } from '../../AuthActions';
 import MasterLayout from '../../../../layouts/MasterLayout';
 //import { fetchPosts } from '../../../Post/PostActions';
+
+import { validateEmail } from '../../../../util/form';
+
+import Button from 'react-toolbox/lib/button/Button';
+import FormInput from '../../../../mdl/FormInput';
+
+// eslint-disable-next-line
+import styles from '../Login/styles.scss';
 
 const form = reduxForm({
   form: 'register',
   validate,
 });
 
-const renderField = field => (
-  <div>
-    <input className='form-control' {...field.input} placeholder={field.placeholder} />
-    {field.touched && field.error &&
-      <div className='error'>{field.error}</div>}
-  </div>
-);
-
-function validate(formProps) {
+function validate({ firstName, lastName, email, password }) {
   const errors = {};
 
-  if (!formProps.firstName) {
+  if (!firstName) {
     errors.firstName = 'Please enter a first name';
   }
-  if (!formProps.lastName) {
+  if (!lastName) {
     errors.lastName = 'Please enter a last name';
   }
-  if (!formProps.email) {
+  if (!email) {
     errors.email = 'Please enter an email';
+  } else if (!validateEmail(email)) {
+    errors.email = 'Please enter a valid email';
   }
-  if (!formProps.password) {
+  if (!password) {
     errors.password = 'Please enter a password';
+  } else if (password.length < 6) {
+    errors.password = 'Password must be six characters or more';
   }
   return errors;
 }
+
 
 class RegisterPage extends Component {
   constructor(props) {
     super(props);
 
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
+  }
+
+  componentWillMount() {
+    this.props.errorReset();
   }
 
   handleFormSubmit(formProps) {
@@ -50,8 +59,8 @@ class RegisterPage extends Component {
   renderAlert() {
     if (this.props.errorMessage) {
       return (
-        <div>
-          <span><strong>Error!</strong> {this.props.errorMessage}</span>
+        <div className={styles.alert}>
+          <span>{this.props.errorMessage}</span>
         </div>
       );
     }
@@ -66,13 +75,41 @@ class RegisterPage extends Component {
         switchLanguage={switchLanguage}
         intl={intl}
       >
-        <form onSubmit={handleSubmit(this.handleFormSubmit)}>
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(this.handleFormSubmit)}
+        >
+          <h3 className={styles.title}>Join Depnes</h3>
+          <Field
+            type='text'
+            name='firstName'
+            icon='person_outline'
+            label='First Name'
+            component={FormInput}
+          />
+          <Field
+            type='text'
+            name='lastName'
+            icon='person'
+            label='Last Name'
+            component={FormInput}
+          />
+          <Field
+            type='text'
+            name='email'
+            icon='email'
+            label='Email'
+            component={FormInput}
+          />
+          <Field
+            type='password'
+            name='password'
+            icon='security'
+            label='Password'
+            component={FormInput}
+          />
           {this.renderAlert()}
-          <Field placeholder='First name' name='firstName' component={renderField} type='text' />
-          <Field placeholder='Last name' name='lastName' component={renderField} type='text' />
-          <Field placeholder='Email' name='email' component={renderField} type='text' />
-          <Field placeholder='Password' name='password' component={renderField} type='password' />
-          <button type='submit'>Register</button>
+          <Button label='Sign Up' type='submit' raised primary />
         </form>
       </MasterLayout>
     );
@@ -87,6 +124,7 @@ RegisterPage.propTypes = {
   switchLanguage: T.func.isRequired,
   intl: T.object.isRequired,
   registerUser: T.func.isRequired,
+  errorReset: T.func.isRequired,
   handleSubmit: T.func.isRequired,
   errorMessage: T.node,
 };
@@ -97,4 +135,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { registerUser })(form(RegisterPage));
+export default connect(mapStateToProps, { registerUser, errorReset })(form(RegisterPage));

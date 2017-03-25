@@ -3,6 +3,7 @@ import {
   AUTH_USER,
   UNAUTH_USER,
   AUTH_ERROR,
+  AUTH_ERROR_RESET,
   PROTECTED_TEST,
 } from './AuthActions';
 
@@ -24,6 +25,8 @@ const AuthReducer = (state = initState, action) => {
       return { ...state, user: null };
     case AUTH_ERROR:
       return { ...state, error: action.reason };
+    case AUTH_ERROR_RESET:
+      return { ...state, error: '' };
     case PROTECTED_TEST:
       return { ...state, content: action.payload };
   }

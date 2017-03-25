@@ -1,0 +1,19 @@
+.form {
+  margin: 0 auto;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  top: 30%;
+  text-align: center;
+  transform: translateY(-30%);
+
+  [data-react-toolbox=input] {
+    text-align: left;
+  }
+
+  .title,
+  button,
+  .alert {
+    margin: 2rem 0;
+  }
+}

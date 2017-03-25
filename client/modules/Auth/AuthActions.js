@@ -8,6 +8,7 @@ export const
   AUTH_USER = 'AUTH_USER',
   UNAUTH_USER = 'UNAUTH_USER',
   AUTH_ERROR = 'AUTH_ERROR',
+  AUTH_ERROR_RESET = 'AUTH_ERROR_RESET',
   FORGOT_PASSWORD_REQUEST = 'FORGOT_PASSWORD_REQUEST',
   RESET_PASSWORD_REQUEST = 'RESET_PASSWORD_REQUEST',
   PROTECTED_TEST = 'PROTECTED_TEST';
@@ -56,6 +57,12 @@ export function logOutUser() {
 
     browserHistory.push('/');
   }
+}
+
+export function errorReset() {
+  return {
+    type: AUTH_ERROR_RESET,
+  };
 }
 
 export function protectedTest() {
