@@ -6,11 +6,11 @@ import { Provider } from 'react-redux';
 import { Router, browserHistory } from 'react-router';
 import IntlWrapper from './modules/Intl/IntlWrapper';
 
-// Import Routes
-import routes from './routes';
-
 import './toolbox/theme.css';
 import './styles/index.scss';
+
+// Import Routes
+import routes from './routes';
 
 export default function App(props) {
   return (

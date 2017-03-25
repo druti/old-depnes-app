@@ -1,8 +1,11 @@
 import React, { PropTypes as T } from 'react';
-import {IconMenu, MenuItem, MenuDivider } from 'react-toolbox/lib/menu';
+
+import IconMenu from 'react-toolbox/lib/menu/IconMenu';
+import MenuItem from 'react-toolbox/lib/menu/MenuItem';
+import MenuDivider from 'react-toolbox/lib/menu/MenuDivider';
 
 import { LinkButton } from '../mdl/Button';
-import { AppBar as ToolboxAppBar } from 'react-toolbox/lib/app_bar';
+import ToolboxAppBar from 'react-toolbox/lib/app_bar/AppBar';
 
 import theme from './appBar.scss'; // eslint-disable-line
 import iconMenuTheme from './iconMenu.scss'; // eslint-disable-line

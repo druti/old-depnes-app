@@ -1,0 +1,16 @@
+.layout {
+  background: #24292e;
+  height: 100%;
+
+  .navDrawerDrawer {
+    background: #24292e;
+    user-select: none;
+    border-color: rgba(0,0,0,.1);
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+}

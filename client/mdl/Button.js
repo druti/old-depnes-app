@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
 
 import { browserHistory } from 'react-router';
-import { Button, IconButton } from 'react-toolbox/lib/button';
+import Button from 'react-toolbox/lib/button/Button';
+import IconButton from 'react-toolbox/lib/button/IconButton';
 
 export const LinkButton = props => {
   return (

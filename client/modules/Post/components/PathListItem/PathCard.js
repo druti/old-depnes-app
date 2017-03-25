@@ -1,8 +1,12 @@
 import React, { PropTypes } from 'react';
 
-import { Card, CardTitle, CardText, CardActions } from 'react-toolbox/lib/card';
+import Card from 'react-toolbox/lib/card/Card';
+import CardTitle from 'react-toolbox/lib/card/CardTitle';
+import CardText from 'react-toolbox/lib/card/CardText';
+import CardActions from 'react-toolbox/lib/card/CardActions';
 import { LinkButton } from '../../../../mdl/Button';
 
+// eslint-disable-next-line
 import cardTheme from './cardTheme.scss';
 
 const PathCard = (props) => {

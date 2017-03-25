@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 import { browserHistory } from 'react-router';
-import { Link } from 'react-toolbox/lib/link';
+import Link from 'react-toolbox/lib/link/Link';
 
 const MdlLink = props => {
   return (

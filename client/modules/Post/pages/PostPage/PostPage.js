@@ -12,6 +12,8 @@ import { toggleMakeMode, fetchPosts } from '../../PostActions';
 import { setRedirectUrl } from '../../../App/AppActions';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
 
+import styles from './postPage.scss'; // eslint-disable-line
+
 class PostPage extends Component { // eslint-disable-line
   static propTypes = {
     awaiting: T.object.isRequired,
@@ -85,7 +87,7 @@ class PostPage extends Component { // eslint-disable-line
       child = null;
     } else if (post) {
       child = (
-        <div>
+        <div className={styles.container}>
           <AuthorList params={params} path={post} user={user} />
           <Navigator params={params} path={post} />
         </div>

@@ -1,5 +1,6 @@
 import React, { Component, PropTypes as T } from 'react';
-import { Button, IconButton } from 'react-toolbox/lib/button';
+import Button from 'react-toolbox/lib/button/Button';
+import IconButton from 'react-toolbox/lib/button/IconButton';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import Delta from 'quill-delta';

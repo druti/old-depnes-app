@@ -1,25 +1,7 @@
-.layout {
-  .navDrawer {
-    background: #24292e;
-    user-select: none;
+.vertical {
+  text-align: center;
 
-    .drawerContent {
-      background: #24292e;
-      border-color: rgba(0,0,0,.1);
-      width: 24rem;
-
-      .menuContainer {
-        text-align: center;
-
-        a {
-          color: #fff;
-        }
-      }
-    }
-
-    &.pinned {
-      max-width: 24rem;
-      width: 24rem;
-    }
+  [data-react-toolbox=link] {
+    color: #fff;
   }
 }

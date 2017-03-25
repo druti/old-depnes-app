@@ -1,5 +1,5 @@
 import React from 'react';
-import ProgressBar from 'react-toolbox/lib/progress_bar';
+import ProgressBar from 'react-toolbox/lib/progress_bar/ProgressBar';
 
 const Spinner = () => (
   <div style={{ textAlign: 'center' }}>

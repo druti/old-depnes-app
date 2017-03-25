@@ -1,8 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
-import { Layout, Panel } from 'react-toolbox';
-import { NavDrawer } from 'react-toolbox/lib/layout';
+
+import Layout from 'react-toolbox/lib/layout/Layout';
+import Panel from 'react-toolbox/lib/layout/Panel';
+import NavDrawer from 'react-toolbox/lib/layout/NavDrawer';
 
 import { logOutUser } from '../modules/Auth/AuthActions';
 import { getCurrentUser } from '../modules/Auth/AuthReducer';
@@ -10,7 +12,7 @@ import { getCurrentUser } from '../modules/Auth/AuthReducer';
 import AppBar from './AppBar';
 import DrawerMenu from './DrawerMenu';
 
-import drawerTheme from './drawerMenu.scss'; // eslint-disable-line
+import layoutTheme from './layout.scss'; // eslint-disable-line
 import buttonTheme from './button.scss'; // eslint-disable-line
 
 class MasterLayout extends React.Component {
@@ -63,8 +65,9 @@ class MasterLayout extends React.Component {
   render() {
     const { user } = this.props;
     return (
-      <Layout theme={drawerTheme}>
+      <Layout theme={layoutTheme}>
         <NavDrawer
+          theme={layoutTheme}
           active={this.state.drawerActive}
           pinned={this.state.drawerPinned}
           onOverlayClick={this.toggleDrawer}
@@ -72,16 +75,14 @@ class MasterLayout extends React.Component {
         >
           <DrawerMenu />
         </NavDrawer>
-        <Panel>
+        <Panel theme={layoutTheme}>
           <AppBar
             user={user}
             toggleDrawer={this.toggleDrawer}
             handleProfile={this.handleProfile}
             handleLogOut={this.handleLogOut}
           />
-          <div style={{flex: 1, overflowY: 'auto', background: '#fff'}}>
-            {this.props.children}
-          </div>
+          {this.props.children}
         </Panel>
       </Layout>
     );

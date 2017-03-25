@@ -2,8 +2,8 @@ import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 //import { browserHistory } from 'react-router';
 
-import Avatar from 'react-toolbox/lib/avatar';
-import Chip from 'react-toolbox/lib/chip';
+import Avatar from 'react-toolbox/lib/avatar/Avatar';
+import Chip from 'react-toolbox/lib/chip/Chip';
 
 import { getUser } from '../../../User/UserReducer';
 import { fetchUser } from '../../../User/UserActions';

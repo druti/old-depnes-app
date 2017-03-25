@@ -1,6 +1,19 @@
 {
   "include": [
-    "BUTTON"
+    "BUTTON",
+    "CARD",
+    "CHIP",
+    "DRAWER",
+    "DROPDOWN",
+    "INPUT",
+    "LAYOUT",
+    "LINK",
+    "LIST",
+    "MENU",
+    "NAVIGATION",
+    "OVERLAY",
+    "PROGRESS_BAR",
+    "RIPPLE"
   ],
   "output": "client/toolbox"
 }

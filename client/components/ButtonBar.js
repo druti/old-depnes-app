@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { AppBar as ToolboxAppBar } from 'react-toolbox/lib/app_bar';
+import ToolboxAppBar from 'react-toolbox/lib/app_bar/AppBar';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import styles from './buttonBar.scss'; // eslint-disable-line
