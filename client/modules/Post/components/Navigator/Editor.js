@@ -7,7 +7,7 @@ import { getCurrentUser } from '../../../Auth/AuthReducer';
 
 import PostPage from '../../pages/PostPage/PostPage';
 
-import styles from './styles.scss'; // eslint-disable-line
+import styles from './navigator.scss'; // eslint-disable-line
 
 export const navigatorEmitter = new EventEmitter();
 
@@ -47,7 +47,7 @@ class Editor extends Component {
 
     const editorElement = document.getElementById('depnes-editor');
     const quill = new Quill(editorElement, {
-      placeholder: 'Compose an epic...',
+      placeholder: 'Write something...',
       modules: {
         authorship: {
           enabled: true,

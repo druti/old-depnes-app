@@ -14,7 +14,7 @@ import {
   addPost,
 } from '../../PostActions';
 import { setRedirectUrl } from '../../../App/AppActions';
-import { getNavigator, getPost, getPosts } from '../../PostReducer';
+import { getNavigator, getPost, getGroupPosts } from '../../PostReducer';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
 import { deltaToString } from '../../../../util/delta';
 
@@ -36,13 +36,13 @@ class Toolbar extends Component {
   constructor() {
     super();
     this.state = {};
-    this.next = this.next.bind(this);
-    this.goToNextMatchedPath = this.goToNextMatchedPath.bind(this);
+    this.nextPath = this.nextPath.bind(this);
+    this.goToMatchedPath = this.goToMatchedPath.bind(this);
     this.toggleMakeMode = this.toggleMakeMode.bind(this);
     this.savePath = this.savePath.bind(this);
   }
 
-  next() {
+  nextPath(direction) {
     const {
       path,
       paths,
@@ -50,25 +50,20 @@ class Toolbar extends Component {
     } = this.props;
 
     if (selection) {
-      this.goToNextMatchedPath(path, paths, navigator, selection);
+      this.goToMatchedPath(path, paths, navigator, selection, direction);
     } else {
-      goToNextConsecutivePath(path, paths);
+      goToConsecutivePath(path, paths, direction);
     }
   }
 
-  goToNextMatchedPath(currentPath, paths, navigator, selection) {
-    const { nextPath, nextPathSelectionLength } = getNextPath(currentPath, paths, selection);
+  goToMatchedPath(currentPath, paths, navigator, selection, direction) {
+    const { nextPath } = getMatchedPath(currentPath, paths, selection, direction);
 
     if (!nextPath) {
       return window.alert('No match found.');
     }
 
-    PostPage.nextSelection = {
-      index: selection.index,
-      length: nextPathSelectionLength,
-    };
-
-    browserHistory.push(`/paths/${nextPath.sid}`);
+    browserHistory.replace(`/paths/${nextPath.sid}`);
   }
 
   toggleMakeMode(save = true) {
@@ -115,7 +110,7 @@ class Toolbar extends Component {
   }
 
   render() {
-    const { path, selection, makeMode, dispatch } = this.props;
+    const { path, paths, selection, makeMode, dispatch } = this.props;
     return (
       <div className={styles.container}>
         <ButtonBar theme={styles}>
@@ -133,11 +128,11 @@ class Toolbar extends Component {
               ><i className='fa fa-times'/></IconButton>
             }
 
-            {!makeMode &&
+            {!makeMode && paths.length > 1 &&
               <Button
                 theme={buttonTheme}
                 label='Prev'
-                onClick={browserHistory && browserHistory.goBack} // no bH during SSR
+                onClick={() => { this.nextPath('backwards')}}
               />
             }
 
@@ -157,11 +152,11 @@ class Toolbar extends Component {
               onClick={this.toggleMakeMode}
             />
 
-            {!makeMode &&
+            {!makeMode && paths.length > 1 &&
               <Button
                 label='Next'
                 theme={buttonTheme}
-                onClick={this.next}
+                onClick={() => { this.nextPath('forwards')}}
               />}
 
             <div
@@ -232,13 +227,23 @@ class Toolbar extends Component {
   }
 }
 
-function getNextPath(currentPath, paths, selection) {
+function getMatchedPath(currentPath, paths, selection, direction) {
   // Reorder paths, excluding current path and starting at next path
   // eslint-disable-next-line no-param-reassign
   let nextPath;
   let nextPathSelectionLength;
   const currentPathIndex = paths.indexOf(currentPath)
-  paths = paths.slice(currentPathIndex + 1).concat(paths.slice(0, currentPathIndex));
+  if (direction === 'forwards') {
+    paths = paths
+      .slice(currentPathIndex + 1)
+      .concat(paths.slice(0, currentPathIndex));
+  } else if (direction === 'backwards') {
+    paths = paths
+      .slice(0, currentPathIndex).reverse()
+      .concat(paths.slice(currentPathIndex + 1)).reverse();
+  } else {
+    return Error('Direction must be forwards or backwards.');
+  }
 
   const currentPathContent = new Delta(copyDelta(currentPath.content));
   const currentPathStartContent = currentPathContent.slice(0, selection.index);
@@ -280,25 +285,22 @@ function copyDelta(delta) {
   return JSON.parse(JSON.stringify(delta));
 }
 
-function goToNextConsecutivePath(currentPath, paths) {
-  if (currentPath && currentPath.sid !== 'blank') {
-    const groupPaths = paths.filter(p => p.groupId === currentPath.groupId);
-    for (let i = 0; i < groupPaths.length; i++) {
-      if (groupPaths[i].sid === currentPath.sid) {
-        const nextPath = groupPaths[i + 1];
-        const url = nextPath ? `/paths/${nextPath.sid}` : '/paths';
-        browserHistory.push(url);
-      }
+function goToConsecutivePath(currentPath, paths, direction) {
+  for (let i = 0; i < paths.length; i++) {
+    if (paths[i].sid === currentPath.sid) {
+      let nextPath = direction === 'forwards' ?
+        paths[i + 1] || paths[0] :
+        paths[i - 1] || paths[paths.length - 1];
+      const url = `/paths/${nextPath.sid}`;
+      browserHistory.replace(url);
     }
-  } else {
-    browserHistory.push(`/paths/${paths[0].sid}`);
   }
 }
 
 function mapStateToProps(state, props) {
   return {
     path: getPost(state, props.params.sid),
-    paths: getPosts(state),
+    paths: getGroupPosts(state, props.params.sid),
     user: getCurrentUser(state),
     ...getNavigator(state),
   };

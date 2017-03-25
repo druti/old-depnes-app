@@ -36,7 +36,7 @@ import {
 import { saveSelection, deleteSelection } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
 
-import styles from './styles.scss'; // eslint-disable-line
+import styles from './navigator.scss'; // eslint-disable-line
 
 class Navigator extends Component {
   constructor() {

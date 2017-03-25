@@ -131,6 +131,11 @@ export const getFailed = state => state.posts.failed;
 
 export const getPosts = state => state.posts.data;
 
+export const getGroupPosts = (state, sid) => {
+  const currentPost = getPost(state, sid);
+  return state.posts.data.filter(p => p.groupId === currentPost.groupId);
+};
+
 export const getPost = (state, sid) => {
   if (sid === 'blank') {
     return state.posts.blank;

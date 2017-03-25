@@ -3,9 +3,10 @@
   padding: 0;
   justify-content: flex-start;
   user-select: none;
+  height: 5.6rem;
 
-  @media screen and (max-width: 600px) and (orientation: landscape) {
-    height: 5.6rem;
+  @media screen and (min-width: 600px) {
+    height: 6.4rem;
   }
 }
 
@@ -23,7 +24,7 @@
 }
 
 .container {
-  position: fixed;
+  position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
