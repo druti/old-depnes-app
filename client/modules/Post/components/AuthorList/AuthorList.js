@@ -31,8 +31,6 @@ const PathAuthors = ({ path }) => {
 };
 
 PathAuthors.propTypes = {
-  user: T.object,
-  params: T.object.isRequired,
   path: T.object.isRequired,
 };
 
