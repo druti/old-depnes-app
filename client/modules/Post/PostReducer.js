@@ -1,4 +1,6 @@
 import {
+  HIGHLIGHT_NAVIGATOR,
+  UNHIGHLIGHT_NAVIGATOR,
   SELECTION_SAVE,
   SELECTION_DELETE,
   TOGGLE_MAKE_MODE,
@@ -25,7 +27,7 @@ const initState = {
     sid: 'blank',
   },
   navigator: {
-    changes: [], // full of quill-deltas
+    highlight: false,
     selection: false,
     makeMode: false,
   },
@@ -33,6 +35,16 @@ const initState = {
 
 const PostReducer = (state = initState, action) => {
   switch (action.type) {
+    case HIGHLIGHT_NAVIGATOR :
+    case UNHIGHLIGHT_NAVIGATOR :
+      return {
+        ...state,
+        navigator: {
+          ...state.navigator,
+          highlight: action.highlight,
+        },
+      };
+
     case SELECTION_SAVE :
       return {
         ...state,
@@ -124,6 +136,8 @@ function updateFailed(state, action, failed) {
 }
 
 export const getNavigator = state => state.posts.navigator;
+
+export const getNavigatorHighlight = state => state.posts.navigator.highlight;
 
 export const getAwaiting = state => state.posts.awaiting;
 

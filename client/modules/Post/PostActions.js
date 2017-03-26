@@ -1,6 +1,9 @@
 import callApi from '../../util/apiCaller';
 import { getPost } from './PostReducer';
 
+export const HIGHLIGHT_NAVIGATOR = 'HIGHLIGHT_NAVIGATOR';
+export const UNHIGHLIGHT_NAVIGATOR = 'UNHIGHLIGHT_NAVIGATOR';
+
 export const SELECTION_SAVE = 'SELECTION_SAVE';
 export const SELECTION_DELETE = 'SELECTION_DELETE';
 
@@ -22,6 +25,19 @@ export const DELETE_POST_REQUEST = 'DELETE_POST_REQUEST';
 export const DELETE_POST = 'DELETE_POST';
 export const DELETE_POST_FAILURE  = 'DELETE_POST_FAILURE';
 
+export function highlightNavigator(highlight) {
+  return {
+    type: HIGHLIGHT_NAVIGATOR,
+    highlight,
+  };
+}
+
+export function unhighlightNavigator(highlight = false) {
+  return {
+    type: UNHIGHLIGHT_NAVIGATOR,
+    highlight,
+  };
+}
 
 export function saveSelection(selection) {
   return {

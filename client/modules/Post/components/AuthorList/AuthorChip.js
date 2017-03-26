@@ -4,15 +4,26 @@ import { connect } from 'react-redux';
 
 import Avatar from 'react-toolbox/lib/avatar/Avatar';
 import Chip from 'react-toolbox/lib/chip/Chip';
+import Link from '../../../../mdl/Link';
 
+import { highlightAuthor, unhighlightAuthor } from '../Navigator/authorship';
+
+import { getNavigatorHighlight } from '../../PostReducer';
 import { getUser } from '../../../User/UserReducer';
+import { highlightNavigator, unhighlightNavigator } from '../../PostActions';
 import { fetchUser } from '../../../User/UserActions';
+
+// eslint-disable-next-line
+import theme from './chipTheme.scss';
 
 class AuthorChip extends Component { // eslint-disable-line
   static propTypes = {
     user: T.object,
     id: T.string.isRequired,
-    dispatch: T.func.isRequired,
+    fetchUser: T.func.isRequired,
+    highlight: T.oneOfType([T.bool, T.object]),
+    highlightNavigator: T.func.isRequired,
+    unhighlightNavigator: T.func.isRequired,
   }
 
   constructor() {
@@ -24,27 +35,55 @@ class AuthorChip extends Component { // eslint-disable-line
   }
 
   componentWillMount() {
-    this.props.dispatch(fetchUser(this.props.id))
-      .then(
-        () => {
-          this.setState({ loading: false });
-        },
-        err => {
-          this.setState({ failed: err, loading: false });
-        }
-      );
+    this.props.fetchUser(this.props.id).then(
+      () => {
+        this.setState({ loading: false });
+      },
+      err => {
+        this.setState({ failed: err, loading: false });
+      }
+    );
+  }
+
+  toggleHighlight = () => {
+    const {
+      user,
+      highlight,
+    } = this.props;
+
+    if (highlight) {
+      unhighlightAuthor(highlight.authorId);
+      if (highlight.authorId === user.sid) {
+        this.props.unhighlightNavigator();
+      } else {
+        this.highlightAuthor(user.sid);
+      }
+    } else {
+      this.highlightAuthor(user.sid);
+    }
+  }
+
+  highlightAuthor = (id) => {
+    highlightAuthor(id, '#ff4081');
+    this.props.highlightNavigator({ authorId: id });
   }
 
   render() {
     const { loading, failed } = this.state;
-    const { user } = this.props;
+    const { user, highlight } = this.props;
 
     let child;
     if (user) {
       child = (
-        <Chip>
+        <Chip onClick={this.toggleHighlight} theme={theme}>
           <Avatar title='A' />
           <span>{`${user.firstName} ${user.lastName}`}</span>
+          {highlight && highlight.authorId === user.sid &&
+            <Link
+              theme={theme}
+              href={`/user/${user.sid}`}
+              label='View Profile'
+            />}
         </Chip>
       );
     } else if (loading) {
@@ -60,6 +99,7 @@ class AuthorChip extends Component { // eslint-disable-line
 export default connect(
   (state, props) => ({
     user: getUser(state, props.id),
+    highlight: getNavigatorHighlight(state),
   }),
-  dispatch => ({dispatch})
+  { fetchUser, highlightNavigator, unhighlightNavigator },
 )(AuthorChip);
