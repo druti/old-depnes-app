@@ -9,6 +9,7 @@ const MdlLink = props => {
       {...props}
       onClick={(e) => {
         e.preventDefault();
+        if (props.onClick) props.onClick();
         browserHistory.push(props.href)
       }}
     >

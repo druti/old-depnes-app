@@ -29,15 +29,22 @@ class MasterLayout extends React.Component {
     this.handleLogOut = this.handleLogOut.bind(this);
   }
 
-  componentDidMount() {
-    // `DidMount` instead of `WillMount` because window is not available on
-    // server for SSR
+  componentWillMount() {
+    if (!window) return;
+
     this.lg = 840;
 
     this.viewportW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     window.onresize = () => {
       this.viewportW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     };
+
+    if (this.viewportW > this.lg) {
+      this.setState({
+        drawerPinned: true,
+        drawerActive: false,
+      });
+    }
   }
 
   toggleDrawer() {
@@ -73,7 +80,9 @@ class MasterLayout extends React.Component {
           onOverlayClick={this.toggleDrawer}
           scrollY
         >
-          <DrawerMenu />
+          <DrawerMenu
+            handleLinkClick={() => { !this.state.drawerPinned && this.toggleDrawer()}}
+          />
         </NavDrawer>
         <Panel theme={layoutTheme}>
           <AppBar

@@ -88,7 +88,8 @@ class PostPage extends Component { // eslint-disable-line
     } else if (post) {
       child = (
         <div className={styles.container}>
-          <AuthorList params={params} path={post} user={user} />
+          {params.sid !== 'blank' &&
+            <AuthorList params={params} path={post} user={user} />}
           <Navigator params={params} path={post} />
         </div>
       );
