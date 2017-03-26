@@ -1,0 +1,27 @@
+.container {
+  background: #fbfbfb;
+  height: 100%;
+  overflow-y: scroll;
+
+  .authorContainer {
+    background: #fff;
+    margin-bottom: 1rem;
+    padding: 5rem;
+    position: relative;
+    text-align: center;
+
+    .name {
+      margin-top: 1rem;
+    }
+  }
+}
+
+.avatar {
+  font-size: 48px;
+  height: 80px;
+  width: 80px;
+
+  span {
+    line-height: 80px;
+  }
+}

@@ -150,6 +150,22 @@ export const getGroupPosts = (state, sid) => {
   return state.posts.data.filter(p => p.groupId === currentPost.groupId);
 };
 
+export const getPostAuthors = (path) => {
+  const authorIds = [];
+  path.content.ops.forEach(op => {
+    if (op.attributes && op.attributes.author) {
+      if (authorIds.indexOf(op.attributes.author) === -1) {
+        authorIds.push(op.attributes.author);
+      }
+    }
+  });
+  return authorIds;
+}
+
+export const getPostsByUser = (state, userId) => {
+  return state.posts.data.filter(p => getPostAuthors(p).includes(userId));
+};
+
 export const getPost = (state, sid) => {
   if (sid === 'blank') {
     return state.posts.blank;

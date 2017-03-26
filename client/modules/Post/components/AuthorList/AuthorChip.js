@@ -35,7 +35,7 @@ class AuthorChip extends Component { // eslint-disable-line
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.props.fetchUser(this.props.id).then(
       () => {
         this.setState({ loading: false });
@@ -79,7 +79,7 @@ class AuthorChip extends Component { // eslint-disable-line
     if (user) {
       child = (
         <Chip onClick={this.toggleHighlight} theme={theme}>
-          <Avatar title='A' />
+          <Avatar title={`${user.firstName.slice(0, 1)}`} />
           <span>{`${user.firstName} ${user.lastName}`}</span>
           {expanded && highlight && highlight.authorId === user.sid &&
             <Link

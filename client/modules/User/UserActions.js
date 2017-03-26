@@ -19,17 +19,14 @@ export function fetchUser(sid) {
     } else {
       dispatch(requestUser(fetchUser.name));
     }
-    return callApi(`user/${sid}`)
-      .then(
-        res => {
-          dispatch(receiveUser(fetchUser.name, res.user))
-          return Promise.resolve(res);
-        },
-        err => {
-          dispatch(failedRequestUser(fetchUser.name, err.reason));
-          return Promise.reject(err);
-        }
-      );
+    return callApi(`user/${sid}`).then(
+      res => {
+        return dispatch(receiveUser(fetchUser.name, res.user))
+      },
+      err => {
+        return dispatch(failedRequestUser(fetchUser.name, err.reason));
+      }
+    );
   };
 }
 

@@ -14,7 +14,7 @@ export const navigatorEmitter = new EventEmitter();
 const isClient = typeof window !== 'undefined'
 if (isClient) {
   var Quill = require('quill');
-  var Authorship = require('./authorship').default;
+  var Authorship = require('./quillAuthorship').default;
 
   Quill.register('modules/authorship', Authorship);
 }

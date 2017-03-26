@@ -2,32 +2,39 @@ import React, { Component, PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import { fetchUser } from '../../UserActions';
 import { getAwaiting, getFailed, getUser } from '../../UserReducer';
+import { fetchPosts } from '../../../Post/PostActions';
+import { getPostsByUser } from '../../../Post/PostReducer';
+import Avatar from 'react-toolbox/lib/avatar/Avatar';
 import MasterLayout from '../../../../layouts/MasterLayout';
+import PathList from '../../../Post/components/PathList/PathList';
 import Loader from '../../../App/components/Loader/Loader';
+
+// eslint-disable-next-line
+import styles from './profilePage.scss';
 
 class ProfilePage extends Component { // eslint-disable-line
   static propTypes = {
     awaiting: T.object.isRequired,
     failed: T.object.isRequired,
     params: T.object.isRequired,
-    dispatch: T.func.isRequired,
+    fetchUser: T.func.isRequired,
+    fetchPosts: T.func.isRequired,
     switchLanguage: T.func.isRequired,
     intl: T.object.isRequired,
     user: T.object,
+    paths: T.array,
   }
 
   componentWillMount() {
-    this.fetchUser(this.props);
+    this.props.fetchUser(this.props.params.sid);
+    this.props.fetchPosts();
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.params.sid !== this.props.params.sid) {
-      this.fetchUser(nextProps);
+      this.props.fetchUser(this.props.params.sid);
+      this.props.fetchPosts();
     }
-  }
-
-  fetchUser = ({ params, dispatch }) => {
-    dispatch(fetchUser(params.sid));
   }
 
   render() {
@@ -35,6 +42,7 @@ class ProfilePage extends Component { // eslint-disable-line
       awaiting,
       failed,
       user,
+      paths,
       params,
       intl,
       switchLanguage,
@@ -47,7 +55,15 @@ class ProfilePage extends Component { // eslint-disable-line
     } else if (awaiting.fetchUser || !user) {
       child = <Loader />;
     } else {
-      child = <h1>{user.firstName} {user.lastName}</h1>;
+      child = (
+        <div className={styles.container}>
+          <div className={styles.authorContainer}>
+            <Avatar theme={styles} title={`${user.firstName.slice(0, 1)}`} />
+            <h3 className={styles.name}>{user.firstName} {user.lastName}</h3>
+          </div>
+          <PathList paths={paths} />
+        </div>
+      );
     }
 
     return (
@@ -63,6 +79,7 @@ class ProfilePage extends Component { // eslint-disable-line
 
 ProfilePage.need = [
   params => { return fetchUser(params.sid) },
+  () => { return fetchPosts() },
 ];
 
 export default connect(
@@ -70,6 +87,7 @@ export default connect(
     awaiting: getAwaiting(state),
     failed: getFailed(state),
     user: getUser(state, props.params.sid),
+    paths: getPostsByUser(state, props.params.sid),
   }),
-  dispatch => ({dispatch})
+  { fetchUser, fetchPosts },
 )(ProfilePage);

@@ -30,7 +30,7 @@ class MasterLayout extends React.Component {
   }
 
   componentWillMount() {
-    if (!window) return;
+    if (typeof window === 'undefined') return;
 
     this.lg = 840;
 
