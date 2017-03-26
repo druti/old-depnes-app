@@ -4,9 +4,5 @@
 
 .container {
   text-align: center;
-  margin-top: 9px;
-
-  @media (min-width: 480px) {
-    margin-top: 12px;
-  }
+  margin-top: 12px;
 }
