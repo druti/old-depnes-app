@@ -38,6 +38,13 @@ class Editor extends Component {
     this.initQuill();
   }
 
+  componentDidUpdate({ path: prevPath }) {
+    const { path } = this.props;
+    if (prevPath.sid !== path.sid) {
+      this.initQuill();
+    }
+  }
+
   initQuill() {
     let {
       path,

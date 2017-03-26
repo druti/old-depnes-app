@@ -29,6 +29,7 @@ class AuthorChip extends Component { // eslint-disable-line
   constructor() {
     super();
     this.state = {
+      expanded: false,
       loading: true,
       failed: false,
     };
@@ -55,6 +56,7 @@ class AuthorChip extends Component { // eslint-disable-line
       unhighlightAuthor(highlight.authorId);
       if (highlight.authorId === user.sid) {
         this.props.unhighlightNavigator();
+        this.setState({ expanded: false });
       } else {
         this.highlightAuthor(user.sid);
       }
@@ -64,12 +66,13 @@ class AuthorChip extends Component { // eslint-disable-line
   }
 
   highlightAuthor = (id) => {
-    highlightAuthor(id, '#ff4081');
     this.props.highlightNavigator({ authorId: id });
+    highlightAuthor(id, '#ff4081');
+    this.setState({ expanded: true });
   }
 
   render() {
-    const { loading, failed } = this.state;
+    const { expanded, loading, failed } = this.state;
     const { user, highlight } = this.props;
 
     let child;
@@ -78,7 +81,7 @@ class AuthorChip extends Component { // eslint-disable-line
         <Chip onClick={this.toggleHighlight} theme={theme}>
           <Avatar title='A' />
           <span>{`${user.firstName} ${user.lastName}`}</span>
-          {highlight && highlight.authorId === user.sid &&
+          {expanded && highlight && highlight.authorId === user.sid &&
             <Link
               theme={theme}
               href={`/user/${user.sid}`}

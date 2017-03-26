@@ -33,7 +33,7 @@ import {
   getStartSelectionOffsets,
 } from './selection';
 
-import { saveSelection, deleteSelection } from '../../PostActions';
+import { toggleMakeMode, saveSelection, deleteSelection } from '../../PostActions';
 import { getNavigator } from '../../PostReducer';
 
 import styles from './navigator.scss'; // eslint-disable-line
@@ -42,6 +42,13 @@ class Navigator extends Component {
   constructor() {
     super();
     this.handleContentClick = this.handleContentClick.bind(this);
+  }
+
+  componentWillReceiveProps({ path: nextPath, params: nextParams }) {
+    const { path, makeMode } = this.props;
+    if (nextPath.sid !== path.sid && makeMode && nextParams.sid !== 'blank') {
+      this.props.toggleMakeMode();
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -135,7 +142,7 @@ class Navigator extends Component {
 
     this.removeMiddleBlocks();
     this.insertMiddleBlocks();
-    this.props.dispatch(saveSelection(this.getSelection()));
+    this.props.saveSelection(this.getSelection());
   }
 
   expandToDefaultSelection() {
@@ -150,7 +157,7 @@ class Navigator extends Component {
 
   deleteSelection() {
     this.removeVisibleSelection();
-    this.props.dispatch(deleteSelection());
+    this.props.deleteSelection();
   }
 
   removeVisibleSelection() {
@@ -341,7 +348,9 @@ Navigator.propTypes = {
   path: T.object.isRequired,
   selection: T.oneOfType([T.bool, T.object]),
   makeMode: T.bool.isRequired,
-  dispatch: T.func.isRequired,
+  saveSelection: T.func.isRequired,
+  deleteSelection: T.func.isRequired,
+  toggleMakeMode: T.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -350,4 +359,10 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, dispatch => ({ dispatch }))(Navigator);
+export default connect(
+  mapStateToProps, {
+    saveSelection,
+    deleteSelection,
+    toggleMakeMode,
+  }
+)(Navigator);
