@@ -73,7 +73,7 @@ export class App extends Component {
             ]}
           />
           <ThemeProvider theme={theme}>
-            <div>
+            <div style={{ height: '100%' }}>
               {child}
               <Dialogs />
             </div>
