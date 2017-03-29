@@ -10,8 +10,8 @@ import theme from './drawerMenu.scss'; // eslint-disable-line
 const DrawerMenu = ({ handleLinkClick }) => (
   <Navigation theme={theme} type='vertical'>
     <Logo />
-    <Link onClick={handleLinkClick} href='/paths/blank' label='Write'/>
-    <Link onClick={handleLinkClick} href='/paths' label='Paths'/>
+    <Link onClick={handleLinkClick} href='/posts/new' label='Write'/>
+    <Link onClick={handleLinkClick} href='/posts' label='Posts'/>
   </Navigation>
 );
 

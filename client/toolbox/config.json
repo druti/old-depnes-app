@@ -1,8 +1,13 @@
 {
   "include": [
+    "AUTOCOMPLETE",
+    "AVATAR",
     "BUTTON",
     "CARD",
+    "CHECKBOX",
     "CHIP",
+    "DATE_PICKER",
+    "DIALOG",
     "DRAWER",
     "DROPDOWN",
     "INPUT",
@@ -13,7 +18,15 @@
     "NAVIGATION",
     "OVERLAY",
     "PROGRESS_BAR",
-    "RIPPLE"
+    "RADIO",
+    "RIPPLE",
+    "SLIDER",
+    "SNACKBAR",
+    "SWITCH",
+    "TABLE",
+    "TABS",
+    "TIME_PICKER",
+    "TOOLTIP"
   ],
   "output": "client/toolbox"
 }

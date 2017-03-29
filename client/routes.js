@@ -59,7 +59,7 @@ export default (
       }}
     />
     <Route
-      path='/paths'
+      path='/posts'
       getComponent={(nextState, cb) => {
         require.ensure([], require => {
           cb(null, require('./modules/Post/pages/PostListPage/PostListPage').default);
@@ -67,7 +67,7 @@ export default (
       }}
     />
     <Route
-      path='/paths/:sid'
+      path='/posts/:sid'
       getComponent={(nextState, cb) => {
         require.ensure([], require => {
           cb(null, require('./modules/Post/pages/PostPage/PostPage').default);

@@ -5,11 +5,10 @@ import cookie from 'react-cookie';
 import theme from '../../toolbox/theme.js';
 import ThemeProvider from 'react-toolbox/lib/ThemeProvider';
 
-// Import Components
 import Helmet from 'react-helmet';
 import DevTools from './components/DevTools';
+import Dialogs from './components/Dialogs/Dialogs';
 
-// Import Actions
 import { AUTH_USER } from '../Auth/AuthActions';
 import { switchLanguage } from '../../modules/Intl/IntlActions';
 
@@ -74,7 +73,10 @@ export class App extends Component {
             ]}
           />
           <ThemeProvider theme={theme}>
-            {child}
+            <div>
+              {child}
+              <Dialogs />
+            </div>
           </ThemeProvider>
         </div>
       </div>

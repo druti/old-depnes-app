@@ -4,9 +4,9 @@ import AuthorChip from './AuthorChip';
 
 import styles from './styles.scss'; // eslint-disable-line
 
-const PathAuthors = ({ path }) => {
+const PostAuthors = ({ post }) => {
   const authorIds = [];
-  path.content.ops.forEach(op => {
+  post.content.ops.forEach(op => {
     if (op.attributes && op.attributes.author) {
       if (authorIds.indexOf(op.attributes.author) === -1) {
         authorIds.push(op.attributes.author);
@@ -30,8 +30,8 @@ const PathAuthors = ({ path }) => {
   );
 };
 
-PathAuthors.propTypes = {
-  path: T.object.isRequired,
+PostAuthors.propTypes = {
+  post: T.object.isRequired,
 };
 
-export default PathAuthors;
+export default PostAuthors;

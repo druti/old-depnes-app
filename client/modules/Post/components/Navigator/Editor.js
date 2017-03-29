@@ -23,7 +23,7 @@ class Editor extends Component {
   static propTypes = {
     user: T.object,
     params: T.object.isRequired,
-    path: T.object.isRequired,
+    post: T.object.isRequired,
     selection: T.oneOfType([T.bool, T.object]),
     makeMode: T.bool.isRequired,
     dispatch: T.func.isRequired,
@@ -38,16 +38,16 @@ class Editor extends Component {
     this.initQuill();
   }
 
-  componentDidUpdate({ path: prevPath }) {
-    const { path } = this.props;
-    if (prevPath.sid !== path.sid) {
+  componentDidUpdate({ post: prevPost }) {
+    const { post } = this.props;
+    if (prevPost.sid !== post.sid) {
       this.initQuill();
     }
   }
 
   initQuill() {
     let {
-      path,
+      post,
       user,
       selection,
     } = this.props;
@@ -66,7 +66,7 @@ class Editor extends Component {
     });
     window.quill = quill;
 
-    quill.setContents(path.content);
+    quill.setContents(post.content);
 
     if (selection) {
       quill.setSelection(selection);
@@ -74,11 +74,11 @@ class Editor extends Component {
 
     quill.on('text-change', (change, oldContent, source) => {
       if (source === 'api') return;
-      PostPage.pathChanges.push(change);
+      PostPage.postChanges.push(change);
     });
 
     PostPage.quill = quill;
-    PostPage.pathChanges = [];
+    PostPage.postChanges = [];
   }
 
   render() {
@@ -91,7 +91,7 @@ class Editor extends Component {
 function mapStateToProps(state, props) {
   return {
     ...getNavigator(state),
-    path: getPost(state, props.params.sid),
+    post: getPost(state, props.params.sid),
     user: getCurrentUser(state),
   };
 }

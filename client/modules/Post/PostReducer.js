@@ -18,13 +18,10 @@ const initState = {
   data: [],
   awaiting: {},
   failed: {},
-  blank: {
-    content: {
-      ops: [{insert: '\n'}],
-      authors: [null],
-    },
+  new: {
+    content: { ops: [{insert: '\n'}] },
     htmlContent: '',
-    sid: 'blank',
+    sid: 'new',
   },
   navigator: {
     highlight: false,
@@ -150,9 +147,9 @@ export const getGroupPosts = (state, sid) => {
   return state.posts.data.filter(p => p.groupId === currentPost.groupId);
 };
 
-export const getPostAuthors = (path) => {
+export const getPostAuthors = (post) => {
   const authorIds = [];
-  path.content.ops.forEach(op => {
+  post.content.ops.forEach(op => {
     if (op.attributes && op.attributes.author) {
       if (authorIds.indexOf(op.attributes.author) === -1) {
         authorIds.push(op.attributes.author);
@@ -167,8 +164,8 @@ export const getPostsByUser = (state, userId) => {
 };
 
 export const getPost = (state, sid) => {
-  if (sid === 'blank') {
-    return state.posts.blank;
+  if (sid === 'new') {
+    return state.posts.new;
   }
   return state.posts.data.filter(post => post.sid === sid)[0];
 };

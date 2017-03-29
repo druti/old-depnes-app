@@ -55,7 +55,7 @@ class PostPage extends Component { // eslint-disable-line
     const server = typeof window === 'undefined';
 
     if (!server) {
-      if (params.sid === 'blank') {
+      if (params.sid === 'new') {
         if (!user) {
           dispatch(setRedirectUrl(location.pathname))
           browserHistory.replace('/login');
@@ -80,14 +80,14 @@ class PostPage extends Component { // eslint-disable-line
     let child;
     let isLoading = awaiting.fetchPosts;
 
-    if (!user && params.sid === 'blank') {
+    if (!user && params.sid === 'new') {
       child = null;
     } else if (post) {
       child = (
         <div className={styles.container}>
-          {params.sid !== 'blank' &&
-            <AuthorList params={params} path={post} user={user} />}
-          <Navigator params={params} path={post} />
+          {params.sid !== 'new' &&
+            <AuthorList params={params} post={post} user={user} />}
+          <Navigator params={params} post={post} />
         </div>
       );
     } else if (!isLoading) {

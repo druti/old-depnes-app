@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getAwaiting, getFailed, getPosts } from '../../PostReducer';
 import { fetchPosts } from '../../PostActions';
 import MasterLayout from '../../../../layouts/MasterLayout';
-import PathList from '../../components/PathList/PathList';
+import PostList from '../../components/PostList/PostList';
 import { LinkButton } from '../../../../mdl/Button';
 import styles from './postListPage.scss'; // eslint-disable-line
 import Loader from '../../../App/components/Loader/Loader';
@@ -12,7 +12,7 @@ class PostListPage extends Component { // eslint-disable-line
   static propTypes = {
     awaiting: T.object.isRequired,
     failed: T.object.isRequired,
-    paths: T.array.isRequired,
+    posts: T.array.isRequired,
     dispatch: T.func.isRequired,
     params: T.object.isRequired,
     switchLanguage: T.func.isRequired,
@@ -25,7 +25,7 @@ class PostListPage extends Component { // eslint-disable-line
 
   render() {
     const {
-      paths,
+      posts,
       awaiting,
       failed,
       params,
@@ -34,13 +34,13 @@ class PostListPage extends Component { // eslint-disable-line
     } = this.props;
 
     let child;
-    let isLoading = awaiting.fetchPosts || !paths.length;
+    let isLoading = awaiting.fetchPosts || !posts.length;
 
     if (failed.fetchPosts) {
       child = <h1>{failed.fetchPosts.reason || 'Something bad happend'}</h1>;
       isLoading = false;
     } else {
-      child = <PathList paths={paths} />;
+      child = <PostList posts={posts} />;
     }
 
     return (
@@ -56,7 +56,7 @@ class PostListPage extends Component { // eslint-disable-line
               primary
               raised
               label='Start Writing'
-              href='/paths/blank'
+              href='/posts/new'
             />
           </div>
           {child}
@@ -73,7 +73,7 @@ export default connect(
   state => ({
     awaiting: getAwaiting(state),
     failed: getFailed(state),
-    paths: getPosts(state),
+    posts: getPosts(state),
   }),
   dispatch => ({dispatch})
 )(PostListPage);

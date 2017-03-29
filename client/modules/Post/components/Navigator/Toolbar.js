@@ -13,7 +13,7 @@ import {
   toggleMakeMode,
   addPost,
 } from '../../PostActions';
-import { setRedirectUrl } from '../../../App/AppActions';
+import { openDialog, setRedirectUrl } from '../../../App/AppActions';
 import { getNavigator, getPost, getGroupPosts } from '../../PostReducer';
 import { getCurrentUser } from '../../../Auth/AuthReducer';
 import { deltaToString } from '../../../../util/delta';
@@ -25,121 +25,131 @@ class Toolbar extends Component {
   static propTypes = {
     user: T.object,
     params: T.object.isRequired,
-    dispatch: T.func.isRequired,
+    openDialog: T.func.isRequired,
+    setRedirectUrl: T.func.isRequired,
+    deleteSelection: T.func.isRequired,
+    toggleMakeMode: T.func.isRequired,
+    addPost: T.func.isRequired,
     selection: T.oneOfType([T.bool, T.object]),
     makeMode: T.bool.isRequired,
-    path: T.object,
-    paths: T.array,
+    post: T.object,
+    posts: T.array,
     className: T.string,
   };
 
   constructor() {
     super();
     this.state = {};
-    this.nextPath = this.nextPath.bind(this);
-    this.goToMatchedPath = this.goToMatchedPath.bind(this);
+    this.nextPost = this.nextPost.bind(this);
+    this.goToMatchedPost = this.goToMatchedPost.bind(this);
     this.toggleMakeMode = this.toggleMakeMode.bind(this);
-    this.savePath = this.savePath.bind(this);
+    this.savePost = this.savePost.bind(this);
   }
 
-  nextPath(direction) {
+  nextPost(direction) {
     const {
-      path,
-      paths,
+      post,
+      posts,
       selection,
     } = this.props;
 
     if (selection) {
-      this.goToMatchedPath(path, paths, navigator, selection, direction);
+      this.goToMatchedPost(post, posts, navigator, selection, direction);
     } else {
-      goToConsecutivePath(path, paths, direction);
+      goToConsecutivePost(post, posts, direction);
     }
   }
 
-  goToMatchedPath(currentPath, paths, navigator, selection, direction) {
-    const { nextPath } = getMatchedPath(currentPath, paths, selection, direction);
+  goToMatchedPost(currentPost, posts, navigator, selection, direction) {
+    const { nextPost } = getMatchedPost(currentPost, posts, selection, direction);
 
-    if (!nextPath) {
-      return window.alert('No match found.');
+    if (!nextPost) {
+      return this.props.openDialog({
+        title: 'No match',
+        message: 'No alternatives were found for your selection. Be the first to write one or make a new selection.',
+      });
     }
 
-    browserHistory.replace(`/paths/${nextPath.sid}`);
+    browserHistory.replace(`/posts/${nextPost.sid}`);
   }
 
   toggleMakeMode(save = true) {
     const {
       user,
-      path,
+      post,
       makeMode,
-      dispatch,
     } = this.props;
 
     if (user) {
       if (makeMode && save) {
         const newContent = PostPage.quill.getContents();
-        if (JSON.stringify(newContent) !== JSON.stringify(path.content)) {
-          this.savePath(newContent, path.groupId);
+        if (JSON.stringify(newContent) !== JSON.stringify(post.content)) {
+          this.savePost(newContent, post.groupId);
         } else {
-          return window.alert('No changes to save.');
+          return this.props.openDialog({
+            title: 'Nothing to save',
+            message: 'No new content to save! Write something...',
+          });
         }
       }
-      dispatch(toggleMakeMode());
+      this.props.toggleMakeMode();
     } else {
-      dispatch(setRedirectUrl(location.pathname))
+      this.props.setRedirectUrl(location.pathname);
       browserHistory.replace('/login');
     }
   }
 
-  savePath(content, groupId) {
-    const result = this.props.dispatch(
-      addPost({
-        groupId,
-        content,
-        htmlContent: PostPage.quill.root.innerHTML,
-      })
-    );
-    // TODO toggle loading state
-    result.then(res => {
+  savePost(content, groupId) {
+    this.props.addPost({
+      groupId,
+      content,
+      htmlContent: PostPage.quill.root.innerHTML,
+    }).then(res => {
       if (!res.post) {
-        window.alert('Error creating path');
-        return;
+        return this.props.openDialog({
+          title: 'Error',
+          message: 'Failed to save post. Please try again.',
+        });
       }
-      browserHistory.push(`/paths/${res.post.sid}`);
-      window.alert('New path created!');
+      browserHistory.push(`/posts/${res.post.sid}`);
+      this.props.openDialog({
+        title: 'Saved',
+        message: 'New post created successfully.',
+      });
     });
   }
 
   render() {
-    const { path, paths, selection, makeMode, dispatch } = this.props;
+    const { post, posts, selection, makeMode } = this.props;
     return (
       <div className={styles.container}>
         <ButtonBar theme={styles}>
           <div id='navigator-toolbar'>
-            {path.sid === 'blank' && makeMode &&
+            {post.sid === 'new' && makeMode &&
               <LinkIconButton
                 theme={buttonTheme}
-                href='/paths'
+                href='/posts'
               ><i className='fa fa-times'/></LinkIconButton>
             }
-            {path.sid !== 'blank' && makeMode &&
+            {post.sid !== 'new' && makeMode &&
               <IconButton
                 theme={buttonTheme}
                 onClick={() => this.toggleMakeMode(false)}
               ><i className='fa fa-times'/></IconButton>
             }
 
-            {!makeMode && paths.length > 1 &&
+            {!makeMode && posts.length > 1 &&
               <Button
                 theme={buttonTheme}
                 label='Prev'
-                onClick={() => { this.nextPath('backwards')}}
+                onClick={() => { this.nextPost('backwards')}}
               />
             }
 
             {selection && !makeMode &&
               <Button
                 theme={buttonTheme}
-                onClick={() => dispatch(deleteSelection())}
+                onClick={() => this.props.deleteSelection()}
                 primary
                 raised
               ><i className='fa fa-times'/></Button>}
@@ -152,11 +162,11 @@ class Toolbar extends Component {
               onClick={this.toggleMakeMode}
             />
 
-            {!makeMode && paths.length > 1 &&
+            {!makeMode && posts.length > 1 &&
               <Button
                 label='Next'
                 theme={buttonTheme}
-                onClick={() => { this.nextPath('forwards')}}
+                onClick={() => { this.nextPost('forwards')}}
               />}
 
             <div
@@ -227,57 +237,57 @@ class Toolbar extends Component {
   }
 }
 
-function getMatchedPath(currentPath, paths, selection, direction) {
-  // Reorder paths, excluding current path and starting at next path
+function getMatchedPost(currentPost, posts, selection, direction) {
+  // Reorder posts, excluding current post and starting at next post
   // eslint-disable-next-line no-param-reassign
-  let nextPath;
-  let nextPathSelectionLength;
-  const currentPathIndex = paths.indexOf(currentPath)
+  let nextPost;
+  let nextPostSelectionLength;
+  const currentPostIndex = posts.indexOf(currentPost)
   if (direction === 'forwards') {
-    paths = paths
-      .slice(currentPathIndex + 1)
-      .concat(paths.slice(0, currentPathIndex));
+    posts = posts
+      .slice(currentPostIndex + 1)
+      .concat(posts.slice(0, currentPostIndex));
   } else if (direction === 'backwards') {
-    paths = paths
-      .slice(0, currentPathIndex).reverse()
-      .concat(paths.slice(currentPathIndex + 1)).reverse();
+    posts = posts
+      .slice(0, currentPostIndex).reverse()
+      .concat(posts.slice(currentPostIndex + 1)).reverse();
   } else {
     return Error('Direction must be forwards or backwards.');
   }
 
-  const currentPathContent = new Delta(copyDelta(currentPath.content));
-  const currentPathStartContent = currentPathContent.slice(0, selection.index);
-  const currentPathEndContent = currentPathContent.slice(selection.index + selection.length);
+  const currentPostContent = new Delta(copyDelta(currentPost.content));
+  const currentPostStartContent = currentPostContent.slice(0, selection.index);
+  const currentPostEndContent = currentPostContent.slice(selection.index + selection.length);
 
-  for (let i = 0; i < paths.length; i++) {
-    let path = paths[i];
-    let pathContent = new Delta(copyDelta(path.content));
+  for (let i = 0; i < posts.length; i++) {
+    let post = posts[i];
+    let postContent = new Delta(copyDelta(post.content));
 
-    const pathSelectionLength = pathContent.length() - currentPathStartContent.length() - currentPathEndContent.length();
-    const pathStartContent = pathContent.slice(0, selection.index);
-    const pathEndContent = pathContent.slice(selection.index + pathSelectionLength);
+    const postSelectionLength = postContent.length() - currentPostStartContent.length() - currentPostEndContent.length();
+    const postStartContent = postContent.slice(0, selection.index);
+    const postEndContent = postContent.slice(selection.index + postSelectionLength);
 
     const bothStartTheSame =
-      stringify(currentPathStartContent) === stringify(pathStartContent);
+      stringify(currentPostStartContent) === stringify(postStartContent);
     const bothEndTheSame =
-      stringify(currentPathEndContent) === stringify(pathEndContent);
+      stringify(currentPostEndContent) === stringify(postEndContent);
 
     const bothStartTheSame2 =
-      deltaToString(currentPathStartContent) === deltaToString(pathStartContent);
+      deltaToString(currentPostStartContent) === deltaToString(postStartContent);
     const bothEndTheSame2 =
-      deltaToString(currentPathEndContent) === deltaToString(pathEndContent);
+      deltaToString(currentPostEndContent) === deltaToString(postEndContent);
 
     if ((bothStartTheSame && bothEndTheSame) ||
         (bothStartTheSame2 && bothEndTheSame2)) {
-      nextPath = path;
-      nextPathSelectionLength = pathSelectionLength;
+      nextPost = post;
+      nextPostSelectionLength = postSelectionLength;
       break;
     }
   }
 
   return {
-    nextPath,
-    nextPathSelectionLength,
+    nextPost,
+    nextPostSelectionLength,
   };
 }
 
@@ -285,13 +295,13 @@ function copyDelta(delta) {
   return JSON.parse(JSON.stringify(delta));
 }
 
-function goToConsecutivePath(currentPath, paths, direction) {
-  for (let i = 0; i < paths.length; i++) {
-    if (paths[i].sid === currentPath.sid) {
-      let nextPath = direction === 'forwards' ?
-        paths[i + 1] || paths[0] :
-        paths[i - 1] || paths[paths.length - 1];
-      const url = `/paths/${nextPath.sid}`;
+function goToConsecutivePost(currentPost, posts, direction) {
+  for (let i = 0; i < posts.length; i++) {
+    if (posts[i].sid === currentPost.sid) {
+      let nextPost = direction === 'forwards' ?
+        posts[i + 1] || posts[0] :
+        posts[i - 1] || posts[posts.length - 1];
+      const url = `/posts/${nextPost.sid}`;
       browserHistory.replace(url);
     }
   }
@@ -299,11 +309,17 @@ function goToConsecutivePath(currentPath, paths, direction) {
 
 function mapStateToProps(state, props) {
   return {
-    path: getPost(state, props.params.sid),
-    paths: getGroupPosts(state, props.params.sid),
+    post: getPost(state, props.params.sid),
+    posts: getGroupPosts(state, props.params.sid),
     user: getCurrentUser(state),
     ...getNavigator(state),
   };
 }
 
-export default connect(mapStateToProps, dispatch => ({ dispatch }))(Toolbar);
+export default connect(mapStateToProps, {
+  openDialog,
+  setRedirectUrl,
+  deleteSelection,
+  toggleMakeMode,
+  addPost,
+})(Toolbar);

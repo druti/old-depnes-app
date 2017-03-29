@@ -6,7 +6,7 @@ import { fetchPosts } from '../../../Post/PostActions';
 import { getPostsByUser } from '../../../Post/PostReducer';
 import Avatar from 'react-toolbox/lib/avatar/Avatar';
 import MasterLayout from '../../../../layouts/MasterLayout';
-import PathList from '../../../Post/components/PathList/PathList';
+import PostList from '../../../Post/components/PostList/PostList';
 import Loader from '../../../App/components/Loader/Loader';
 
 // eslint-disable-next-line
@@ -22,7 +22,7 @@ class ProfilePage extends Component { // eslint-disable-line
     switchLanguage: T.func.isRequired,
     intl: T.object.isRequired,
     user: T.object,
-    paths: T.array,
+    posts: T.array,
   }
 
   componentWillMount() {
@@ -42,7 +42,7 @@ class ProfilePage extends Component { // eslint-disable-line
       awaiting,
       failed,
       user,
-      paths,
+      posts,
       params,
       intl,
       switchLanguage,
@@ -61,9 +61,9 @@ class ProfilePage extends Component { // eslint-disable-line
             <Avatar theme={styles} title={`${user.firstName.slice(0, 1)}`} />
             <h3 className={styles.name}>{user.firstName} {user.lastName}</h3>
           </div>
-          {paths.length > 0 &&
-            <PathList paths={paths} />}
-          {!paths.length &&
+          {posts.length > 0 &&
+            <PostList posts={posts} />}
+          {!posts.length &&
             <h4 className={styles.noContent}>{user.firstName} {user.lastName} hasn’t been active on Depnes yet. Check back later to see their posts.</h4>}
         </div>
       );
@@ -90,7 +90,7 @@ export default connect(
     awaiting: getAwaiting(state),
     failed: getFailed(state),
     user: getUser(state, props.params.sid),
-    paths: getPostsByUser(state, props.params.sid),
+    posts: getPostsByUser(state, props.params.sid),
   }),
   { fetchUser, fetchPosts },
 )(ProfilePage);

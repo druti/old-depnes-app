@@ -12,29 +12,29 @@ import { LinkButton } from '../../../../mdl/Button';
 // eslint-disable-next-line
 import cardTheme from './cardTheme.scss';
 
-class PathCard extends Component {
-  goToPath = () => {
-    browserHistory.push(`/paths/${this.props.path.sid}`);
+class PostCard extends Component {
+  goToPost = () => {
+    browserHistory.push(`/posts/${this.props.post.sid}`);
   }
 
   render() {
-    const { path } = this.props;
+    const { post } = this.props;
     return (
       <Card theme={cardTheme}>
-        <AuthorList path={path} />
-        <CardText theme={cardTheme} onClick={this.goToPath}>
-          {deltaToString(path.content, 200)}
+        <AuthorList post={post} />
+        <CardText theme={cardTheme} onClick={this.goToPost}>
+          {deltaToString(post.content, 200)}
         </CardText>
         <CardActions>
-          <LinkButton primary label='Read' href={`/paths/${path.sid}`} />
+          <LinkButton primary label='Read' href={`/posts/${post.sid}`} />
         </CardActions>
       </Card>
     );
   }
 }
 
-PathCard.propTypes = {
-  path: T.object.isRequired,
+PostCard.propTypes = {
+  post: T.object.isRequired,
 };
 
-export default PathCard;
+export default PostCard;

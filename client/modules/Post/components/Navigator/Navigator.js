@@ -44,20 +44,20 @@ class Navigator extends Component {
     this.handleContentClick = this.handleContentClick.bind(this);
   }
 
-  componentWillReceiveProps({ path: nextPath, params: nextParams }) {
-    const { path, makeMode } = this.props;
-    if (nextPath.sid !== path.sid && makeMode && nextParams.sid !== 'blank') {
+  componentWillReceiveProps({ post: nextPost, params: nextParams }) {
+    const { post, makeMode } = this.props;
+    if (nextPost.sid !== post.sid && makeMode && nextParams.sid !== 'new') {
       this.props.toggleMakeMode();
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { path, selection } = this.props;
-    if (prevProps.path.sid !== path.sid && selection) {
+    const { post, selection } = this.props;
+    if (prevProps.post.sid !== post.sid && selection) {
       this.setSelection(convertSelection(
-        prevProps.path.content,
+        prevProps.post.content,
         selection,
-        path.content
+        post.content
       ));
     }
     if (prevProps.selection && !selection) {
@@ -321,10 +321,10 @@ class Navigator extends Component {
   }
 
   render() {
-    const { params, makeMode, path } = this.props;
+    const { params, makeMode, post } = this.props;
     return (
       <div className={styles.container}>
-        <Helmet title={deltaToString(this.props.path.content, 30)} />
+        <Helmet title={deltaToString(this.props.post.content, 30)} />
         {makeMode &&
           <Editor params={params} />}
         {!makeMode &&
@@ -334,7 +334,7 @@ class Navigator extends Component {
               ref='content'
               className='ql-editor'
               onClick={this.handleContentClick}
-              dangerouslySetInnerHTML={{ __html: path.htmlContent }}
+              dangerouslySetInnerHTML={{ __html: post.htmlContent }}
             />
           </div>}
         <Toolbar params={params} />
@@ -345,7 +345,7 @@ class Navigator extends Component {
 
 Navigator.propTypes = {
   params: T.object.isRequired,
-  path: T.object.isRequired,
+  post: T.object.isRequired,
   selection: T.oneOfType([T.bool, T.object]),
   makeMode: T.bool.isRequired,
   saveSelection: T.func.isRequired,

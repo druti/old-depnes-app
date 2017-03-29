@@ -35,7 +35,6 @@ const AuthReducer = (state = initState, action) => {
 
 /* Selectors */
 
-// Get letMakePath
 export const getCurrentUser = state => state.auth.user;
 
 // Export Reducer
