@@ -55,7 +55,7 @@ class PostListPage extends Component { // eslint-disable-line
               className={styles.cta}
               primary
               raised
-              label='Write Something'
+              label='Start Writing'
               href='/paths/blank'
             />
           </div>

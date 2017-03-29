@@ -5,6 +5,7 @@
 
   .authorContainer {
     background: #fff;
+    border-bottom: 1px solid #24292e;
     margin-bottom: 1rem;
     padding: 5rem;
     position: relative;
@@ -13,6 +14,10 @@
     .name {
       margin-top: 1rem;
     }
+  }
+
+  .noContent {
+    text-align: center;
   }
 }
 

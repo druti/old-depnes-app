@@ -61,7 +61,10 @@ class ProfilePage extends Component { // eslint-disable-line
             <Avatar theme={styles} title={`${user.firstName.slice(0, 1)}`} />
             <h3 className={styles.name}>{user.firstName} {user.lastName}</h3>
           </div>
-          <PathList paths={paths} />
+          {paths.length > 0 &&
+            <PathList paths={paths} />}
+          {!paths.length &&
+            <h4 className={styles.noContent}>{user.firstName} {user.lastName} hasn’t been active on Depnes yet. Check back later to see their posts.</h4>}
         </div>
       );
     }

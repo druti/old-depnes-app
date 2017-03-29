@@ -12,9 +12,6 @@ const DrawerMenu = ({ handleLinkClick }) => (
     <Logo />
     <Link onClick={handleLinkClick} href='/paths/blank' label='Write'/>
     <Link onClick={handleLinkClick} href='/paths' label='Paths'/>
-    <Link onClick={handleLinkClick} href='/paths/dafdfafsdf' label='Daf Path'/>
-    <Link onClick={handleLinkClick} href='/user/Sy2HGXzig' label='Andres Profile'/>
-    <Link onClick={handleLinkClick} href='/user/dafdfafsdf' label='Daf Profile'/>
   </Navigation>
 );
 

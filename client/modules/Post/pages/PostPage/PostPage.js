@@ -78,12 +78,9 @@ class PostPage extends Component { // eslint-disable-line
     } = this.props;
 
     let child;
-    let isLoading = awaiting.fetchPosts || !post;
+    let isLoading = awaiting.fetchPosts;
 
-    if (failed.fetchPosts) {
-      child = <h1>{failed.fetchPosts.reason || 'Something bad happend'}</h1>;
-      isLoading = false;
-    } else if (!user && params.sid === 'blank') {
+    if (!user && params.sid === 'blank') {
       child = null;
     } else if (post) {
       child = (
@@ -93,6 +90,8 @@ class PostPage extends Component { // eslint-disable-line
           <Navigator params={params} path={post} />
         </div>
       );
+    } else if (!isLoading) {
+      child = <h1>{failed.fetchPosts.reason || 'Something bad happend'}</h1>;
     }
 
     return (
