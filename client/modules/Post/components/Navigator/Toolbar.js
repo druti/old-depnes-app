@@ -91,8 +91,14 @@ class Toolbar extends Component {
             message: 'No new content to save! Write something...',
           });
         }
+        this.props.deleteSelection()
+        this.props.toggleMakeMode();
+      } else {
+        if (makeMode) {
+          this.props.deleteSelection()
+        }
+        this.props.toggleMakeMode();
       }
-      this.props.toggleMakeMode();
     } else {
       this.props.setRedirectUrl(location.pathname);
       browserHistory.replace('/login');
