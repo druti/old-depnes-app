@@ -14,17 +14,17 @@ export function fetchUser(sid) {
   return (dispatch, getState) => {
     const cachedUser = getUser(getState(), sid);
     if (cachedUser)  {
-      dispatch(userCached(fetchUser.name));
+      dispatch(userCached('fetchUser'));
       return Promise.resolve({ user: cachedUser });
     } else {
-      dispatch(requestUser(fetchUser.name));
+      dispatch(requestUser('fetchUser'));
     }
     return callApi(`user/${sid}`).then(
       res => {
-        return dispatch(receiveUser(fetchUser.name, res.user))
+        return dispatch(receiveUser('fetchUser', res.user))
       },
       err => {
-        return dispatch(failedRequestUser(fetchUser.name, err.reason));
+        return dispatch(failedRequestUser('fetchUser', err.reason));
       }
     );
   };

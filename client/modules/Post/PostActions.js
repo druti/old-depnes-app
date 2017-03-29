@@ -66,18 +66,18 @@ export function fetchPost(sid) {
   return (dispatch, getState) => {
     const cachedPost = getPost(getState(), sid);
     if (cachedPost)  {
-      dispatch(postCached(fetchPost.name));
+      dispatch(postCached('fetchPost'));
       return Promise.resolve({ post: cachedPost });
     } else {
-      dispatch(requestPost(fetchPost.name));
+      dispatch(requestPost('fetchPost'));
     }
     return callApi(`posts/${sid}`)
       .then(
         res => {
-          dispatch(receivePost(fetchPost.name, res.post));
+          dispatch(receivePost('fetchPost', res.post));
         },
         err => {
-          dispatch(failedRequestPost(fetchPost.name, err.reason));
+          dispatch(failedRequestPost('fetchPost', err.reason));
         }
       );
   };
@@ -119,14 +119,14 @@ export function failedRequestPost(requestName, reason) {
  */
 export function fetchPosts() {
   return (dispatch) => {
-    dispatch(requestPosts(fetchPosts.name));
+    dispatch(requestPosts('fetchPosts'));
     return callApi('posts')
       .then(
         res => {
-          dispatch(receivePosts(fetchPosts.name, res.posts));
+          dispatch(receivePosts('fetchPosts', res.posts));
         },
         err => {
-          dispatch(failedRequestPosts(fetchPosts.name, err.reason));
+          dispatch(failedRequestPosts('fetchPosts', err.reason));
         }
       );
   };
@@ -161,10 +161,10 @@ export function addPost(post) {
     dispatch(addPostRequest());
     return callApi('posts', 'post', { post }).then(
       res => {
-        return dispatch(receivePost(addPost.name, res.post));
+        return dispatch(receivePost('addPost', res.post));
       },
       err => {
-        return dispatch(failedAddPost(addPost.name, err.reason));
+        return dispatch(failedAddPost('addPost', err.reason));
       }
     );
   };
